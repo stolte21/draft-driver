@@ -5,9 +5,9 @@ const SunIcon = createIcon({
   viewBox: '0 0 24 24',
   path: (
     <g
-      stroke-linejoin="round"
-      stroke-linecap="round"
-      stroke-width="2"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+      strokeWidth="2"
       fill="none"
       stroke="currentColor"
     >
