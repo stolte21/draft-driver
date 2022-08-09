@@ -40,7 +40,7 @@ const PlayerFilter = (props: PlayerFilterProps) => {
   return (
     <InputGroup>
       <Input
-        marginBottom={2}
+        size={['sm', 'md']}
         placeholder="Search for players"
         value={value}
         onChange={(e) => setValue(e.target.value)}

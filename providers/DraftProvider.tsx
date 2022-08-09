@@ -76,12 +76,16 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
       newState = {
         ...state,
         draftedPlayers: state.draftedPlayers.filter((_, i) => i !== 0),
+        roster: state.roster.filter(
+          (player) => player.id !== state.draftedPlayers[0].id
+        ),
       };
       break;
     case 'reset':
       newState = {
         ...state,
         draftedPlayers: [],
+        roster: [],
       };
       break;
     case 'add-roster':

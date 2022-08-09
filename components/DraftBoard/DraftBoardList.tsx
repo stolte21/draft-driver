@@ -1,25 +1,26 @@
+import { useRef } from 'react';
 import { FixedSizeList } from 'react-window';
-import { Flex, Heading, Button } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/react';
 import { Player, Position } from 'types';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
-import { useDraft } from 'providers/DraftProvider';
 
 type DraftBoardListProps = {
   title: string;
   players: Player[];
   position?: Position;
   height: number;
-  width: string;
   variant: 'rankings' | 'picks';
 };
 
 const DraftBoardList = (props: DraftBoardListProps) => {
-  const { dispatch } = useDraft();
+  // used to subtract the size of the heading from the passed in height
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <Flex flexDirection="column">
       <Heading
+        ref={headingRef}
         as="h3"
         size="sm"
         padding={1}
@@ -31,25 +32,9 @@ const DraftBoardList = (props: DraftBoardListProps) => {
       >
         {props.title}
       </Heading>
-      {props.variant === 'picks' && (
-        <Flex justifyContent="space-between">
-          <Button
-            disabled={props.players.length === 0}
-            onClick={() => dispatch({ type: 'undo' })}
-          >
-            Undo
-          </Button>
-          <Button
-            disabled={props.players.length === 0}
-            onClick={() => dispatch({ type: 'reset' })}
-          >
-            Reset
-          </Button>
-        </Flex>
-      )}
       <FixedSizeList
-        height={props.height}
-        width={props.width}
+        height={props.height - (headingRef.current?.clientHeight ?? 0)}
+        width="100%"
         itemCount={props.players.length}
         itemSize={30}
         // some obscure players don't have a fantasy data id so fallback to the name.

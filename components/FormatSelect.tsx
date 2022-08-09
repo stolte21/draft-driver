@@ -15,6 +15,7 @@ const formatConfig: Record<Format, string> = {
 
 const FormatSelect = (props: FormatSelectProps) => (
   <Select
+    size={['sm', 'md']}
     value={props.format}
     onChange={(e) => props.onSelect(e.target.value as Format)}
   >

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import Head from 'next/head';
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Flex, BoxProps } from '@chakra-ui/react';
 
 type Meta = {
   title: string;
@@ -23,7 +23,8 @@ const Page = (props: PageProps) => {
     children,
   } = props;
   return (
-    <Box
+    <Flex
+      flexDirection="column"
       height="calc(100% - 3.5rem)"
       width="100%"
       maxWidth="container.xl"
@@ -37,7 +38,7 @@ const Page = (props: PageProps) => {
         <meta content={meta.description} name="description" />
       </Head>
       {children}
-    </Box>
+    </Flex>
   );
 };
 

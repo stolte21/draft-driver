@@ -24,7 +24,6 @@ const DraftBoardPickRow = (
   return (
     <Flex
       style={props.style}
-      title="Add Player to Roster"
       justifyContent="space-between"
       alignItems="center"
       cursor="pointer"
@@ -35,7 +34,7 @@ const DraftBoardPickRow = (
        */
       onMouseDown={(e) => e.detail > 1 && e.preventDefault()}
     >
-      <Flex marginLeft={1} gap={2}>
+      <Flex marginLeft={1} gap={2} overflow="hidden">
         <Text>{state.draftedPlayers.length - props.index}</Text>
         <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
           {player.name}
@@ -45,6 +44,8 @@ const DraftBoardPickRow = (
       <Checkbox
         onClick={handleClick}
         isChecked={computed.teamPlayerIds.has(player.id)}
+        marginLeft={1}
+        marginRight={2}
       />
     </Flex>
   );

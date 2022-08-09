@@ -1,48 +1,43 @@
-import { Grid, GridItem, SimpleGrid, Button } from '@chakra-ui/react';
+import { Grid, GridItem, useBreakpoint } from '@chakra-ui/react';
 import DraftBoardList from 'components/DraftBoard/DraftBoardList';
 import { useDraft } from 'providers/DraftProvider';
-import { Position } from 'types';
-
-const positions: Position[] = ['RB', 'WR', 'QB', 'TE'];
+import useElementHeight from 'hooks/useElementHeight';
 
 const DraftBoard = () => {
   const { state } = useDraft();
+  const { element, height } = useElementHeight();
+  const bp = useBreakpoint();
+  const isXS = bp === 'base';
 
   const filteredPlayers = state.rankings.filter((player) =>
     player.name.toLowerCase().includes(state.filter)
   );
 
+  const overallHeight = isXS ? height * 0.6 : height;
+  const picksHeight = isXS ? height * 0.4 : height;
+
   return (
-    <Grid gridTemplateColumns="repeat(12, 1fr)" gridGap={2}>
-      <GridItem colSpan={[12, 8, 4]}>
+    <Grid
+      ref={element}
+      visibility={height === 0 ? 'hidden' : 'visible'}
+      gridTemplateColumns="repeat(12, 1fr)"
+      gridGap={2}
+      flexGrow={1}
+      overflow="hidden"
+    >
+      <GridItem colSpan={[12, 8]}>
         <DraftBoardList
           title="Overall"
           players={filteredPlayers}
-          height={500}
-          width="100%"
+          height={overallHeight}
           variant="rankings"
         />
       </GridItem>
-      <GridItem display={['none', 'none', 'block']} colSpan={4}>
-        <SimpleGrid columns={2} gridGap={2}>
-          {positions.map((position) => (
-            <DraftBoardList
-              key={position}
-              title={position}
-              players={filteredPlayers.filter((p) => p.position === position)}
-              height={250}
-              width="100%"
-              variant="rankings"
-            />
-          ))}
-        </SimpleGrid>
-      </GridItem>
-      <GridItem colSpan={[12, 4, 4]}>
+      <GridItem colSpan={[12, 4]}>
         <DraftBoardList
           title="Picks"
           players={state.draftedPlayers}
-          height={500}
-          width="100%"
+          height={picksHeight}
           variant="picks"
         />
       </GridItem>

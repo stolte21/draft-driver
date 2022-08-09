@@ -2,19 +2,20 @@ import { extendTheme, Theme } from '@chakra-ui/react';
 
 const themeObject: Partial<Theme> = {
   styles: {
-    global: {
+    global: (props) => ({
       'html, body, #__next': {
         height: '100%',
       },
       body: {
         minWidth: '320px',
+        minHeight: '600px',
       },
       '::-webkit-scrollbar': {
         width: '4px',
         height: '4px',
       },
       '::-webkit-scrollbar-track': {
-        backgroundColor: 'gray.900',
+        backgroundColor: props.colorMode === 'dark' ? 'gray.900' : 'gray.200',
       },
 
       '::-webkit-scrollbar-thumb': {
@@ -24,7 +25,7 @@ const themeObject: Partial<Theme> = {
         scrollbarWidth: 'thin',
         scrollbarColor: 'gray.500 gray.900',
       },
-    },
+    }),
   },
   config: {
     initialColorMode: 'dark',
