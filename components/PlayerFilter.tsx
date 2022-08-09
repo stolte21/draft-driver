@@ -51,6 +51,7 @@ const PlayerFilter = (props: PlayerFilterProps) => {
             aria-label="clear filter"
             icon={<ClearIcon />}
             size="xs"
+            top={[-1, 0]}
             variant="ghost"
             onClick={() => setValue('')}
           />

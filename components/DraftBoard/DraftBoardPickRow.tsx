@@ -1,6 +1,7 @@
-import { Flex, Box, Text, Checkbox } from '@chakra-ui/react';
+import { Flex, Text, Checkbox } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useDraft } from 'providers/DraftProvider';
+import { handlePreventDoubleClickHighlight } from 'utils';
 import { Player } from 'types';
 
 type DraftBoardPickRowProps = {
@@ -28,11 +29,10 @@ const DraftBoardPickRow = (
       alignItems="center"
       cursor="pointer"
       onClick={handleClick}
-      /**
-       * This prevents text from being selected after double clicking
-       * but still allows the text to be click+drag highlighted.
-       */
-      onMouseDown={(e) => e.detail > 1 && e.preventDefault()}
+      onMouseDown={handlePreventDoubleClickHighlight}
+      _hover={{
+        backgroundColor: 'blackAlpha.100',
+      }}
     >
       <Flex marginLeft={1} gap={2} overflow="hidden">
         <Text>{state.draftedPlayers.length - props.index}</Text>

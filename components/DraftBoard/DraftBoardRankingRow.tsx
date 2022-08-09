@@ -1,6 +1,7 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useDraft } from 'providers/DraftProvider';
+import { handlePreventDoubleClickHighlight } from 'utils';
 import { Player } from 'types';
 
 type DraftBoardRankingRowProps = {
@@ -15,34 +16,35 @@ const DraftBoardRankingRow = (
   const isPlayerDrafted = computed.draftedPlayerIds.has(player.id);
 
   return (
-    <Box
+    <Flex
       style={props.style}
-      display="flex"
       alignItems="center"
+      gap={2}
       cursor={isPlayerDrafted ? 'not-allowed' : 'pointer'}
+      backgroundColor={isPlayerDrafted ? 'blackAlpha.400' : undefined}
       onClick={
         !isPlayerDrafted
           ? () => dispatch({ type: 'draft', payload: player })
           : undefined
       }
-      /**
-       * This prevents text from being selected after double clicking
-       * but still allows the text to be click+drag highlighted.
-       */
-      onMouseDown={(e) => e.detail > 1 && e.preventDefault()}
+      onMouseDown={handlePreventDoubleClickHighlight}
+      _hover={{
+        backgroundColor: !isPlayerDrafted ? 'blackAlpha.100' : undefined,
+      }}
     >
+      <Text marginLeft={1} flexBasis={10}>
+        {props.index + 1}
+      </Text>
+      <Text flexBasis={10}>{player.position}</Text>
       <Text
         whiteSpace="nowrap"
         overflow="hidden"
         textOverflow="ellipsis"
-        marginLeft={1}
-        textDecoration={
-          computed.draftedPlayerIds.has(player.id) ? 'line-through' : 'none'
-        }
+        textDecoration={isPlayerDrafted ? 'line-through' : 'none'}
       >
         {player.name}
       </Text>
-    </Box>
+    </Flex>
   );
 };
 

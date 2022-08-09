@@ -28,6 +28,7 @@ const Toolbar = () => {
           size={['sm', 'md']}
           disabled={state.draftedPlayers.length === 0}
           onClick={() => dispatch({ type: 'reset' })}
+          color="red.500"
         >
           Reset
         </Button>

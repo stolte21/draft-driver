@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import playersJSON from "public/players.json";
-import { formatsList, positionsList } from "utils";
-import { Format, Player } from "types";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import playersJSON from 'public/players.json';
+import { formatsList, positionsList } from 'utils';
+import { Format, Player } from 'types';
 
-function validateFormat(query: NextApiRequest["query"]): Format {
+function validateFormat(query: NextApiRequest['query']): Format {
   const { format } = query;
 
-  if (!format) return "ppr";
+  if (!format) return 'ppr';
 
   const parsedFormat = format.toString();
 
@@ -14,7 +14,7 @@ function validateFormat(query: NextApiRequest["query"]): Format {
   if (formatsList.includes(parsedFormat)) {
     return parsedFormat as Format;
   } else {
-    return "ppr";
+    return 'ppr';
   }
 }
 
@@ -23,7 +23,7 @@ export default function handler(
   res: NextApiResponse<Player[]>
 ) {
   const format = validateFormat(req.query);
-  console.log("getting rankings for format: ", format);
+  console.log('getting rankings for format: ', format);
 
   const players: Player[] = [];
 
@@ -31,8 +31,15 @@ export default function handler(
     //@ts-expect-error
     const player = playersJSON[id];
 
-    if (
-      player.status === "Active" &&
+    if (player.position === 'DEF') {
+      players.push({
+        id: player.player_id,
+        name: player.last_name,
+        position: 'DST',
+        team: player.team,
+      });
+    } else if (
+      player.status === 'Active' &&
       player.depth_chart_order <= 3 &&
       positionsList.includes(player.position)
     ) {

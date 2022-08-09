@@ -66,7 +66,7 @@ const RosterSettingsProvider = (props: { children: ReactNode }) => {
       RB: 2,
       WR: 2,
       TE: 1,
-      DEF: 1,
+      DST: 1,
       K: 1,
     },
   });
