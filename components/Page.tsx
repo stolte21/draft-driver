@@ -8,7 +8,6 @@ type Meta = {
 };
 
 type PageProps = {
-  width?: BoxProps['width'];
   boxProps?: Omit<BoxProps, 'width'>;
   meta?: Partial<Meta>;
   children: ReactNode;
@@ -16,7 +15,6 @@ type PageProps = {
 
 const Page = (props: PageProps) => {
   const {
-    width = '100%',
     boxProps = {},
     meta = {
       title: 'Draft Driver | Fantasy Football Draft Tool',
@@ -26,9 +24,10 @@ const Page = (props: PageProps) => {
   } = props;
   return (
     <Box
-      width={width}
+      height="calc(100% - 3.5rem)"
+      width="100%"
       maxWidth="container.xl"
-      marginTop={2}
+      paddingTop={2}
       paddingX={[1, 2]}
       marginX="auto"
       {...boxProps}

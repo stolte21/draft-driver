@@ -7,6 +7,7 @@ import {
   Reducer,
   ReactNode,
 } from 'react';
+import { getStorageItem, setStorageItem } from 'utils';
 import { Format, Player } from 'types';
 
 type State = {
@@ -20,6 +21,7 @@ type State = {
 type PlayersMap = Record<number, Player>;
 
 type Action =
+  | { type: 'hydrate'; payload: State }
   | { type: 'change-format'; payload: Format }
   | { type: 'update-filter'; payload: string }
   | { type: 'set-rankings'; payload: Player[] }
@@ -38,6 +40,7 @@ const DraftContext = createContext<
   | {
       state: State;
       computed: {
+        isInitializing: boolean;
         playersMap: PlayersMap;
         draftedPlayerIds: Set<number>;
         teamPlayerIds: Set<number>;
@@ -48,43 +51,59 @@ const DraftContext = createContext<
 >(undefined);
 
 const draftReducer: Reducer<State, Action> = (state, action) => {
+  let newState: null | State = null;
+
   switch (action.type) {
+    case 'hydrate':
+      newState = action.payload;
+      break;
     case 'change-format':
-      return { ...state, format: action.payload };
+      newState = { ...state, format: action.payload };
+      break;
     case 'update-filter':
-      return { ...state, filter: action.payload };
+      newState = { ...state, filter: action.payload };
+      break;
     case 'set-rankings':
-      return { ...state, rankings: action.payload };
+      newState = { ...state, rankings: action.payload };
+      break;
     case 'draft':
-      return {
+      newState = {
         ...state,
         draftedPlayers: [action.payload, ...state.draftedPlayers],
       };
+      break;
     case 'undo':
-      return {
+      newState = {
         ...state,
         draftedPlayers: state.draftedPlayers.filter((_, i) => i !== 0),
       };
+      break;
     case 'reset':
-      return {
+      newState = {
         ...state,
         draftedPlayers: [],
       };
+      break;
     case 'add-roster':
-      return {
+      newState = {
         ...state,
         roster: [...state.roster, action.payload],
       };
+      break;
     case 'remove-roster':
-      return {
+      newState = {
         ...state,
         roster: state.roster.filter((player) => player.id !== action.payload),
       };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
+
+  setStorageItem('DRAFT', newState);
+  return newState;
 };
 
 const DraftProvider = (props: { children: ReactNode }) => {
@@ -110,6 +129,8 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return new Set(state.roster.map((player) => player.id));
   }, [state.roster]);
 
+  const isInitializing = state.rankings.length === 0;
+
   useEffect(() => {
     fetch(`/api/rankings?format=${state.format}`)
       .then((response) => response.json())
@@ -117,8 +138,12 @@ const DraftProvider = (props: { children: ReactNode }) => {
   }, [state.format, dispatch]);
 
   useEffect(() => {
-    window.localStorage.setItem('draft-driver__state', JSON.stringify(state));
-  }, [state]);
+    const savedState = getStorageItem('DRAFT');
+
+    if (savedState) {
+      dispatch({ type: 'hydrate', payload: savedState });
+    }
+  }, []);
 
   return (
     <DraftContext.Provider
@@ -126,6 +151,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
         state,
         dispatch,
         computed: {
+          isInitializing,
           playersMap,
           draftedPlayerIds,
           teamPlayerIds,

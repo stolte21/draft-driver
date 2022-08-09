@@ -3,6 +3,9 @@ import { extendTheme, Theme } from '@chakra-ui/react';
 const themeObject: Partial<Theme> = {
   styles: {
     global: {
+      'html, body, #__next': {
+        height: '100%',
+      },
       body: {
         minWidth: '320px',
       },
@@ -25,7 +28,6 @@ const themeObject: Partial<Theme> = {
   },
   config: {
     initialColorMode: 'dark',
-    useSystemColorMode: false,
   },
 };
 

@@ -6,6 +6,7 @@ import {
   Reducer,
   ReactNode,
 } from 'react';
+import { getStorageItem, setStorageItem } from 'utils';
 import { Position } from 'types';
 
 type State = {
@@ -24,30 +25,38 @@ const RosterSettingsContext = createContext<
 >(undefined);
 
 const rosterSettingsReducer: Reducer<State, Action> = (state, action) => {
+  let newState: State | null = null;
+
   switch (action.type) {
     case 'hydrate':
-      return action.payload;
+      newState = action.payload;
+      break;
     case 'increment-roster-size':
-      return {
+      newState = {
         ...state,
         rosterSize: {
           ...state.rosterSize,
           [action.payload]: state.rosterSize[action.payload] + 1,
         },
       };
+      break;
     case 'decrement-roster-size':
-      return {
+      newState = {
         ...state,
         rosterSize: {
           ...state.rosterSize,
           [action.payload]: state.rosterSize[action.payload] - 1,
         },
       };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
+
+  setStorageItem('ROSTER_SETTINGS', newState);
+  return newState;
 };
 
 const RosterSettingsProvider = (props: { children: ReactNode }) => {
@@ -62,22 +71,13 @@ const RosterSettingsProvider = (props: { children: ReactNode }) => {
     },
   });
 
-  /*
   useEffect(() => {
-    const savedState = window.localStorage.getItem(
-      'draft-driver__roster-settings'
-    );
-    if (savedState) {
-      dispatch({ type: 'hydrate', payload: JSON.parse(savedState) });
-    }
-  }, []);*/
+    const savedState = getStorageItem('ROSTER_SETTINGS');
 
-  useEffect(() => {
-    window.localStorage.setItem(
-      'draft-driver__roster-settings',
-      JSON.stringify(state)
-    );
-  }, [state]);
+    if (savedState) {
+      dispatch({ type: 'hydrate', payload: savedState });
+    }
+  }, []);
 
   return (
     <RosterSettingsContext.Provider value={{ state, dispatch }}>
