@@ -32,7 +32,7 @@ type Action =
   | { type: 'undo' }
   | { type: 'reset' }
   | { type: 'add-roster'; payload: Player }
-  | { type: 'remove-roster'; payload: number };
+  | { type: 'remove-roster'; payload: string };
 
 type Dispatch = (action: Action) => void;
 
@@ -42,8 +42,8 @@ const DraftContext = createContext<
       computed: {
         isInitializing: boolean;
         playersMap: PlayersMap;
-        draftedPlayerIds: Set<number>;
-        teamPlayerIds: Set<number>;
+        draftedPlayerIds: Set<string>;
+        teamPlayerIds: Set<string>;
       };
       dispatch: Dispatch;
     }
@@ -120,7 +120,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
   });
 
   const playersMap = useMemo(() => {
-    const map: Record<number, Player> = {};
+    const map: Record<string, Player> = {};
     state.rankings.forEach((player) => (map[player.id] = player));
     return map;
   }, [state.rankings]);

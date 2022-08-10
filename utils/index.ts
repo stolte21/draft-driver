@@ -1,4 +1,5 @@
 import { Format, Position } from 'types';
+export * from 'utils/scrape';
 export * from 'utils/storage';
 
 export const formatsList: Format[] = ['standard', 'half-ppr', 'ppr'];

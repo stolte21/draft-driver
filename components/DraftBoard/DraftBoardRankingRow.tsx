@@ -33,7 +33,7 @@ const DraftBoardRankingRow = (
       }}
     >
       <Text marginLeft={1} flexBasis={10}>
-        {props.index + 1}
+        {player.rank}
       </Text>
       <Text flexBasis={10}>{player.position}</Text>
       <Text

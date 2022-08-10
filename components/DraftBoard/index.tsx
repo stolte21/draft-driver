@@ -27,7 +27,6 @@ const DraftBoard = () => {
     >
       <GridItem colSpan={[12, 8]}>
         <DraftBoardList
-          title="Overall"
           players={filteredPlayers}
           height={overallHeight}
           variant="rankings"
@@ -35,7 +34,6 @@ const DraftBoard = () => {
       </GridItem>
       <GridItem colSpan={[12, 4]}>
         <DraftBoardList
-          title="Picks"
           players={state.draftedPlayers}
           height={picksHeight}
           variant="picks"
