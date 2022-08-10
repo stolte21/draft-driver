@@ -13,6 +13,7 @@ const DraftBoardPickRow = (
 ) => {
   const { state, computed, dispatch } = useDraft();
   const player = props.data.players[props.index];
+  const checked = computed.teamPlayerIds.has(player.id);
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
@@ -30,12 +31,13 @@ const DraftBoardPickRow = (
       cursor="pointer"
       onClick={handleClick}
       onMouseDown={handlePreventDoubleClickHighlight}
+      backgroundColor={checked ? 'blackAlpha.400' : undefined}
       _hover={{
-        backgroundColor: 'blackAlpha.100',
+        backgroundColor: !checked ? 'blackAlpha.100' : undefined,
       }}
     >
       <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
-        <Text flexShrink={0} flexBasis={8}>
+        <Text flexShrink={0} flexBasis={10}>
           {state.draftedPlayers.length - props.index}
         </Text>
         <Text
@@ -50,7 +52,7 @@ const DraftBoardPickRow = (
 
       <Checkbox
         onClick={handleClick}
-        isChecked={computed.teamPlayerIds.has(player.id)}
+        isChecked={checked}
         marginLeft={1}
         marginRight={2}
       />

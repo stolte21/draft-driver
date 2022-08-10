@@ -36,6 +36,10 @@ const Page = (props: PageProps) => {
       <Head>
         <title>{meta.title}</title>
         <meta content={meta.description} name="description" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
       {children}
     </Flex>

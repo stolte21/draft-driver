@@ -8,14 +8,16 @@ const Toolbar = () => {
 
   return (
     <Flex flexDirection={['column', 'row']} gap={[1, 2]} marginBottom={2}>
-      <FormatSelect
-        format={state.format}
-        onSelect={(f) => dispatch({ type: 'change-format', payload: f })}
-      />
-      <PlayerFilter
-        filter={state.filter}
-        onChange={(f) => dispatch({ type: 'update-filter', payload: f })}
-      />
+      <Flex flexGrow={1} gap={[1, 2]}>
+        <FormatSelect
+          format={state.format}
+          onSelect={(f) => dispatch({ type: 'change-format', payload: f })}
+        />
+        <PlayerFilter
+          filter={state.filter}
+          onChange={(f) => dispatch({ type: 'update-filter', payload: f })}
+        />
+      </Flex>
       <Flex gap={[1, 2]}>
         <Button
           size={['sm', 'md']}

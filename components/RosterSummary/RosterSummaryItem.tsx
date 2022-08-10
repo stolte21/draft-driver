@@ -35,12 +35,13 @@ const RosterSummaryItem = (props: RosterSummaryItemProps) => {
         lastNumInPosition.current !== numInPosition ? pingAnimation : undefined
       }
       flexDirection="column"
-      width="80px"
-      height="80px"
+      width={['40px', '80px']}
+      height={['40px', '80px']}
       justifyContent="center"
       alignItems="center"
       backgroundColor="blackAlpha.300"
-      rounded="md"
+      rounded={['full', 'md']}
+      fontSize={['xs', 'md']}
     >
       <Text fontWeight="bold">{props.position}</Text>
       <Text>
