@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-//import playersJSON from 'public/players.json';
 import { formatsList, scrapeFantasyPros } from 'utils';
 import { Format, Player, Position } from 'types';
 

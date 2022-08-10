@@ -6,6 +6,12 @@ const themeObject: Partial<Theme> = {
       'html, body, #__next': {
         height: '100%',
       },
+      html: {
+        scrollbarWidth: 'none',
+      },
+      'html::-webkit-scrollbar': {
+        display: 'none',
+      },
       body: {
         minWidth: '320px',
         minHeight: '600px',
