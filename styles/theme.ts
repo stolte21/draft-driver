@@ -5,12 +5,7 @@ const themeObject: Partial<Theme> = {
     global: (props) => ({
       'html, body, #__next': {
         height: '100%',
-      },
-      html: {
-        scrollbarWidth: 'none',
-      },
-      'html::-webkit-scrollbar': {
-        display: 'none',
+        overflow: 'hidden',
       },
       body: {
         minWidth: '320px',
@@ -23,7 +18,6 @@ const themeObject: Partial<Theme> = {
       '::-webkit-scrollbar-track': {
         backgroundColor: props.colorMode === 'dark' ? 'gray.900' : 'gray.200',
       },
-
       '::-webkit-scrollbar-thumb': {
         backgroundColor: 'gray.500',
       },
