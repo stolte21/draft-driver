@@ -32,10 +32,15 @@ const DraftBoardRankingRow = (
         backgroundColor: !isPlayerDrafted ? 'blackAlpha.100' : undefined,
       }}
     >
-      <Text marginLeft={1} flexBasis={10}>
+      <Text flexShrink={0} marginLeft={1} flexBasis={10}>
         {player.rank}
       </Text>
-      <Text flexBasis={10}>{player.position}</Text>
+      <Text flexShrink={0} flexBasis={10}>
+        {player.team}
+      </Text>
+      <Text flexShrink={0} flexBasis={10}>
+        {player.position}
+      </Text>
       <Text
         whiteSpace="nowrap"
         overflow="hidden"

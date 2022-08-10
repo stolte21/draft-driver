@@ -34,9 +34,16 @@ const DraftBoardPickRow = (
         backgroundColor: 'blackAlpha.100',
       }}
     >
-      <Flex marginLeft={1} gap={2} overflow="hidden">
-        <Text>{state.draftedPlayers.length - props.index}</Text>
-        <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
+      <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
+        <Text flexShrink={0} flexBasis={8}>
+          {state.draftedPlayers.length - props.index}
+        </Text>
+        <Text
+          flexGrow={1}
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
+        >
           {player.name}
         </Text>
       </Flex>
