@@ -28,7 +28,7 @@ export default async function handler(
     const rankings = await scrapeFantasyPros(format);
     rankings.forEach((ranking) =>
       players.push({
-        id: ranking.rank + '_' + ranking.name,
+        id: (ranking.team || 'FA') + '_' + ranking.name,
         name: ranking.name,
         position: ranking.pos as Position,
         team: ranking.team,

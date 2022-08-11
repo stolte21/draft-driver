@@ -25,7 +25,6 @@ const DraftBoardPositionFilter = (props: DraftBoardPositionFilterProps) => {
   };
 
   return (
-    // TODO: add scrolling but hide scrollbars for the stack
     <HStack marginLeft={2} overflow="hidden">
       {buttons.map((filter) => (
         <Button
@@ -36,7 +35,7 @@ const DraftBoardPositionFilter = (props: DraftBoardPositionFilterProps) => {
           (filter !== 'ALL' && props.filters.has(filter))
             ? {
                 variant: 'solid',
-                colorScheme: 'linkedin',
+                colorScheme: 'blue',
                 border: '1px solid transparent',
               }
             : { variant: 'outline' })}

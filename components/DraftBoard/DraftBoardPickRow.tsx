@@ -1,4 +1,4 @@
-import { Flex, Text, Checkbox } from '@chakra-ui/react';
+import { useColorMode, Flex, Text, Checkbox } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
@@ -12,6 +12,7 @@ type DraftBoardPickRowProps = {
 const DraftBoardPickRow = (
   props: ListChildComponentProps<DraftBoardPickRowProps>
 ) => {
+  const { colorMode } = useColorMode();
   const { state: settings } = useSettings();
   const { state, computed, dispatch } = useDraft();
   const player = props.data.players[props.index];
@@ -37,9 +38,19 @@ const DraftBoardPickRow = (
       cursor="pointer"
       onClick={handleClick}
       onMouseDown={handlePreventDoubleClickHighlight}
-      backgroundColor={checked ? 'blackAlpha.400' : undefined}
+      backgroundColor={
+        checked
+          ? colorMode === 'dark'
+            ? 'blackAlpha.400'
+            : 'gray.300'
+          : undefined
+      }
       _hover={{
-        backgroundColor: !checked ? 'blackAlpha.100' : undefined,
+        backgroundColor: !checked
+          ? colorMode === 'dark'
+            ? 'blackAlpha.100'
+            : 'gray.300'
+          : undefined,
       }}
     >
       <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">

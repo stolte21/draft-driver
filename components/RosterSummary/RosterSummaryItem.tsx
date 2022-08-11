@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { Flex, Text, keyframes } from '@chakra-ui/react';
+import { useColorMode, Flex, Text, keyframes } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
 import { Position } from 'types';
@@ -17,6 +17,7 @@ const ping = keyframes`
 const pingAnimation = `${ping} 1s linear`;
 
 const RosterSummaryItem = (props: RosterSummaryItemProps) => {
+  const { colorMode } = useColorMode();
   const { state } = useSettings();
   const { state: draftState } = useDraft();
   const numInPosition = draftState.roster.filter(
@@ -39,7 +40,7 @@ const RosterSummaryItem = (props: RosterSummaryItemProps) => {
       height={['40px', '80px']}
       justifyContent="center"
       alignItems="center"
-      backgroundColor="blackAlpha.300"
+      backgroundColor={colorMode === 'dark' ? 'blackAlpha.300' : 'gray.200'}
       rounded={['full', 'md']}
       fontSize={['xs', 'md']}
     >

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { FixedSizeList } from 'react-window';
-import { Flex, Box, Heading } from '@chakra-ui/react';
+import { useColorMode, Flex, Box, Heading } from '@chakra-ui/react';
 import { Player, Position } from 'types';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
@@ -14,6 +14,7 @@ type DraftBoardListProps = {
 };
 
 const DraftBoardList = (props: DraftBoardListProps) => {
+  const { colorMode } = useColorMode();
   const [positionFilters, setPositionFilters] = useState<Set<Position>>(
     new Set()
   );
@@ -37,7 +38,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         paddingLeft={2}
         marginBottom={1}
         rounded="md"
-        backgroundColor="blackAlpha.300"
+        backgroundColor={colorMode === 'dark' ? 'blackAlpha.300' : 'gray.200'}
       >
         <Heading as="h3" size="sm" textTransform="uppercase">
           {props.variant}

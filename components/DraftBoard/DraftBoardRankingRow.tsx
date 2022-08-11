@@ -1,4 +1,4 @@
-import { Flex, Text } from '@chakra-ui/react';
+import { useColorMode, Flex, Text } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useDraft } from 'providers/DraftProvider';
 import { handlePreventDoubleClickHighlight } from 'utils';
@@ -11,6 +11,7 @@ type DraftBoardRankingRowProps = {
 const DraftBoardRankingRow = (
   props: ListChildComponentProps<DraftBoardRankingRowProps>
 ) => {
+  const { colorMode } = useColorMode();
   const { computed, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const isPlayerDrafted = computed.draftedPlayerIds.has(player.id);
@@ -21,7 +22,13 @@ const DraftBoardRankingRow = (
       alignItems="center"
       gap={2}
       cursor={isPlayerDrafted ? 'not-allowed' : 'pointer'}
-      backgroundColor={isPlayerDrafted ? 'blackAlpha.400' : undefined}
+      backgroundColor={
+        isPlayerDrafted
+          ? colorMode === 'dark'
+            ? 'blackAlpha.400'
+            : 'gray.300'
+          : undefined
+      }
       onClick={
         !isPlayerDrafted
           ? () => dispatch({ type: 'draft', payload: player })
@@ -29,7 +36,11 @@ const DraftBoardRankingRow = (
       }
       onMouseDown={handlePreventDoubleClickHighlight}
       _hover={{
-        backgroundColor: !isPlayerDrafted ? 'blackAlpha.100' : undefined,
+        backgroundColor: !isPlayerDrafted
+          ? colorMode === 'dark'
+            ? 'blackAlpha.100'
+            : 'gray.100'
+          : undefined,
       }}
     >
       <Text flexShrink={0} marginLeft={1} flexBasis={10}>
