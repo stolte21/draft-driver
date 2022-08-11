@@ -11,20 +11,23 @@ import { Position } from 'types';
 
 type State = {
   rosterSize: Record<Position, number>;
+  numTeams: number;
 };
 
 type Action =
   | { type: 'increment-roster-size'; payload: Position }
   | { type: 'decrement-roster-size'; payload: Position }
+  | { type: 'increment-num-teams' }
+  | { type: 'decrement-num-teams' }
   | { type: 'hydrate'; payload: State };
 
 type Dispatch = (action: Action) => void;
 
-const RosterSettingsContext = createContext<
+const SettingsContext = createContext<
   { state: State; dispatch: Dispatch } | undefined
 >(undefined);
 
-const rosterSettingsReducer: Reducer<State, Action> = (state, action) => {
+const settingsReducer: Reducer<State, Action> = (state, action) => {
   let newState: State | null = null;
 
   switch (action.type) {
@@ -49,18 +52,30 @@ const rosterSettingsReducer: Reducer<State, Action> = (state, action) => {
         },
       };
       break;
+    case 'increment-num-teams':
+      newState = {
+        ...state,
+        numTeams: state.numTeams + 1,
+      };
+      break;
+    case 'decrement-num-teams':
+      newState = {
+        ...state,
+        numTeams: state.numTeams - 1,
+      };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
 
-  setStorageItem('ROSTER_SETTINGS', newState);
+  setStorageItem('SETTINGS', newState);
   return newState;
 };
 
-const RosterSettingsProvider = (props: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(rosterSettingsReducer, {
+const SettingsProvider = (props: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(settingsReducer, {
     rosterSize: {
       QB: 1,
       RB: 2,
@@ -69,10 +84,11 @@ const RosterSettingsProvider = (props: { children: ReactNode }) => {
       DST: 1,
       K: 1,
     },
+    numTeams: 10,
   });
 
   useEffect(() => {
-    const savedState = getStorageItem('ROSTER_SETTINGS');
+    const savedState = getStorageItem('SETTINGS');
 
     if (savedState) {
       dispatch({ type: 'hydrate', payload: savedState });
@@ -80,22 +96,20 @@ const RosterSettingsProvider = (props: { children: ReactNode }) => {
   }, []);
 
   return (
-    <RosterSettingsContext.Provider value={{ state, dispatch }}>
+    <SettingsContext.Provider value={{ state, dispatch }}>
       {props.children}
-    </RosterSettingsContext.Provider>
+    </SettingsContext.Provider>
   );
 };
 
-export const useRosterSettings = () => {
-  const context = useContext(RosterSettingsContext);
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
 
   if (context === undefined) {
-    throw new Error(
-      'useRosterSettings must be used within a RosterSettingsProvider'
-    );
+    throw new Error('useSettings must be used within a SettingsProvider');
   }
 
   return context;
 };
 
-export default RosterSettingsProvider;
+export default SettingsProvider;

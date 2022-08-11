@@ -1,5 +1,6 @@
 import { Flex, Text, Checkbox } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
+import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
 import { handlePreventDoubleClickHighlight } from 'utils';
 import { Player } from 'types';
@@ -11,6 +12,7 @@ type DraftBoardPickRowProps = {
 const DraftBoardPickRow = (
   props: ListChildComponentProps<DraftBoardPickRowProps>
 ) => {
+  const { state: settings } = useSettings();
   const { state, computed, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const checked = computed.teamPlayerIds.has(player.id);
@@ -22,6 +24,10 @@ const DraftBoardPickRow = (
       ? dispatch({ type: 'remove-roster', payload: player.id })
       : dispatch({ type: 'add-roster', payload: player });
   };
+
+  const rawPick = state.draftedPlayers.length - props.index - 1;
+  const round = Math.floor(rawPick / settings.numTeams) + 1;
+  const pick = (rawPick % settings.numTeams) + 1;
 
   return (
     <Flex
@@ -38,7 +44,7 @@ const DraftBoardPickRow = (
     >
       <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
         <Text flexShrink={0} flexBasis={10}>
-          {state.draftedPlayers.length - props.index}
+          {`${round}.${pick}`}
         </Text>
         <Text
           flexGrow={1}

@@ -1,17 +1,17 @@
 import type { AppProps } from 'next/app';
 import ChakraProvider from 'providers/ChakraProvider';
-import RosterSettingsProvider from 'providers/RosterSettingsProvider';
+import SettingsProvider from 'providers/SettingsProvider';
 import DraftProvider from 'providers/DraftProvider';
 import AppBar from 'components/AppBar';
 
 const App = ({ Component, pageProps }: AppProps) => (
   <ChakraProvider>
-    <RosterSettingsProvider>
+    <SettingsProvider>
       <AppBar />
       <DraftProvider>
         <Component {...pageProps} />
       </DraftProvider>
-    </RosterSettingsProvider>
+    </SettingsProvider>
   </ChakraProvider>
 );
 

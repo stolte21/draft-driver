@@ -1,5 +1,5 @@
 const StorageKeyMap = {
-  ROSTER_SETTINGS: 'roster-settings',
+  SETTINGS: 'settings',
   DRAFT: 'draft',
 };
 

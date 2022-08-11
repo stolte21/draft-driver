@@ -1,6 +1,6 @@
 import { Flex, Heading } from '@chakra-ui/react';
-import RosterSettingsButton from './RosterSettingsButton';
 import ColorModeButton from 'components/AppBar/ColorModeButton';
+import SettingsButton from 'components/AppBar/SettingsButton';
 
 const AppBar = () => (
   <Flex
@@ -14,7 +14,7 @@ const AppBar = () => (
       Draft Driver
     </Heading>
     <Flex gap={2}>
-      <RosterSettingsButton />
+      <SettingsButton />
       <ColorModeButton />
     </Flex>
   </Flex>
