@@ -1,34 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Draft Driver
 
-## Getting Started
+![draft-driver](https://user-images.githubusercontent.com/3914543/185001004-0ec2dee4-6482-425b-adf9-a8bdcbca0ac8.png)
 
-First, run the development server:
+A fantasy football tool that helps you draft your players.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## Fantasy Data
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app works by scraping the listed Average Draft Positions listed on [Fantasy Pros](https://www.fantasypros.com/nfl/adp).
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Controls
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Choose your scoring system and adjust team/roster sizes as necessary from the settings menu. Click on a player to draft him. Once a player is drafted, you can select them again from the "picks" list to add them to your roster.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Features
 
-## Learn More
+- Automatically saves your settings and progress so don't worry about accidentally refreshing
+- Light and Dark modes available
+- Player search and filtering by position
+- Works great on mobile
 
-To learn more about Next.js, take a look at the following resources:
+## Potential Improvements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Use more data sources
+- Have team/roster sizes affect player rankings
+- Make it easier to view the players on your roster
+- Add "hide after drafting" option to completely remove a player from the rankings table after drafting
