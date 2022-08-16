@@ -8,16 +8,23 @@ type RosterSummaryItemProps = {
   position: Position;
 };
 
-const ping = keyframes`
+const darkPing = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); }
   50% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
   100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 `;
 
-const pingAnimation = `${ping} 1s linear`;
+const lightPing = keyframes`
+  0% { box-shadow: 0 0 0 0 rgba(155, 155, 155, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+`;
 
 const RosterSummaryItem = (props: RosterSummaryItemProps) => {
   const { colorMode } = useColorMode();
+  const pingAnimation = `${
+    colorMode === 'dark' ? darkPing : lightPing
+  } 1s linear`;
   const { state } = useSettings();
   const { state: draftState } = useDraft();
   const numInPosition = draftState.roster.filter(
