@@ -1,4 +1,5 @@
 import {
+  useState,
   useEffect,
   useReducer,
   useContext,
@@ -111,6 +112,7 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
 };
 
 const DraftProvider = (props: { children: ReactNode }) => {
+  const [isHydrated, setIsHydrated] = useState(false);
   const [state, dispatch] = useReducer(draftReducer, {
     format: 'standard',
     filter: '',
@@ -136,16 +138,19 @@ const DraftProvider = (props: { children: ReactNode }) => {
   const isInitializing = state.rankings.length === 0;
 
   useEffect(() => {
-    fetch(`/api/rankings?format=${state.format}`)
-      .then((response) => response.json())
-      .then((r) => dispatch({ type: 'set-rankings', payload: r }));
-  }, [state.format, dispatch]);
+    if (isHydrated) {
+      fetch(`/api/rankings?format=${state.format}`)
+        .then((response) => response.json())
+        .then((r) => dispatch({ type: 'set-rankings', payload: r }));
+    }
+  }, [isHydrated, state.format, dispatch]);
 
   useEffect(() => {
     const savedState = getStorageItem('DRAFT');
 
     if (savedState) {
       dispatch({ type: 'hydrate', payload: savedState });
+      setIsHydrated(true);
     }
   }, []);
 
