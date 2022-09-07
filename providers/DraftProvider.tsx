@@ -150,8 +150,9 @@ const DraftProvider = (props: { children: ReactNode }) => {
 
     if (savedState) {
       dispatch({ type: 'hydrate', payload: savedState });
-      setIsHydrated(true);
     }
+
+    setIsHydrated(true);
   }, []);
 
   return (
