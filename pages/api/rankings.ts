@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { formatsList, scrapeFantasyPros } from 'utils';
-import { Format, Player, Position } from 'types';
+import {
+  formatsList,
+  dataSourcesList,
+  fetchFantasyProsData,
+  fetchBorisData,
+} from 'utils';
+import { Format, DataSource, Player, Position } from 'types';
 
 function validateFormat(query: NextApiRequest['query']): Format {
   const { format } = query;
@@ -17,24 +22,57 @@ function validateFormat(query: NextApiRequest['query']): Format {
   }
 }
 
+function validateDataSource(query: NextApiRequest['query']): DataSource {
+  const { src } = query;
+
+  if (!src) return 'boris';
+
+  const parsedDataSource = src.toString();
+
+  //@ts-ignore
+  if (dataSourcesList.includes(parsedDataSource)) {
+    return parsedDataSource as DataSource;
+  } else {
+    return 'fp';
+  }
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Player[]>
 ) {
   const format = validateFormat(req.query);
+  const dataSource = validateDataSource(req.query);
   const players: Player[] = [];
 
   try {
-    const rankings = await scrapeFantasyPros(format);
-    rankings.forEach((ranking) =>
+    /**
+     * The fantasy pros rankings have each player's current team, while the Boris
+     * data does not. We should fetch the fp data regardless so we can insert the team
+     * for each player in case we want to use the Boris data as the source.
+     */
+    const fpRankings = await fetchFantasyProsData(format);
+    const rankingsToUse =
+      dataSource === 'boris' ? await fetchBorisData(format) : fpRankings;
+    const nameMap =
+      dataSource === 'boris'
+        ? new Map(fpRankings.map((ranking) => [ranking.name, ranking]))
+        : new Map<string, (typeof rankingsToUse)[number]>();
+
+    rankingsToUse.forEach((ranking) => {
       players.push({
-        id: (ranking.team || 'FA') + '_' + ranking.name,
+        id: `${ranking.name}_${ranking.pos}`,
         name: ranking.name,
         position: ranking.pos as Position,
-        team: ranking.team,
+        team:
+          ranking.team ??
+          (nameMap.has(ranking.name)
+            ? nameMap.get(ranking.name)!.team!
+            : undefined),
         rank: ranking.rank,
-      })
-    );
+        tier: 'tier' in ranking ? ranking.tier : undefined,
+      });
+    });
   } catch (error) {
     //@ts-ignore
     throw new Error(error);

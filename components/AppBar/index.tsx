@@ -9,7 +9,9 @@ const AppBar = () => {
       alignItems="center"
       height={12}
       paddingX={4}
-      backgroundColor={colorMode === 'dark' ? 'blackAlpha.400' : 'gray.300'}
+      backgroundColor={
+        colorMode === 'dark' ? 'blackAlpha.400' : 'blackAlpha.300'
+      }
       shadow="lg"
     >
       <Heading flexGrow={1} size="lg" whiteSpace="nowrap">

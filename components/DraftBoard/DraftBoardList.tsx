@@ -38,7 +38,9 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         paddingLeft={2}
         marginBottom={1}
         rounded="md"
-        backgroundColor={colorMode === 'dark' ? 'blackAlpha.300' : 'gray.200'}
+        backgroundColor={
+          colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200'
+        }
       >
         <Heading as="h3" size="sm" textTransform="uppercase">
           {props.variant}

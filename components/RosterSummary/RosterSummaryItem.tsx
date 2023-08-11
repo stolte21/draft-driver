@@ -47,7 +47,9 @@ const RosterSummaryItem = (props: RosterSummaryItemProps) => {
       height={['40px', '80px']}
       justifyContent="center"
       alignItems="center"
-      backgroundColor={colorMode === 'dark' ? 'blackAlpha.300' : 'gray.200'}
+      backgroundColor={
+        colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200'
+      }
       rounded={['full', 'md']}
       fontSize={['xs', 'md']}
     >

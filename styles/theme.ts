@@ -16,14 +16,18 @@ const themeObject: Partial<Theme> = {
         height: '4px',
       },
       '::-webkit-scrollbar-track': {
-        backgroundColor: props.colorMode === 'dark' ? 'gray.900' : 'gray.200',
+        backgroundColor:
+          props.colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200',
       },
       '::-webkit-scrollbar-thumb': {
-        backgroundColor: 'gray.500',
+        backgroundColor:
+          props.colorMode === 'dark' ? 'blackAlpha.700' : 'blackAlpha.600',
       },
       '*': {
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'gray.500 gray.900',
+        scrollbarColor:
+          props.colorMode === 'dark'
+            ? 'var(--chakra-colors-blackAlpha-700) var(--chakra-colors-blackAlpha-300)'
+            : 'var(--chakra-colors-blackAlpha-600) var(--chakra-colors-blackAlpha-200)',
       },
     }),
   },

@@ -43,7 +43,7 @@ const fantasyProsFormatPages: Record<Format, string> = {
   'half-ppr': '/half-point-ppr-overall.php',
 };
 
-export const scrapeFantasyPros = async (format: Format) => {
+export const fetchFantasyProsData = async (format: Format) => {
   const url = FANTASY_PROS_BASE_URL + fantasyProsFormatPages[format];
 
   const response = await fetch(url);

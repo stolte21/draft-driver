@@ -8,4 +8,7 @@ export type Player = {
   name: string;
   position: Position;
   team?: string;
+  tier?: number;
 };
+
+export type DataSource = 'boris' | 'fp';

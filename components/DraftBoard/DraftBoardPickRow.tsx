@@ -14,14 +14,14 @@ const DraftBoardPickRow = (
 ) => {
   const { colorMode } = useColorMode();
   const { state: settings } = useSettings();
-  const { state, computed, dispatch } = useDraft();
+  const { state, getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
-  const checked = computed.teamPlayerIds.has(player.id);
+  const checked = getters.teamPlayerIds.has(player.id);
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
 
-    computed.teamPlayerIds.has(player.id)
+    getters.teamPlayerIds.has(player.id)
       ? dispatch({ type: 'remove-roster', payload: player.id })
       : dispatch({ type: 'add-roster', payload: player });
   };
@@ -42,15 +42,11 @@ const DraftBoardPickRow = (
         checked
           ? colorMode === 'dark'
             ? 'blackAlpha.400'
-            : 'gray.300'
+            : 'blackAlpha.300'
           : undefined
       }
       _hover={{
-        backgroundColor: !checked
-          ? colorMode === 'dark'
-            ? 'blackAlpha.100'
-            : 'gray.300'
-          : undefined,
+        backdropFilter: !checked ? 'brightness(90%)' : undefined,
       }}
     >
       <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">

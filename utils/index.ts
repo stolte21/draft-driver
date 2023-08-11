@@ -1,9 +1,11 @@
-import { Format, Position } from 'types';
+import { DataSource, Format, Position } from 'types';
+export * from 'utils/boris';
 export * from 'utils/scrape';
 export * from 'utils/storage';
 
 export const formatsList: Format[] = ['standard', 'half-ppr', 'ppr'];
 export const positionsList: Position[] = ['QB', 'RB', 'WR', 'TE', 'K', 'DST'];
+export const dataSourcesList: DataSource[] = ['fp', 'boris'];
 
 /**
  * This prevents text from being selected after double clicking

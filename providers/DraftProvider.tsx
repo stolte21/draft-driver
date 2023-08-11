@@ -8,6 +8,7 @@ import {
   Reducer,
   ReactNode,
 } from 'react';
+import { useSettings } from 'providers/SettingsProvider';
 import { getStorageItem, setStorageItem } from 'utils';
 import { Format, Player } from 'types';
 
@@ -40,7 +41,7 @@ type Dispatch = (action: Action) => void;
 const DraftContext = createContext<
   | {
       state: State;
-      computed: {
+      getters: {
         isInitializing: boolean;
         playersMap: PlayersMap;
         draftedPlayerIds: Set<string>;
@@ -112,6 +113,7 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
 };
 
 const DraftProvider = (props: { children: ReactNode }) => {
+  const { state: settings } = useSettings();
   const [isHydrated, setIsHydrated] = useState(false);
   const [state, dispatch] = useReducer(draftReducer, {
     format: 'standard',
@@ -139,11 +141,11 @@ const DraftProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isHydrated) {
-      fetch(`/api/rankings?format=${state.format}`)
+      fetch(`/api/rankings?format=${state.format}&src=${settings.dataSource}`)
         .then((response) => response.json())
         .then((r) => dispatch({ type: 'set-rankings', payload: r }));
     }
-  }, [isHydrated, state.format, dispatch]);
+  }, [isHydrated, state.format, settings.dataSource, dispatch]);
 
   useEffect(() => {
     const savedState = getStorageItem('DRAFT');
@@ -160,7 +162,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
       value={{
         state,
         dispatch,
-        computed: {
+        getters: {
           isInitializing,
           playersMap,
           draftedPlayerIds,

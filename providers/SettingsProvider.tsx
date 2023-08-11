@@ -7,11 +7,12 @@ import {
   ReactNode,
 } from 'react';
 import { getStorageItem, setStorageItem } from 'utils';
-import { Position } from 'types';
+import { DataSource, Position } from 'types';
 
 type State = {
   rosterSize: Record<Position, number>;
   numTeams: number;
+  dataSource: DataSource;
 };
 
 type Action =
@@ -19,6 +20,7 @@ type Action =
   | { type: 'decrement-roster-size'; payload: Position }
   | { type: 'increment-num-teams' }
   | { type: 'decrement-num-teams' }
+  | { type: 'change-data-source'; payload: DataSource }
   | { type: 'hydrate'; payload: State };
 
 type Dispatch = (action: Action) => void;
@@ -64,6 +66,12 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
         numTeams: state.numTeams - 1,
       };
       break;
+    case 'change-data-source':
+      newState = {
+        ...state,
+        dataSource: action.payload,
+      };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -85,6 +93,7 @@ const SettingsProvider = (props: { children: ReactNode }) => {
       K: 1,
     },
     numTeams: 10,
+    dataSource: 'fp',
   });
 
   useEffect(() => {

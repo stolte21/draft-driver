@@ -7,11 +7,11 @@ import DraftBoard from 'components/DraftBoard';
 import { useDraft } from 'providers/DraftProvider';
 
 const Index: NextPage = () => {
-  const { computed } = useDraft();
+  const { getters } = useDraft();
 
   return (
     <Page>
-      {computed.isInitializing ? (
+      {getters.isInitializing ? (
         <PageLoader />
       ) : (
         <>

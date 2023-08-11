@@ -13,9 +13,11 @@ import {
   Text,
   Button,
   Divider,
+  Select,
 } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
-import { positionsList } from 'utils';
+import { positionsList, dataSourcesList } from 'utils';
+import { DataSource } from 'types';
 
 const SettingsIcon = createIcon({
   displayName: 'SettingsIcon',
@@ -27,6 +29,11 @@ const SettingsIcon = createIcon({
     ></path>
   ),
 });
+
+const DataSourceMap: Record<DataSource, string> = {
+  boris: 'Boris Chen',
+  fp: 'Fantasy Pros',
+};
 
 const SettingsButton = () => {
   const { state, dispatch } = useSettings();
@@ -111,6 +118,29 @@ const SettingsButton = () => {
     </>
   );
 
+  const renderDataSourceSettings = () => {
+    return (
+      <>
+        <Text marginBottom={2}>Data Source</Text>
+        <Select
+          value={state.dataSource}
+          onChange={(e) =>
+            dispatch({
+              type: 'change-data-source',
+              payload: e.target.value as DataSource,
+            })
+          }
+        >
+          {dataSourcesList.map((dataSource) => (
+            <option key={dataSource} value={dataSource}>
+              {DataSourceMap[dataSource]}
+            </option>
+          ))}
+        </Select>
+      </>
+    );
+  };
+
   return (
     <Popover placement="bottom-start">
       <PopoverTrigger>
@@ -121,12 +151,14 @@ const SettingsButton = () => {
         />
       </PopoverTrigger>
       <PopoverContent>
-        <PopoverCloseButton />
+        <PopoverCloseButton right={1} />
         <PopoverHeader>Settings</PopoverHeader>
         <PopoverBody>
           <Box marginBottom={2}>{renderTeamSettings()}</Box>
           <Divider marginTop={4} marginBottom={2} />
           <Box>{renderDraftSettings()}</Box>
+          <Divider marginTop={4} marginBottom={2} />
+          <Box>{renderDataSourceSettings()}</Box>
         </PopoverBody>
       </PopoverContent>
     </Popover>
