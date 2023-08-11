@@ -68,7 +68,7 @@ const Toolbar = () => {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to reset the draft? You can't undo this
+              Are you sure you want to reset the draft? You can&apos;t undo this
               action afterwards.
             </AlertDialogBody>
 
