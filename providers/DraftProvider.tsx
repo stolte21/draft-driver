@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { useSettings } from 'providers/SettingsProvider';
 import { getStorageItem, setStorageItem } from 'utils';
-import { Format, Player } from 'types';
+import { Format, Player, Position } from 'types';
 
 type State = {
   format: Format;
@@ -44,6 +44,7 @@ const DraftContext = createContext<
       getters: {
         isInitializing: boolean;
         playersMap: PlayersMap;
+        rosterByPosition: Record<Position, Player[]>;
         draftedPlayerIds: Set<string>;
         teamPlayerIds: Set<string>;
       };
@@ -129,6 +130,28 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return map;
   }, [state.rankings]);
 
+  const rosterByPosition = useMemo(
+    () =>
+      state.roster.reduce(
+        (group, player) => {
+          const { position } = player;
+          group[position].push(player);
+
+          return group;
+        },
+        {
+          QB: [],
+          RB: [],
+          WR: [],
+          TE: [],
+          K: [],
+          DST: [],
+          BN: [],
+        } as Record<Position, Player[]>
+      ),
+    [state.roster]
+  );
+
   const draftedPlayerIds = useMemo(() => {
     return new Set(state.draftedPlayers.map((player) => player.id));
   }, [state.draftedPlayers]);
@@ -165,6 +188,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
         getters: {
           isInitializing,
           playersMap,
+          rosterByPosition,
           draftedPlayerIds,
           teamPlayerIds,
         },

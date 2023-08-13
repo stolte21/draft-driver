@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Page from 'components/Page';
 import PageLoader from 'components/PageLoader';
-import RosterSummary from 'components/RosterSummary';
+import Roster from 'components/Roster';
 import Toolbar from 'components/Toolbar';
 import DraftBoard from 'components/DraftBoard';
 import { useDraft } from 'providers/DraftProvider';
@@ -15,9 +15,9 @@ const Index: NextPage = () => {
         <PageLoader />
       ) : (
         <>
-          <RosterSummary />
           <Toolbar />
           <DraftBoard />
+          <Roster />
         </>
       )}
     </Page>

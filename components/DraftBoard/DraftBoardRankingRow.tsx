@@ -1,4 +1,4 @@
-import { useColorMode, Flex, Text, BackgroundProps } from '@chakra-ui/react';
+import { useColorMode, Flex, Text } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useDraft } from 'providers/DraftProvider';
 import { handlePreventDoubleClickHighlight } from 'utils';

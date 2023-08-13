@@ -38,7 +38,7 @@ const Toolbar = () => {
             onChange={(f) => dispatch({ type: 'update-filter', payload: f })}
           />
         </Flex>
-        <Flex gap={[1, 2]}>
+        <Flex gap={[1, 2]} justifyContent="flex-end">
           <Button
             size={['sm', 'md']}
             disabled={state.draftedPlayers.length === 0}
