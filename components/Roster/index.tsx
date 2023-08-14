@@ -3,7 +3,7 @@ import RosterSummary from 'components/Roster/RosterSummary';
 import RosterDetail from 'components/Roster/RosterDetail';
 
 const OFFSET_HEIGHT = '50px';
-const OPEN_HEIGHT = '85svh';
+const OPEN_HEIGHT = '75svh';
 
 const Roster = () => {
   const { colorMode } = useColorMode();

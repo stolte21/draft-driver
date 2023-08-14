@@ -2,7 +2,7 @@ import { HStack } from '@chakra-ui/react';
 import RosterPositionCircle from 'components/Roster/RosterPositionCircle';
 import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
-import { positionsList } from 'utils';
+import { positionsForFantasyList } from 'utils';
 
 const RosterSummary = () => {
   const { state: settings } = useSettings();
@@ -12,7 +12,7 @@ const RosterSummary = () => {
 
   return (
     <HStack justifyContent="center" marginBottom={2}>
-      {positionsList.map((position) => (
+      {positionsForFantasyList.map((position) => (
         <RosterPositionCircle
           key={position}
           position={position}

@@ -16,7 +16,7 @@ import {
   Select,
 } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
-import { positionsList, dataSourcesList } from 'utils';
+import { positionsForFantasyList, dataSourcesList } from 'utils';
 import { DataSource } from 'types';
 
 const SettingsIcon = createIcon({
@@ -79,7 +79,7 @@ const SettingsButton = () => {
     <>
       <Text marginBottom={2}>Roster Size</Text>
       <VStack>
-        {positionsList.map((position) => (
+        {positionsForFantasyList.map((position) => (
           <Flex key={position} alignItems="center" gap={4}>
             <Button
               size="sm"

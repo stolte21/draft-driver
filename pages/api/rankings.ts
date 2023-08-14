@@ -59,20 +59,22 @@ export default async function handler(
         ? new Map(fpRankings.map((ranking) => [ranking.name, ranking]))
         : new Map<string, (typeof rankingsToUse)[number]>();
 
-    rankingsToUse.forEach((ranking) => {
-      players.push({
-        id: `${ranking.name}_${ranking.pos}`,
-        name: ranking.name,
-        position: ranking.pos as Position,
-        team:
-          ranking.team ??
-          (nameMap.has(ranking.name)
-            ? nameMap.get(ranking.name)!.team!
-            : undefined),
-        rank: ranking.rank,
-        tier: 'tier' in ranking ? ranking.tier : undefined,
+    if (rankingsToUse) {
+      rankingsToUse.forEach((ranking) => {
+        players.push({
+          id: `${ranking.name}_${ranking.pos}`,
+          name: ranking.name,
+          position: ranking.pos as Position,
+          team:
+            ranking.team ??
+            (nameMap.has(ranking.name)
+              ? nameMap.get(ranking.name)!.team!
+              : undefined),
+          rank: ranking.rank,
+          tier: 'tier' in ranking ? ranking.tier : undefined,
+        });
       });
-    });
+    }
   } catch (error) {
     //@ts-ignore
     throw new Error(error);

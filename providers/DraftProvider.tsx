@@ -9,7 +9,12 @@ import {
   ReactNode,
 } from 'react';
 import { useSettings } from 'providers/SettingsProvider';
-import { getStorageItem, setStorageItem } from 'utils';
+import {
+  getStorageItem,
+  setStorageItem,
+  positionsList,
+  flexPositionsList,
+} from 'utils';
 import { Format, Player, Position } from 'types';
 
 type State = {
@@ -130,27 +135,50 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return map;
   }, [state.rankings]);
 
-  const rosterByPosition = useMemo(
-    () =>
-      state.roster.reduce(
-        (group, player) => {
-          const { position } = player;
-          group[position].push(player);
+  const rosterByPosition = useMemo(() => {
+    const tempRoster = state.roster.reduce(
+      (group, player) => {
+        const { position } = player;
+        group[position].push(player);
 
-          return group;
-        },
-        {
-          QB: [],
-          RB: [],
-          WR: [],
-          TE: [],
-          K: [],
-          DST: [],
-          BN: [],
-        } as Record<Position, Player[]>
-      ),
-    [state.roster]
-  );
+        return group;
+      },
+      {
+        QB: [],
+        RB: [],
+        WR: [],
+        TE: [],
+        FLX: [],
+        K: [],
+        DST: [],
+        BN: [],
+      } as Record<Position, Player[]>
+    );
+
+    // go through and "chop off" extra players at position
+    // and send them to the bench (or flex)
+    positionsList.forEach((pos) => {
+      tempRoster[pos].sort((a, b) => a.rank - b.rank);
+      const extraPlayers = tempRoster[pos].splice(
+        settings.rosterSize[pos],
+        tempRoster[pos].length - settings.rosterSize[pos]
+      );
+
+      // check if we can move any extra players to flex first
+      if (flexPositionsList.includes(pos)) {
+        const spaceInFlex =
+          settings.rosterSize['FLX'] - tempRoster['FLX'].length;
+        if (spaceInFlex) {
+          tempRoster['FLX'].push(...extraPlayers.splice(0, spaceInFlex));
+        }
+      }
+
+      // send whatever is left to the bench
+      tempRoster['BN'].push(...extraPlayers);
+    });
+
+    return tempRoster;
+  }, [state.roster]);
 
   const draftedPlayerIds = useMemo(() => {
     return new Set(state.draftedPlayers.map((player) => player.id));
