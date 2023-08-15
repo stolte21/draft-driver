@@ -29,11 +29,30 @@ const SettingsContext = createContext<
   { state: State; dispatch: Dispatch } | undefined
 >(undefined);
 
+const RosterSizes: State['rosterSize'] = {
+  QB: 1,
+  RB: 2,
+  WR: 2,
+  TE: 1,
+  FLX: 1,
+  DST: 1,
+  K: 1,
+  BN: 6,
+};
+
 const settingsReducer: Reducer<State, Action> = (state, action) => {
   let newState: State | null = null;
 
   switch (action.type) {
     case 'hydrate':
+      Object.keys(action.payload.rosterSize).forEach((key) => {
+        const position = key as keyof State['rosterSize'];
+        //@ts-ignore
+        if (isNaN(parseInt(action.payload.rosterSize[position]))) {
+          action.payload.rosterSize[position] = RosterSizes[position];
+        }
+      });
+
       newState = action.payload;
       break;
     case 'increment-roster-size':
@@ -84,16 +103,7 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
 const SettingsProvider = (props: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(settingsReducer, {
-    rosterSize: {
-      QB: 1,
-      RB: 2,
-      WR: 2,
-      TE: 1,
-      FLX: 1,
-      DST: 1,
-      K: 1,
-      BN: 6,
-    },
+    rosterSize: RosterSizes,
     numTeams: 10,
     dataSource: 'fp',
   });

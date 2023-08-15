@@ -60,6 +60,17 @@ const DraftBoardRankingRow = (
       >
         {player.name}
       </Text>
+      {player.tier && (
+        <Text
+          display={['none', 'none', 'block']}
+          textAlign="right"
+          flexGrow={1}
+          marginRight={2}
+          color={colorMode === 'dark' ? 'whiteAlpha.500' : 'blackAlpha.700'}
+        >
+          Tier {player.tier}
+        </Text>
+      )}
     </Flex>
   );
 };
