@@ -2,28 +2,38 @@ import { useMemo } from 'react';
 import { Grid, GridItem, useBreakpoint } from '@chakra-ui/react';
 import DraftBoardList from 'components/DraftBoard/DraftBoardList';
 import { useDraft } from 'providers/DraftProvider';
+import { useSettings } from 'providers/SettingsProvider';
 import useElementHeight from 'hooks/useElementHeight';
 
 const DraftBoard = () => {
-  const { state } = useDraft();
+  const { state: draft, getters } = useDraft();
+  const { state: settings } = useSettings();
   const { element, height } = useElementHeight();
   const bp = useBreakpoint();
   const isXS = bp === 'base';
 
   const filteredPlayers = useMemo(
     () =>
-      state.rankings.filter((player) =>
-        player.name.toLowerCase().includes(state.filter)
+      draft.rankings.filter((player) =>
+        player.name.toLowerCase().includes(draft.filter) &&
+        settings.hidePlayerAfterDrafting
+          ? !getters.draftedPlayerIds.has(player.id)
+          : true
       ),
-    [state.rankings, state.filter]
+    [
+      draft.rankings,
+      draft.filter,
+      settings.hidePlayerAfterDrafting,
+      getters.draftedPlayerIds,
+    ]
   );
 
   const filteredDraftedPlayers = useMemo(
     () =>
-      state.draftedPlayers.filter((player) =>
-        player.name.toLowerCase().includes(state.filter)
+      draft.draftedPlayers.filter((player) =>
+        player.name.toLowerCase().includes(draft.filter)
       ),
-    [state.draftedPlayers, state.filter]
+    [draft.draftedPlayers, draft.filter]
   );
 
   const overallHeight = isXS ? height * 0.6 : height;

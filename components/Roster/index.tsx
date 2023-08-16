@@ -14,6 +14,8 @@ const Roster = () => {
       {/* This is to take up some space to push the content above it up */}
       <Box height={OFFSET_HEIGHT}></Box>
       <Box
+        display="flex"
+        flexDirection="column"
         height={isOpen ? OPEN_HEIGHT : OFFSET_HEIGHT}
         width="100vw"
         minWidth="320px"

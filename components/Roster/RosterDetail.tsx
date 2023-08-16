@@ -22,7 +22,14 @@ const RosterDetail = () => {
   } = useDraft();
 
   return (
-    <List maxWidth="container.sm" margin="auto" paddingY={2} paddingX={4}>
+    <List
+      width="100%"
+      maxWidth="container.sm"
+      margin="auto"
+      paddingY={2}
+      paddingX={4}
+      overflow="auto"
+    >
       {positionsForFantasyList.map((position) =>
         new Array(settings.rosterSize[position]).fill(undefined).map((_, i) => {
           const player = rosterByPosition[position][i];
@@ -53,7 +60,7 @@ const RosterDetail = () => {
               {player && player.team && player.position !== 'DST' && (
                 <Tag size="sm">{player.team}</Tag>
               )}
-              {player && position === 'BN' && (
+              {player && (position === 'BN' || position === 'FLX') && (
                 <Tag size="sm" colorScheme={PositionalColor[player.position]}>
                   {player.position}
                 </Tag>

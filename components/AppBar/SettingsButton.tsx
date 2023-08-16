@@ -14,6 +14,9 @@ import {
   Button,
   Divider,
   Select,
+  Checkbox,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
 import { positionsForFantasyList, dataSourcesList } from 'utils';
@@ -38,9 +41,41 @@ const DataSourceMap: Record<DataSource, string> = {
 const SettingsButton = () => {
   const { state, dispatch } = useSettings();
 
+  const renderGeneralSettings = () => (
+    <>
+      <Checkbox
+        isChecked={state.hidePlayerAfterDrafting}
+        onChange={() => dispatch({ type: 'toggle-hide-player' })}
+        marginBottom={3}
+      >
+        Hide Drafted Players?
+      </Checkbox>
+      <FormControl>
+        <FormLabel fontWeight="normal">Data Source</FormLabel>
+        <Select
+          value={state.dataSource}
+          onChange={(e) =>
+            dispatch({
+              type: 'change-data-source',
+              payload: e.target.value as DataSource,
+            })
+          }
+        >
+          {dataSourcesList.map((dataSource) => (
+            <option key={dataSource} value={dataSource}>
+              {DataSourceMap[dataSource]}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+    </>
+  );
+
   const renderTeamSettings = () => (
     <>
-      <Text marginBottom={2}>Teams</Text>
+      <Text fontWeight="bold" marginBottom={2}>
+        Teams
+      </Text>
       <Flex justifyContent="center" alignItems="center" gap={4}>
         <Button
           size="sm"
@@ -77,7 +112,9 @@ const SettingsButton = () => {
 
   const renderDraftSettings = () => (
     <>
-      <Text marginBottom={2}>Roster Size</Text>
+      <Text fontWeight="bold" marginBottom={2}>
+        Roster Size
+      </Text>
       <VStack>
         {positionsForFantasyList.map((position) => (
           <Flex key={position} alignItems="center" gap={4}>
@@ -118,29 +155,6 @@ const SettingsButton = () => {
     </>
   );
 
-  const renderDataSourceSettings = () => {
-    return (
-      <>
-        <Text marginBottom={2}>Data Source</Text>
-        <Select
-          value={state.dataSource}
-          onChange={(e) =>
-            dispatch({
-              type: 'change-data-source',
-              payload: e.target.value as DataSource,
-            })
-          }
-        >
-          {dataSourcesList.map((dataSource) => (
-            <option key={dataSource} value={dataSource}>
-              {DataSourceMap[dataSource]}
-            </option>
-          ))}
-        </Select>
-      </>
-    );
-  };
-
   return (
     <Popover placement="bottom-start">
       <PopoverTrigger>
@@ -152,13 +166,13 @@ const SettingsButton = () => {
       </PopoverTrigger>
       <PopoverContent>
         <PopoverCloseButton right={1} />
-        <PopoverHeader>Settings</PopoverHeader>
+        <PopoverHeader fontWeight="bold">Settings</PopoverHeader>
         <PopoverBody>
+          <Box marginBottom={2}>{renderGeneralSettings()}</Box>
+          <Divider marginTop={4} marginBottom={2} />
           <Box marginBottom={2}>{renderTeamSettings()}</Box>
           <Divider marginTop={4} marginBottom={2} />
           <Box>{renderDraftSettings()}</Box>
-          <Divider marginTop={4} marginBottom={2} />
-          <Box>{renderDataSourceSettings()}</Box>
         </PopoverBody>
       </PopoverContent>
     </Popover>

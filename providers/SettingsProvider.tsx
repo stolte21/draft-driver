@@ -10,12 +10,14 @@ import { getStorageItem, setStorageItem } from 'utils';
 import { DataSource, Position } from 'types';
 
 type State = {
+  hidePlayerAfterDrafting: boolean;
   rosterSize: Record<Position, number>;
   numTeams: number;
   dataSource: DataSource;
 };
 
 type Action =
+  | { type: 'toggle-hide-player' }
   | { type: 'increment-roster-size'; payload: Position }
   | { type: 'decrement-roster-size'; payload: Position }
   | { type: 'increment-num-teams' }
@@ -54,6 +56,12 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
       });
 
       newState = action.payload;
+      break;
+    case 'toggle-hide-player':
+      newState = {
+        ...state,
+        hidePlayerAfterDrafting: !state.hidePlayerAfterDrafting,
+      };
       break;
     case 'increment-roster-size':
       newState = {
@@ -103,9 +111,10 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
 const SettingsProvider = (props: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(settingsReducer, {
+    hidePlayerAfterDrafting: true,
     rosterSize: RosterSizes,
     numTeams: 10,
-    dataSource: 'fp',
+    dataSource: 'boris',
   });
 
   useEffect(() => {
