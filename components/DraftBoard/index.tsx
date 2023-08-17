@@ -12,21 +12,22 @@ const DraftBoard = () => {
   const bp = useBreakpoint();
   const isXS = bp === 'base';
 
-  const filteredPlayers = useMemo(
-    () =>
-      draft.rankings.filter((player) =>
-        player.name.toLowerCase().includes(draft.filter) &&
-        settings.hidePlayerAfterDrafting
-          ? !getters.draftedPlayerIds.has(player.id)
-          : true
-      ),
-    [
-      draft.rankings,
-      draft.filter,
-      settings.hidePlayerAfterDrafting,
-      getters.draftedPlayerIds,
-    ]
-  );
+  const filteredPlayers = useMemo(() => {
+    const players = settings.hidePlayerAfterDrafting
+      ? draft.rankings.filter(
+          (player) => !getters.draftedPlayerIds.has(player.id)
+        )
+      : draft.rankings;
+
+    return players.filter((player) =>
+      player.name.toLowerCase().includes(draft.filter)
+    );
+  }, [
+    draft.rankings,
+    draft.filter,
+    settings.hidePlayerAfterDrafting,
+    getters.draftedPlayerIds,
+  ]);
 
   const filteredDraftedPlayers = useMemo(
     () =>

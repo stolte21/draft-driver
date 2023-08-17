@@ -25,7 +25,8 @@ const RosterDetail = () => {
     <List
       width="100%"
       maxWidth="container.sm"
-      margin="auto"
+      marginLeft="auto"
+      marginRight="auto"
       paddingY={2}
       paddingX={4}
       overflow="auto"
