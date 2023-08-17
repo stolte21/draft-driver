@@ -18,6 +18,7 @@ import {
   FormControl,
   FormLabel,
 } from '@chakra-ui/react';
+import FormatSelect from 'components/FormatSelect';
 import { useSettings } from 'providers/SettingsProvider';
 import { positionsForFantasyList, dataSourcesList } from 'utils';
 import { DataSource } from 'types';
@@ -43,16 +44,17 @@ const SettingsButton = () => {
 
   const renderGeneralSettings = () => (
     <>
-      <Checkbox
-        isChecked={state.hidePlayerAfterDrafting}
-        onChange={() => dispatch({ type: 'toggle-hide-player' })}
-        marginBottom={3}
-      >
-        Hide Drafted Players?
-      </Checkbox>
-      <FormControl>
+      <FormControl marginBottom={3}>
+        <FormLabel fontWeight="normal">Scoring Format</FormLabel>
+        <FormatSelect
+          format={state.format}
+          onSelect={(f) => dispatch({ type: 'change-format', payload: f })}
+        />
+      </FormControl>
+      <FormControl marginBottom={3}>
         <FormLabel fontWeight="normal">Data Source</FormLabel>
         <Select
+          size={['sm', 'md']}
           value={state.dataSource}
           onChange={(e) =>
             dispatch({
@@ -68,6 +70,12 @@ const SettingsButton = () => {
           ))}
         </Select>
       </FormControl>
+      <Checkbox
+        isChecked={state.hidePlayerAfterDrafting}
+        onChange={() => dispatch({ type: 'toggle-hide-player' })}
+      >
+        Hide Drafted Players?
+      </Checkbox>
     </>
   );
 

@@ -8,10 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import FormatSelect from 'components/FormatSelect';
 import PlayerFilter from 'components/PlayerFilter';
 import { useDraft } from 'providers/DraftProvider';
 
@@ -27,12 +25,8 @@ const Toolbar = () => {
 
   return (
     <>
-      <Flex flexDirection={['column', 'row']} gap={[1, 2]} marginBottom={2}>
+      <Flex flexDirection={'row'} gap={[1, 2]} marginBottom={2}>
         <Flex flexGrow={1} gap={[1, 2]}>
-          <FormatSelect
-            format={state.format}
-            onSelect={(f) => dispatch({ type: 'change-format', payload: f })}
-          />
           <PlayerFilter
             filter={state.filter}
             onChange={(f) => dispatch({ type: 'update-filter', payload: f })}

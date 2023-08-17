@@ -15,10 +15,9 @@ import {
   positionsList,
   flexPositionsList,
 } from 'utils';
-import { Format, Player, RosteredPlayer, Position } from 'types';
+import { Player, RosteredPlayer, Position } from 'types';
 
 type State = {
-  format: Format;
   filter: string;
   rankings: Player[];
   draftedPlayers: Player[];
@@ -29,7 +28,6 @@ type PlayersMap = Record<number, Player>;
 
 type Action =
   | { type: 'hydrate'; payload: State }
-  | { type: 'change-format'; payload: Format }
   | { type: 'update-filter'; payload: string }
   | { type: 'set-rankings'; payload: Player[] }
   | {
@@ -67,9 +65,6 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case 'hydrate':
       newState = action.payload;
-      break;
-    case 'change-format':
-      newState = { ...state, format: action.payload };
       break;
     case 'update-filter':
       newState = { ...state, filter: action.payload };
@@ -132,7 +127,6 @@ const DraftProvider = (props: { children: ReactNode }) => {
   const { state: settings } = useSettings();
   const [isHydrated, setIsHydrated] = useState(false);
   const [state, dispatch] = useReducer(draftReducer, {
-    format: 'standard',
     filter: '',
     rankings: [],
     draftedPlayers: [],
@@ -202,11 +196,13 @@ const DraftProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isHydrated) {
-      fetch(`/api/rankings?format=${state.format}&src=${settings.dataSource}`)
+      fetch(
+        `/api/rankings?format=${settings.format}&src=${settings.dataSource}`
+      )
         .then((response) => response.json())
         .then((r) => dispatch({ type: 'set-rankings', payload: r }));
     }
-  }, [isHydrated, state.format, settings.dataSource, dispatch]);
+  }, [isHydrated, settings.format, settings.dataSource, dispatch]);
 
   useEffect(() => {
     const savedState = getStorageItem('DRAFT');

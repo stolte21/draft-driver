@@ -7,16 +7,18 @@ import {
   ReactNode,
 } from 'react';
 import { getStorageItem, setStorageItem } from 'utils';
-import { DataSource, Position } from 'types';
+import { DataSource, Position, Format } from 'types';
 
 type State = {
+  format: Format;
+  dataSource: DataSource;
   hidePlayerAfterDrafting: boolean;
   rosterSize: Record<Position, number>;
   numTeams: number;
-  dataSource: DataSource;
 };
 
 type Action =
+  | { type: 'change-format'; payload: Format }
   | { type: 'toggle-hide-player' }
   | { type: 'increment-roster-size'; payload: Position }
   | { type: 'decrement-roster-size'; payload: Position }
@@ -56,6 +58,9 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
       });
 
       newState = action.payload;
+      break;
+    case 'change-format':
+      newState = { ...state, format: action.payload };
       break;
     case 'toggle-hide-player':
       newState = {
@@ -111,10 +116,11 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
 const SettingsProvider = (props: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(settingsReducer, {
+    format: 'standard',
+    dataSource: 'boris',
     hidePlayerAfterDrafting: true,
     rosterSize: RosterSizes,
     numTeams: 10,
-    dataSource: 'boris',
   });
 
   useEffect(() => {
