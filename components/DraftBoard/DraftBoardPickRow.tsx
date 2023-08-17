@@ -17,18 +17,17 @@ const DraftBoardPickRow = (
   const { state, getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const checked = getters.teamPlayerIds.has(player.id);
+  const rawPick = state.draftedPlayers.length - props.index - 1;
+  const round = Math.floor(rawPick / settings.numTeams) + 1;
+  const pick = (rawPick % settings.numTeams) + 1;
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
 
     getters.teamPlayerIds.has(player.id)
       ? dispatch({ type: 'remove-roster', payload: player.id })
-      : dispatch({ type: 'add-roster', payload: player });
+      : dispatch({ type: 'add-roster', payload: { player, round, pick } });
   };
-
-  const rawPick = state.draftedPlayers.length - props.index - 1;
-  const round = Math.floor(rawPick / settings.numTeams) + 1;
-  const pick = (rawPick % settings.numTeams) + 1;
 
   return (
     <Flex

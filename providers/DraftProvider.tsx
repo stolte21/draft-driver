@@ -15,14 +15,14 @@ import {
   positionsList,
   flexPositionsList,
 } from 'utils';
-import { Format, Player, Position } from 'types';
+import { Format, Player, RosteredPlayer, Position } from 'types';
 
 type State = {
   format: Format;
   filter: string;
   rankings: Player[];
   draftedPlayers: Player[];
-  roster: Player[];
+  roster: RosteredPlayer[];
 };
 
 type PlayersMap = Record<number, Player>;
@@ -38,7 +38,10 @@ type Action =
     }
   | { type: 'undo' }
   | { type: 'reset' }
-  | { type: 'add-roster'; payload: Player }
+  | {
+      type: 'add-roster';
+      payload: { player: Player; round: number; pick: number };
+    }
   | { type: 'remove-roster'; payload: string };
 
 type Dispatch = (action: Action) => void;
@@ -49,7 +52,7 @@ const DraftContext = createContext<
       getters: {
         isInitializing: boolean;
         playersMap: PlayersMap;
-        rosterByPosition: Record<Position, Player[]>;
+        rosterByPosition: Record<Position, RosteredPlayer[]>;
         draftedPlayerIds: Set<string>;
         teamPlayerIds: Set<string>;
       };
@@ -99,7 +102,14 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
     case 'add-roster':
       newState = {
         ...state,
-        roster: [...state.roster, action.payload],
+        roster: [
+          ...state.roster,
+          {
+            ...action.payload.player,
+            round: action.payload.round,
+            pick: action.payload.pick,
+          },
+        ],
       };
       break;
     case 'remove-roster':
@@ -152,7 +162,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
         K: [],
         DST: [],
         BN: [],
-      } as Record<Position, Player[]>
+      } as Record<Position, RosteredPlayer[]>
     );
 
     // go through and "chop off" extra players at position

@@ -11,4 +11,9 @@ export type Player = {
   tier?: number;
 };
 
+export type RosteredPlayer = Player & {
+  round: number;
+  pick: number;
+};
+
 export type DataSource = 'boris' | 'fp';
