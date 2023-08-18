@@ -25,7 +25,7 @@ const Page = (props: PageProps) => {
   return (
     <Flex
       flexDirection="column"
-      height="calc(100% - 3.5rem)"
+      height="calc(100% - 3rem)"
       width="100%"
       maxWidth="container.xl"
       paddingTop={2}

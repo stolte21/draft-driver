@@ -11,7 +11,7 @@ const RosterSummary = () => {
   } = useDraft();
 
   return (
-    <HStack justifyContent="center" marginBottom={2}>
+    <HStack justifyContent="center">
       {positionsForFantasyList.map((position) => (
         <RosterPositionCircle
           key={position}

@@ -1,10 +1,14 @@
-import { List } from '@chakra-ui/react';
+import { List, LayoutProps } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
 import RosterDetailItem from 'components/Roster/RosterDetailItem';
 import { positionsForFantasyList } from 'utils';
 
-const RosterDetail = () => {
+type RosterDetailProps = {
+  overflow?: LayoutProps['overflow'];
+};
+
+const RosterDetail = (props: RosterDetailProps) => {
   const { state: settings } = useSettings();
   const {
     getters: { rosterByPosition },
@@ -16,9 +20,9 @@ const RosterDetail = () => {
       maxWidth="container.sm"
       marginLeft="auto"
       marginRight="auto"
-      paddingY={2}
+      paddingY={[1, 2]}
       paddingX={4}
-      overflow="auto"
+      overflow={props.overflow ?? 'auto'}
     >
       {positionsForFantasyList.map((position) =>
         new Array(settings.rosterSize[position]).fill(undefined).map((_, i) => {

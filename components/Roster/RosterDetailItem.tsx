@@ -24,6 +24,7 @@ const RosterDetailItem = (props: RosterDetailItemProps) => {
   return (
     <ListItem display="flex" alignItems="center" gap={2} margin={2}>
       <Tag
+        minHeight={7}
         size="lg"
         width={12}
         justifyContent="center"
