@@ -1,8 +1,10 @@
-import { useColorMode, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, IconButton, useColorMode } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
+import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { handlePreventDoubleClickHighlight } from 'utils';
 import { Player } from 'types';
+import { useState } from 'react';
 
 type DraftBoardRankingRowProps = {
   players: Player[];
@@ -15,6 +17,7 @@ const DraftBoardRankingRow = (
   const { getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
+  const [isFav, setIsFav] = useState(false);
 
   return (
     <Flex
@@ -41,6 +44,9 @@ const DraftBoardRankingRow = (
       onMouseDown={handlePreventDoubleClickHighlight}
       _hover={{
         backdropFilter: !isPlayerDrafted ? 'brightness(90%)' : undefined,
+        '& .favorite-icon': {
+          visibility: 'visible',
+        },
       }}
     >
       <Text flexShrink={0} marginLeft={1} flexBasis={10}>
@@ -60,12 +66,28 @@ const DraftBoardRankingRow = (
       >
         {player.name}
       </Text>
+      <Box flexGrow={1} textAlign="right">
+        <IconButton
+          className="favorite-icon"
+          aria-label="favorite"
+          icon={<HeartIcon filled={isFav} />}
+          visibility={isFav ? 'visible' : 'hidden'}
+          size="xs"
+          variant="ghost"
+          isRound
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFav((fav) => !fav);
+          }}
+        />
+      </Box>
       {player.tier && (
         <Text
           display={['none', 'none', 'block']}
           textAlign="right"
-          flexGrow={1}
           marginRight={2}
+          // pull the fav icon a little closer
+          marginLeft={-0.5}
           color={colorMode === 'dark' ? 'whiteAlpha.500' : 'blackAlpha.700'}
         >
           Tier {player.tier}
