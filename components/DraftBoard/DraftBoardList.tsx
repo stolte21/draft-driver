@@ -54,7 +54,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
       </Box>
 
       <FixedSizeList
-        height={props.height - (headingRef.current?.clientHeight ?? 0)}
+        height={props.height - (headingRef.current?.clientHeight ?? 0) + 4}
         width="100%"
         itemCount={filteredPlayers.length}
         itemSize={30}

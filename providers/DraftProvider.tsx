@@ -22,6 +22,7 @@ type State = {
   rankings: Player[];
   draftedPlayers: Player[];
   roster: RosteredPlayer[];
+  favorites: Player['id'][];
 };
 
 type PlayersMap = Record<number, Player>;
@@ -40,7 +41,8 @@ type Action =
       type: 'add-roster';
       payload: { player: Player; round: number; pick: number };
     }
-  | { type: 'remove-roster'; payload: string };
+  | { type: 'remove-roster'; payload: string }
+  | { type: 'toggle-favorite'; payload: Player['id'] };
 
 type Dispatch = (action: Action) => void;
 
@@ -53,6 +55,7 @@ const DraftContext = createContext<
         rosterByPosition: Record<Position, RosteredPlayer[]>;
         draftedPlayerIds: Set<string>;
         teamPlayerIds: Set<string>;
+        favoritePlayerIds: Set<string>;
       };
       dispatch: Dispatch;
     }
@@ -65,6 +68,10 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case 'hydrate':
       newState = action.payload;
+      newState.favorites = Array.isArray(newState.favorites)
+        ? newState.favorites
+        : [];
+
       break;
     case 'update-filter':
       newState = { ...state, filter: action.payload };
@@ -113,6 +120,21 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
         roster: state.roster.filter((player) => player.id !== action.payload),
       };
       break;
+    case 'toggle-favorite':
+      const newFavorites = [...state.favorites];
+      const playerIndex = newFavorites.indexOf(action.payload);
+
+      if (playerIndex === -1) {
+        newFavorites.push(action.payload);
+      } else {
+        newFavorites.splice(playerIndex, 1);
+      }
+
+      newState = {
+        ...state,
+        favorites: newFavorites,
+      };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -131,6 +153,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
     rankings: [],
     draftedPlayers: [],
     roster: [],
+    favorites: [],
   });
 
   const playersMap = useMemo(() => {
@@ -182,7 +205,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
     });
 
     return tempRoster;
-  }, [state.roster]);
+  }, [state.roster, settings.rosterSize]);
 
   const draftedPlayerIds = useMemo(() => {
     return new Set(state.draftedPlayers.map((player) => player.id));
@@ -191,6 +214,10 @@ const DraftProvider = (props: { children: ReactNode }) => {
   const teamPlayerIds = useMemo(() => {
     return new Set(state.roster.map((player) => player.id));
   }, [state.roster]);
+
+  const favoritePlayerIds = useMemo(() => {
+    return new Set(state.favorites);
+  }, [state.favorites]);
 
   const isInitializing = state.rankings.length === 0;
 
@@ -225,6 +252,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
           rosterByPosition,
           draftedPlayerIds,
           teamPlayerIds,
+          favoritePlayerIds,
         },
       }}
     >

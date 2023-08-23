@@ -4,7 +4,6 @@ import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { handlePreventDoubleClickHighlight } from 'utils';
 import { Player } from 'types';
-import { useState } from 'react';
 
 type DraftBoardRankingRowProps = {
   players: Player[];
@@ -17,7 +16,7 @@ const DraftBoardRankingRow = (
   const { getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
-  const [isFav, setIsFav] = useState(false);
+  const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
 
   return (
     <Flex
@@ -70,14 +69,19 @@ const DraftBoardRankingRow = (
         <IconButton
           className="favorite-icon"
           aria-label="favorite"
-          icon={<HeartIcon filled={isFav} />}
-          visibility={isFav ? 'visible' : 'hidden'}
+          icon={
+            <HeartIcon
+              filled={isPlayerFavorite}
+              color={isPlayerFavorite ? 'blue.300' : ''}
+            />
+          }
+          visibility={isPlayerFavorite ? 'visible' : 'hidden'}
           size="xs"
           variant="ghost"
           isRound
           onClick={(e) => {
             e.stopPropagation();
-            setIsFav((fav) => !fav);
+            dispatch({ type: 'toggle-favorite', payload: player.id });
           }}
         />
       </Box>
