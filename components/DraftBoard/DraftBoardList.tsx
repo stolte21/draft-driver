@@ -52,7 +52,9 @@ const DraftBoardList = (props: DraftBoardListProps) => {
 
       <Box height="100%">
         <AutoSizer disableWidth>
-          {({ height }) => (
+          {/* for some reason the build doesn't pick up the correct type
+              in the render prop */}
+          {({ height }: { height: number }) => (
             <FixedSizeList
               height={height}
               width="100%"
