@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { useColorMode, Flex, Box, Heading } from '@chakra-ui/react';
 import { Player, Position } from 'types';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
@@ -19,18 +20,14 @@ const DraftBoardList = (props: DraftBoardListProps) => {
     new Set()
   );
 
-  // used to subtract the size of the heading from the passed in height
-  const headingRef = useRef<HTMLHeadingElement>(null);
-
   const filteredPlayers =
     props.variant === 'picks' || positionFilters.size === 0
       ? props.players
       : props.players.filter((player) => positionFilters.has(player.position));
 
   return (
-    <Flex flexDirection="column">
+    <Flex flexDirection="column" height="100%">
       <Box
-        ref={headingRef}
         display="flex"
         alignItems="center"
         height={8}
@@ -53,24 +50,30 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         )}
       </Box>
 
-      <FixedSizeList
-        height={props.height - (headingRef.current?.clientHeight ?? 0) + 4}
-        width="100%"
-        itemCount={filteredPlayers.length}
-        itemSize={30}
-        // some obscure players don't have a fantasy data id so fallback to the name.
-        // this probably won't be an issue once trim the players based on rankings
-        itemKey={(index) =>
-          filteredPlayers[index].id ?? filteredPlayers[index].name
-        }
-        itemData={{
-          players: filteredPlayers,
-        }}
-      >
-        {props.variant === 'rankings'
-          ? DraftBoardRankingRow
-          : DraftBoardPickRow}
-      </FixedSizeList>
+      <Box height="100%">
+        <AutoSizer disableWidth>
+          {({ height }) => (
+            <FixedSizeList
+              height={height}
+              width="100%"
+              itemCount={filteredPlayers.length}
+              itemSize={30}
+              // some obscure players don't have a fantasy data id so fallback to the name.
+              // this probably won't be an issue once trim the players based on rankings
+              itemKey={(index) =>
+                filteredPlayers[index].id ?? filteredPlayers[index].name
+              }
+              itemData={{
+                players: filteredPlayers,
+              }}
+            >
+              {props.variant === 'rankings'
+                ? DraftBoardRankingRow
+                : DraftBoardPickRow}
+            </FixedSizeList>
+          )}
+        </AutoSizer>
+      </Box>
     </Flex>
   );
 };
