@@ -71,6 +71,15 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
       newState.favorites = Array.isArray(newState.favorites)
         ? newState.favorites
         : [];
+      newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
+        ? newState.draftedPlayers
+        : [];
+      newState.rankings = Array.isArray(newState.rankings)
+        ? newState.rankings
+        : [];
+      newState.roster = Array.isArray(newState.roster) ? newState.roster : [];
+      newState.filter =
+        typeof newState.filter === 'string' ? newState.filter : '';
 
       break;
     case 'update-filter':
@@ -141,7 +150,11 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
     }
   }
 
-  setStorageItem('DRAFT', newState);
+  // we don't want to save the rankings to local storage so make a copy and clear them out
+  const stateCopy = { ...newState };
+  stateCopy.rankings = [];
+
+  setStorageItem('DRAFT', stateCopy);
   return newState;
 };
 
@@ -182,6 +195,8 @@ const DraftProvider = (props: { children: ReactNode }) => {
       } as Record<Position, RosteredPlayer[]>
     );
 
+    const flexPlayers: RosteredPlayer[] = [];
+
     // go through and "chop off" extra players at position
     // and send them to the bench (or flex)
     positionsList.forEach((pos) => {
@@ -191,18 +206,22 @@ const DraftProvider = (props: { children: ReactNode }) => {
         tempRoster[pos].length - settings.rosterSize[pos]
       );
 
-      // check if we can move any extra players to flex first
+      // add potential flex players to a temp list first,
+      // it will have to be sorted later
       if (flexPositionsList.includes(pos)) {
-        const spaceInFlex =
-          settings.rosterSize['FLX'] - tempRoster['FLX'].length;
-        if (spaceInFlex) {
-          tempRoster['FLX'].push(...extraPlayers.splice(0, spaceInFlex));
-        }
+        flexPlayers.push(...extraPlayers);
+      } else {
+        // send whatever is left to the bench
+        tempRoster['BN'].push(...extraPlayers);
       }
-
-      // send whatever is left to the bench
-      tempRoster['BN'].push(...extraPlayers);
     });
+
+    if (flexPlayers.length > 0) {
+      flexPlayers.sort((a, b) => a.rank - b.rank);
+      const extraFlexPlayers = flexPlayers.splice(settings.rosterSize['FLX']);
+      tempRoster['FLX'].push(...flexPlayers);
+      tempRoster['BN'].push(...extraFlexPlayers);
+    }
 
     return tempRoster;
   }, [state.roster, settings.rosterSize]);

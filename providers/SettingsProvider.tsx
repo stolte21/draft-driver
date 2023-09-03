@@ -6,7 +6,12 @@ import {
   Reducer,
   ReactNode,
 } from 'react';
-import { getStorageItem, setStorageItem } from 'utils';
+import {
+  getStorageItem,
+  setStorageItem,
+  dataSourcesList,
+  formatsList,
+} from 'utils';
 import { DataSource, Position, Format } from 'types';
 
 type State = {
@@ -56,6 +61,22 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
           action.payload.rosterSize[position] = RosterSizes[position];
         }
       });
+
+      action.payload.dataSource = dataSourcesList.includes(
+        action.payload.dataSource
+      )
+        ? action.payload.dataSource
+        : 'boris';
+
+      action.payload.format = formatsList.includes(action.payload.format)
+        ? action.payload.format
+        : 'standard';
+
+      action.payload.hidePlayerAfterDrafting =
+        !!action.payload.hidePlayerAfterDrafting;
+      action.payload.numTeams = isNaN(action.payload.numTeams)
+        ? 10
+        : action.payload.numTeams;
 
       newState = action.payload;
       break;

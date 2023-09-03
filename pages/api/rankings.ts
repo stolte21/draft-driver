@@ -59,6 +59,43 @@ export default async function handler(
         ? new Map(fpRankings.map((ranking) => [ranking.name, ranking]))
         : new Map<string, (typeof rankingsToUse)[number]>();
 
+    // the boris data doesn't include all the defenses and kickers, so we should add the rest
+    // from the fantasy pros data
+    if (dataSource === 'boris') {
+      const nextHighestTier: number =
+        //@ts-ignore
+        rankingsToUse.reduce((acc, curr) => {
+          if (curr.tier > acc) return curr.tier;
+          return acc;
+        }, 0) + 1;
+
+      const defensesAndKickers = new Set(
+        rankingsToUse
+          //@ts-ignore
+          .filter((ranking) => {
+            return ranking.pos === 'DST' || ranking.pos === 'K';
+          })
+          //@ts-ignore
+          .map((ranking) => ranking.name)
+      );
+
+      fpRankings
+        .filter((ranking) => {
+          return ranking.pos === 'DST' || ranking.pos === 'K';
+        })
+        .forEach((ranking) => {
+          if (!defensesAndKickers.has(ranking.name)) {
+            rankingsToUse.push({
+              ...ranking,
+              //@ts-expect-error
+              tier: nextHighestTier,
+              //@ts-ignore
+              rank: rankingsToUse.length + 1,
+            });
+          }
+        });
+    }
+
     if (rankingsToUse) {
       rankingsToUse.forEach((ranking) => {
         players.push({

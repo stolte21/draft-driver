@@ -172,7 +172,7 @@ const SettingsButton = () => {
           icon={<SettingsIcon />}
         />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent maxHeight={500} overflow="auto">
         <PopoverCloseButton right={1} />
         <PopoverHeader fontWeight="bold">Settings</PopoverHeader>
         <PopoverBody>
