@@ -11,6 +11,7 @@ import {
   setStorageItem,
   dataSourcesList,
   formatsList,
+  positionsForFantasyList,
 } from 'utils';
 import { DataSource, Position, Format } from 'types';
 
@@ -54,7 +55,7 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
   switch (action.type) {
     case 'hydrate':
-      Object.keys(action.payload.rosterSize).forEach((key) => {
+      positionsForFantasyList.forEach((key) => {
         const position = key as keyof State['rosterSize'];
         //@ts-ignore
         if (isNaN(parseInt(action.payload.rosterSize[position]))) {
