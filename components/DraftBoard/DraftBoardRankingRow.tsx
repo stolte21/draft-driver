@@ -19,6 +19,11 @@ const DraftBoardRankingRow = (
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
 
+  const handleClick = () => {
+    navigator.clipboard.writeText(player.name);
+    dispatch({ type: 'draft', payload: player });
+  };
+
   return (
     <Flex
       style={props.style}
@@ -36,11 +41,7 @@ const DraftBoardRankingRow = (
             : 'blackAlpha.400'
           : undefined
       }
-      onClick={
-        !isPlayerDrafted
-          ? () => dispatch({ type: 'draft', payload: player })
-          : undefined
-      }
+      onClick={!isPlayerDrafted ? handleClick : undefined}
       onMouseDown={handlePreventDoubleClickHighlight}
       _hover={{
         backdropFilter: !isPlayerDrafted ? 'brightness(90%)' : undefined,
