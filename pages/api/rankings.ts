@@ -4,6 +4,7 @@ import {
   dataSourcesList,
   fetchFantasyProsData,
   fetchBorisData,
+  fetchFantasyProsRookies,
 } from 'utils';
 import { Format, DataSource, Player, Position } from 'types';
 
@@ -52,6 +53,9 @@ export default async function handler(
      * for each player in case we want to use the Boris data as the source.
      */
     const fpRankings = await fetchFantasyProsData(format);
+    const fpRookies = new Set(
+      (await fetchFantasyProsRookies()).map((rookie) => rookie.name)
+    );
     const rankingsToUse =
       dataSource === 'boris' ? await fetchBorisData(format) : fpRankings;
     const nameMap =
@@ -109,6 +113,7 @@ export default async function handler(
               : undefined),
           rank: ranking.rank,
           tier: 'tier' in ranking ? ranking.tier : undefined,
+          isRookie: fpRookies.has(ranking.name),
         });
       });
     }

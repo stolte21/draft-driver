@@ -1,6 +1,13 @@
 import { parse } from 'node-html-parser';
 import { Format } from 'types';
 
+type FantasyProRow = {
+  rank: number;
+  name: string;
+  team?: string;
+  pos: string;
+};
+
 const TEAM_TO_ABRV_MAP = {
   'Arizona Cardinals': 'ARI',
   'Atlanta Falcons': 'ATL',
@@ -43,14 +50,12 @@ const fantasyProsFormatPages: Record<Format, string> = {
   'half-ppr': '/half-point-ppr-overall.php',
 };
 
-export const fetchFantasyProsData = async (format: Format) => {
-  const url = FANTASY_PROS_BASE_URL + fantasyProsFormatPages[format];
-
+const fetchRanks = async (url: string) => {
   const response = await fetch(url);
   const text = await response.text();
   const root = parse(text);
   const table = root.querySelectorAll('.player-table tbody tr');
-  const ranks = [];
+  const ranks: FantasyProRow[] = [];
 
   for (const row of table) {
     const [rankHTML, nameHTML, posHTML] = row.querySelectorAll('td');
@@ -69,4 +74,14 @@ export const fetchFantasyProsData = async (format: Format) => {
   }
 
   return ranks;
+};
+
+export const fetchFantasyProsData = async (format: Format) => {
+  const url = FANTASY_PROS_BASE_URL + fantasyProsFormatPages[format];
+  return fetchRanks(url);
+};
+
+export const fetchFantasyProsRookies = async () => {
+  const url = FANTASY_PROS_BASE_URL + '/rookies.php';
+  return fetchRanks(url);
 };

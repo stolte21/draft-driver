@@ -9,6 +9,7 @@ export type Player = {
   position: Position;
   team?: string;
   tier?: number;
+  isRookie?: boolean;
 };
 
 export type RosteredPlayer = Player & {

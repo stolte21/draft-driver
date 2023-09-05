@@ -1,4 +1,5 @@
 import { Box, Flex, Text, IconButton, useColorMode } from '@chakra-ui/react';
+import { StarIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
@@ -64,6 +65,7 @@ const DraftBoardRankingRow = (
         textDecoration={isPlayerDrafted ? 'line-through' : 'none'}
       >
         {player.name}
+        {player.isRookie && <StarIcon verticalAlign="super" h={2} />}
       </Text>
       <Box flexGrow={1} textAlign="right">
         <IconButton
