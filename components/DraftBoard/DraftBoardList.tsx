@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useColorMode, Flex, Box, Heading } from '@chakra-ui/react';
+import { useColorMode, Flex, Box, Heading, Spinner } from '@chakra-ui/react';
 import { Player, Position } from 'types';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
@@ -12,6 +12,7 @@ type DraftBoardListProps = {
   position?: Position;
   height: number;
   variant: 'rankings' | 'picks';
+  isLoading?: boolean;
 };
 
 const DraftBoardList = (props: DraftBoardListProps) => {
@@ -39,9 +40,27 @@ const DraftBoardList = (props: DraftBoardListProps) => {
           colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200'
         }
       >
-        <Heading as="h3" size="sm" textTransform="uppercase">
-          {props.variant}
-        </Heading>
+        <Box position="relative">
+          <Heading
+            visibility={props.isLoading ? 'hidden' : 'visible'}
+            as="h3"
+            size="sm"
+            textTransform="uppercase"
+          >
+            {props.variant}
+          </Heading>
+          {props.isLoading && (
+            <Spinner
+              size="sm"
+              position="absolute"
+              top={0}
+              bottom={0}
+              right={0}
+              left={0}
+              margin="auto"
+            />
+          )}
+        </Box>
         {props.variant === 'rankings' && (
           <DraftBoardPositionFilter
             filters={positionFilters}

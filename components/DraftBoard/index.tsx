@@ -54,6 +54,7 @@ const DraftBoard = () => {
           players={filteredPlayers}
           height={overallHeight}
           variant="rankings"
+          isLoading={draft.isLoadingRankings}
         />
       </GridItem>
       <GridItem colSpan={[12, 4]}>

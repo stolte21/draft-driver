@@ -18,6 +18,7 @@ import {
 import { Player, RosteredPlayer, Position } from 'types';
 
 type State = {
+  isLoadingRankings: boolean;
   filter: string;
   rankings: Player[];
   draftedPlayers: Player[];
@@ -29,6 +30,7 @@ type PlayersMap = Record<number, Player>;
 
 type Action =
   | { type: 'hydrate'; payload: State }
+  | { type: 'set-ranking-loading-status'; payload: boolean }
   | { type: 'update-filter'; payload: string }
   | { type: 'set-rankings'; payload: Player[] }
   | {
@@ -81,6 +83,9 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
       newState.filter =
         typeof newState.filter === 'string' ? newState.filter : '';
 
+      break;
+    case 'set-ranking-loading-status':
+      newState = { ...state, isLoadingRankings: action.payload };
       break;
     case 'update-filter':
       newState = { ...state, filter: action.payload };
@@ -162,6 +167,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
   const { state: settings } = useSettings();
   const [isHydrated, setIsHydrated] = useState(false);
   const [state, dispatch] = useReducer(draftReducer, {
+    isLoadingRankings: true,
     filter: '',
     rankings: [],
     draftedPlayers: [],
@@ -242,11 +248,21 @@ const DraftProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isHydrated) {
+      dispatch({
+        type: 'set-ranking-loading-status',
+        payload: true,
+      });
       fetch(
         `/api/rankings?format=${settings.format}&src=${settings.dataSource}`
       )
         .then((response) => response.json())
-        .then((r) => dispatch({ type: 'set-rankings', payload: r }));
+        .then((r) => dispatch({ type: 'set-rankings', payload: r }))
+        .finally(() => {
+          dispatch({
+            type: 'set-ranking-loading-status',
+            payload: false,
+          });
+        });
     }
   }, [isHydrated, settings.format, settings.dataSource, dispatch]);
 
