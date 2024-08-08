@@ -1,4 +1,4 @@
-import { Flex, Skeleton } from '@chakra-ui/react';
+import { Flex, Skeleton, Grid, GridItem } from '@chakra-ui/react';
 
 const PageLoader = () => {
   return (
@@ -17,7 +17,20 @@ const PageLoader = () => {
           <Skeleton key={_} height="40px" width="100%" />
         ))}
       </Flex>
-      <Skeleton flexGrow={1} width="100%" />
+      <Grid
+        gridTemplateColumns="repeat(12, 1fr)"
+        gridGap={2}
+        flexGrow={1}
+        overflow="hidden"
+      >
+        <GridItem colSpan={[12, 8]}>
+          <Skeleton height="100%" width="100%" />
+        </GridItem>
+        <GridItem colSpan={[12, 4]}>
+          <Skeleton height="100%" width="100%" />
+        </GridItem>
+      </Grid>
+      <Skeleton height="50px" />
     </Flex>
   );
 };
