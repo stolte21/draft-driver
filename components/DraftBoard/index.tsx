@@ -62,6 +62,7 @@ const DraftBoard = () => {
           players={filteredDraftedPlayers}
           height={picksHeight}
           variant="picks"
+          isLoading={draft.isLoadingRankings}
         />
       </GridItem>
     </Grid>

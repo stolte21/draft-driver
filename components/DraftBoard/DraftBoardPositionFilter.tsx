@@ -25,7 +25,7 @@ const DraftBoardPositionFilter = (props: DraftBoardPositionFilterProps) => {
   };
 
   return (
-    <HStack marginLeft={2} overflow="hidden">
+    <HStack padding={1} marginLeft={2} overflow="hidden">
       {buttons.map((filter) => (
         <Button
           key={filter}

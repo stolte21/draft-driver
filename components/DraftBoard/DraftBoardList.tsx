@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useColorMode, Flex, Box, Heading, Spinner } from '@chakra-ui/react';
+import { useColorMode, Flex, Box, Heading, Skeleton } from '@chakra-ui/react';
 import { Player, Position } from 'types';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
@@ -14,6 +14,17 @@ type DraftBoardListProps = {
   variant: 'rankings' | 'picks';
   isLoading?: boolean;
 };
+
+function renderLoaderRows(availableHeight: number) {
+  const rows = Math.floor(availableHeight / 30);
+  return (
+    <Box gap={1} display="flex" flexDirection="column" height={availableHeight}>
+      {Array.from({ length: rows }, (_, i) => (
+        <Skeleton key={i} height={30} marginX={1} rounded="sm" />
+      ))}
+    </Box>
+  );
+}
 
 const DraftBoardList = (props: DraftBoardListProps) => {
   const { colorMode } = useColorMode();
@@ -31,8 +42,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
       <Box
         display="flex"
         alignItems="center"
-        height={8}
-        padding={1}
+        height={12}
         paddingLeft={2}
         marginBottom={1}
         rounded="md"
@@ -40,26 +50,10 @@ const DraftBoardList = (props: DraftBoardListProps) => {
           colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200'
         }
       >
-        <Box position="relative">
-          <Heading
-            visibility={props.isLoading ? 'hidden' : 'visible'}
-            as="h3"
-            size="sm"
-            textTransform="uppercase"
-          >
+        <Box>
+          <Heading as="h3" size="sm" textTransform="uppercase">
             {props.variant}
           </Heading>
-          {props.isLoading && (
-            <Spinner
-              size="sm"
-              position="absolute"
-              top={0}
-              bottom={0}
-              right={0}
-              left={0}
-              margin="auto"
-            />
-          )}
         </Box>
         {props.variant === 'rankings' && (
           <DraftBoardPositionFilter
@@ -71,28 +65,29 @@ const DraftBoardList = (props: DraftBoardListProps) => {
 
       <Box height="100%">
         <AutoSizer disableWidth>
-          {/* for some reason the build doesn't pick up the correct type
-              in the render prop */}
-          {({ height }: { height: number }) => (
-            <FixedSizeList
-              height={height}
-              width="100%"
-              itemCount={filteredPlayers.length}
-              itemSize={30}
-              // some obscure players don't have a fantasy data id so fallback to the name.
-              // this probably won't be an issue once trim the players based on rankings
-              itemKey={(index) =>
-                filteredPlayers[index].id ?? filteredPlayers[index].name
-              }
-              itemData={{
-                players: filteredPlayers,
-              }}
-            >
-              {props.variant === 'rankings'
-                ? DraftBoardRankingRow
-                : DraftBoardPickRow}
-            </FixedSizeList>
-          )}
+          {({ height }: { height: number }) =>
+            props.isLoading ? (
+              renderLoaderRows(height)
+            ) : (
+              <FixedSizeList
+                height={height}
+                width="100%"
+                itemCount={filteredPlayers.length}
+                itemSize={30}
+                // some obscure players don't have a fantasy data id so fallback to the name.
+                itemKey={(index) =>
+                  filteredPlayers[index].id ?? filteredPlayers[index].name
+                }
+                itemData={{
+                  players: filteredPlayers,
+                }}
+              >
+                {props.variant === 'rankings'
+                  ? DraftBoardRankingRow
+                  : DraftBoardPickRow}
+              </FixedSizeList>
+            )
+          }
         </AutoSizer>
       </Box>
     </Flex>

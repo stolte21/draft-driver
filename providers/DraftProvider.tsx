@@ -82,6 +82,7 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
       newState.roster = Array.isArray(newState.roster) ? newState.roster : [];
       newState.filter =
         typeof newState.filter === 'string' ? newState.filter : '';
+      newState.isLoadingRankings = true;
 
       break;
     case 'set-ranking-loading-status':

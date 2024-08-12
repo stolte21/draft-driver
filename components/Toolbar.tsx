@@ -14,7 +14,7 @@ import PlayerFilter from 'components/PlayerFilter';
 import { useDraft } from 'providers/DraftProvider';
 
 const Toolbar = () => {
-  const { state, dispatch } = useDraft();
+  const { state, dispatch, getters } = useDraft();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -35,14 +35,18 @@ const Toolbar = () => {
         <Flex gap={[1, 2]} justifyContent="flex-end">
           <Button
             size={['sm', 'md']}
-            disabled={state.draftedPlayers.length === 0}
+            isDisabled={
+              getters.isInitializing || state.draftedPlayers.length === 0
+            }
             onClick={() => dispatch({ type: 'undo' })}
           >
             Undo
           </Button>
           <Button
             size={['sm', 'md']}
-            disabled={state.draftedPlayers.length === 0}
+            isDisabled={
+              getters.isInitializing || state.draftedPlayers.length === 0
+            }
             onClick={onOpen}
             colorScheme="red"
           >
