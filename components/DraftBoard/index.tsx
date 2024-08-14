@@ -43,6 +43,7 @@ const DraftBoard = () => {
   return (
     <Grid
       ref={element}
+      height="100%"
       visibility={height === 0 ? 'hidden' : 'visible'}
       gridTemplateColumns="repeat(12, 1fr)"
       gridGap={2}

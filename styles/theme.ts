@@ -1,4 +1,4 @@
-import { extendTheme, Theme, StyleFunctionProps } from '@chakra-ui/react';
+import { extendTheme, StyleFunctionProps } from '@chakra-ui/react';
 
 const theme = extendTheme({
   styles: {

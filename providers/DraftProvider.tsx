@@ -50,6 +50,7 @@ type Dispatch = (action: Action) => void;
 
 const DraftContext = createContext<
   | {
+      isHydrated: boolean;
       state: State;
       getters: {
         isInitializing: boolean;
@@ -280,6 +281,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
   return (
     <DraftContext.Provider
       value={{
+        isHydrated,
         state,
         dispatch,
         getters: {

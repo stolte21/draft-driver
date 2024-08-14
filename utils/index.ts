@@ -26,3 +26,23 @@ export const dataSourcesList: DataSource[] = ['fp', 'boris'];
 export const handlePreventDoubleClickHighlight: React.MouseEventHandler<
   HTMLDivElement
 > = (e) => e.detail > 1 && e.preventDefault();
+
+export function getFormatName(format: Format) {
+  switch (format) {
+    case 'standard':
+      return 'Standard';
+    case 'half-ppr':
+      return 'Half PPR';
+    case 'ppr':
+      return 'PPR';
+  }
+}
+
+export function getRankingsName(dataSource: DataSource) {
+  switch (dataSource) {
+    case 'boris':
+      return 'Boris Chen';
+    case 'fp':
+      return 'Fantasy Pros';
+  }
+}

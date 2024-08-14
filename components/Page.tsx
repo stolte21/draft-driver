@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import Head from 'next/head';
-import { Flex, BoxProps } from '@chakra-ui/react';
+import { Box, BoxProps } from '@chakra-ui/react';
 
 type Meta = {
   title: string;
@@ -23,14 +23,13 @@ const Page = (props: PageProps) => {
     children,
   } = props;
   return (
-    <Flex
-      flexDirection="column"
-      height="calc(100% - 3rem)"
+    <Box
+      display="grid"
+      gridTemplateRows="auto 1fr auto"
+      gridTemplateColumns="1fr min(var(--chakra-sizes-container-xl), calc(100% - 20px)) 1fr"
+      gridColumnGap="10px"
+      height="100%"
       width="100%"
-      maxWidth="container.xl"
-      paddingTop={2}
-      paddingX={[1, 2]}
-      marginX="auto"
       {...boxProps}
     >
       <Head>
@@ -42,7 +41,7 @@ const Page = (props: PageProps) => {
         />
       </Head>
       {children}
-    </Flex>
+    </Box>
   );
 };
 

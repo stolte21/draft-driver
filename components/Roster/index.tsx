@@ -12,7 +12,7 @@ import RosterSummary from 'components/Roster/RosterSummary';
 import RosterDetail from 'components/Roster/RosterDetail';
 
 const OFFSET_HEIGHT = '50px';
-const OPEN_HEIGHT_DESKTOP = '55%';
+const OPEN_HEIGHT_DESKTOP = '40vh';
 const OPEN_HEIGHT_MOBILE = '75lvh';
 
 const Roster = () => {
@@ -56,12 +56,12 @@ const Roster = () => {
       {/* This is to take up some space to push the content above it up in mobile views */}
       {isXS && <Box height={OFFSET_HEIGHT}></Box>}
       <Box
+        gridColumn={2}
         display="flex"
         flexDirection="column"
         height={isOpen ? openHeight : OFFSET_HEIGHT}
         width="100vw"
         minWidth="320px"
-        marginTop={2}
         paddingTop={1}
         backgroundColor={colorMode === 'dark' ? 'gray.900' : '#d6d6d6'}
         transition="0.35s height"

@@ -11,6 +11,7 @@ import useDebounce from 'hooks/useDebounce';
 type PlayerFilterProps = {
   filter: string;
   onChange: (filter: string) => void;
+  isDisabled?: boolean;
 };
 
 const ClearIcon = createIcon({
@@ -40,6 +41,7 @@ const PlayerFilter = (props: PlayerFilterProps) => {
   return (
     <InputGroup>
       <Input
+        isDisabled={props.isDisabled}
         size={['sm', 'md']}
         placeholder="Search for players"
         value={value}
