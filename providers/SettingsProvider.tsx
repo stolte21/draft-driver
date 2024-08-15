@@ -57,8 +57,10 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
     case 'hydrate':
       positionsForFantasyList.forEach((key) => {
         const position = key as keyof State['rosterSize'];
-        //@ts-ignore
-        if (isNaN(parseInt(action.payload.rosterSize[position]))) {
+        if (
+          isNaN(action.payload.rosterSize[position]) ||
+          action.payload.rosterSize[position] < 0
+        ) {
           action.payload.rosterSize[position] = RosterSizes[position];
         }
       });
@@ -75,9 +77,10 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
       action.payload.hidePlayerAfterDrafting =
         !!action.payload.hidePlayerAfterDrafting;
-      action.payload.numTeams = isNaN(action.payload.numTeams)
-        ? 10
-        : action.payload.numTeams;
+      action.payload.numTeams =
+        isNaN(action.payload.numTeams) || action.payload.numTeams < 4
+          ? 10
+          : action.payload.numTeams;
 
       newState = action.payload;
       break;

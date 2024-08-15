@@ -89,7 +89,7 @@ const SettingsButton = () => {
           size="sm"
           rounded="full"
           variant="outline"
-          disabled={state.numTeams <= 6}
+          isDisabled={state.numTeams <= 2}
           onClick={() =>
             dispatch({
               type: 'decrement-num-teams',
@@ -105,7 +105,7 @@ const SettingsButton = () => {
           size="sm"
           rounded="full"
           variant="outline"
-          disabled={state.numTeams >= 16}
+          isDisabled={state.numTeams >= 64}
           onClick={() =>
             dispatch({
               type: 'increment-num-teams',
@@ -130,7 +130,7 @@ const SettingsButton = () => {
               size="sm"
               rounded="full"
               variant="outline"
-              disabled={state.rosterSize[position] <= 0}
+              isDisabled={state.rosterSize[position] <= 0}
               onClick={() =>
                 dispatch({
                   type: 'decrement-roster-size',
@@ -147,7 +147,7 @@ const SettingsButton = () => {
               size="sm"
               rounded="full"
               variant="outline"
-              disabled={state.rosterSize[position] >= 3}
+              isDisabled={state.rosterSize[position] >= 10}
               onClick={() =>
                 dispatch({
                   type: 'increment-roster-size',
