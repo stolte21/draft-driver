@@ -14,7 +14,7 @@ import PlayerFilter from 'components/PlayerFilter';
 import { useDraft } from 'providers/DraftProvider';
 
 const Toolbar = () => {
-  const { isHydrated, state, dispatch, getters } = useDraft();
+  const { state, dispatch, getters } = useDraft();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -27,7 +27,7 @@ const Toolbar = () => {
     <>
       <Flex flexDirection={'row'} gap={[1, 2]} marginBottom={2}>
         <Flex flexGrow={1} gap={[1, 2]}>
-          {isHydrated ? (
+          {state.isHydrated ? (
             <PlayerFilter
               key="hydrated-filter"
               filter={state.filter}

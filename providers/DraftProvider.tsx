@@ -9,6 +9,7 @@ import {
   ReactNode,
 } from 'react';
 import { useSettings } from 'providers/SettingsProvider';
+import useRankings from 'hooks/useRankings';
 import {
   getStorageItem,
   setStorageItem,
@@ -18,7 +19,7 @@ import {
 import { Player, RosteredPlayer, Position } from 'types';
 
 type State = {
-  isLoadingRankings: boolean;
+  isHydrated: boolean;
   filter: string;
   rankings: Player[];
   draftedPlayers: Player[];
@@ -29,8 +30,7 @@ type State = {
 type PlayersMap = Record<number, Player>;
 
 type Action =
-  | { type: 'hydrate'; payload: State }
-  | { type: 'set-ranking-loading-status'; payload: boolean }
+  | { type: 'hydrate'; payload: State | null }
   | { type: 'update-filter'; payload: string }
   | { type: 'set-rankings'; payload: Player[] }
   | {
@@ -50,10 +50,10 @@ type Dispatch = (action: Action) => void;
 
 const DraftContext = createContext<
   | {
-      isHydrated: boolean;
       state: State;
       getters: {
         isInitializing: boolean;
+        isLoadingRankings: boolean;
         playersMap: PlayersMap;
         rosterByPosition: Record<Position, RosteredPlayer[]>;
         draftedPlayerIds: Set<string>;
@@ -70,24 +70,25 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
 
   switch (action.type) {
     case 'hydrate':
-      newState = action.payload;
-      newState.favorites = Array.isArray(newState.favorites)
-        ? newState.favorites
-        : [];
-      newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
-        ? newState.draftedPlayers
-        : [];
-      newState.rankings = Array.isArray(newState.rankings)
-        ? newState.rankings
-        : [];
-      newState.roster = Array.isArray(newState.roster) ? newState.roster : [];
-      newState.filter =
-        typeof newState.filter === 'string' ? newState.filter : '';
-      newState.isLoadingRankings = true;
+      if (action.payload) {
+        newState = action.payload;
+        newState.favorites = Array.isArray(newState.favorites)
+          ? newState.favorites
+          : [];
+        newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
+          ? newState.draftedPlayers
+          : [];
+        newState.rankings = Array.isArray(newState.rankings)
+          ? newState.rankings
+          : [];
+        newState.roster = Array.isArray(newState.roster) ? newState.roster : [];
+        newState.filter =
+          typeof newState.filter === 'string' ? newState.filter : '';
+        newState.isHydrated = true;
+      } else {
+        newState = { ...state, isHydrated: true };
+      }
 
-      break;
-    case 'set-ranking-loading-status':
-      newState = { ...state, isLoadingRankings: action.payload };
       break;
     case 'update-filter':
       newState = { ...state, filter: action.payload };
@@ -157,9 +158,10 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
     }
   }
 
-  // we don't want to save the rankings to local storage so make a copy and clear them out
-  const stateCopy = { ...newState };
-  stateCopy.rankings = [];
+  // we don't want to save certain properties to local storage so make a copy and clear them out
+  const stateCopy: Partial<State> = { ...newState };
+  delete stateCopy.rankings;
+  delete stateCopy.isHydrated;
 
   setStorageItem('DRAFT', stateCopy);
   return newState;
@@ -167,9 +169,8 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
 
 const DraftProvider = (props: { children: ReactNode }) => {
   const { state: settings } = useSettings();
-  const [isHydrated, setIsHydrated] = useState(false);
   const [state, dispatch] = useReducer(draftReducer, {
-    isLoadingRankings: true,
+    isHydrated: false,
     filter: '',
     rankings: [],
     draftedPlayers: [],
@@ -248,44 +249,29 @@ const DraftProvider = (props: { children: ReactNode }) => {
 
   const isInitializing = state.rankings.length === 0;
 
+  const { data: rankingsData, isPending } = useRankings({
+    isEnabled: state.isHydrated,
+    format: settings.format,
+    dataSource: settings.dataSource,
+  });
+
   useEffect(() => {
-    if (isHydrated) {
-      dispatch({
-        type: 'set-ranking-loading-status',
-        payload: true,
-      });
-      fetch(
-        `/api/rankings?format=${settings.format}&src=${settings.dataSource}`
-      )
-        .then((response) => response.json())
-        .then((r) => dispatch({ type: 'set-rankings', payload: r }))
-        .finally(() => {
-          dispatch({
-            type: 'set-ranking-loading-status',
-            payload: false,
-          });
-        });
-    }
-  }, [isHydrated, settings.format, settings.dataSource, dispatch]);
+    dispatch({ type: 'set-rankings', payload: rankingsData ?? [] });
+  }, [rankingsData]);
 
   useEffect(() => {
     const savedState = getStorageItem('DRAFT');
-
-    if (savedState) {
-      dispatch({ type: 'hydrate', payload: savedState });
-    }
-
-    setIsHydrated(true);
+    dispatch({ type: 'hydrate', payload: savedState });
   }, []);
 
   return (
     <DraftContext.Provider
       value={{
-        isHydrated,
         state,
         dispatch,
         getters: {
           isInitializing,
+          isLoadingRankings: isPending,
           playersMap,
           rosterByPosition,
           draftedPlayerIds,
