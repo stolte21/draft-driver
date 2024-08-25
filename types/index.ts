@@ -1,6 +1,7 @@
 export type Format = 'standard' | 'ppr' | 'half-ppr';
 
 export type Position = 'RB' | 'WR' | 'QB' | 'TE' | 'FLX' | 'K' | 'DST' | 'BN';
+export type SpecialFilter = 'R' | 'FAV';
 
 export type Player = {
   id: string;

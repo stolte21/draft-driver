@@ -16,6 +16,7 @@ import {
 import { DataSource, Position, Format } from 'types';
 
 type State = {
+  isHydrated: boolean;
   format: Format;
   dataSource: DataSource;
   hidePlayerAfterDrafting: boolean;
@@ -55,34 +56,39 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
   switch (action.type) {
     case 'hydrate':
-      positionsForFantasyList.forEach((key) => {
-        const position = key as keyof State['rosterSize'];
-        if (
-          isNaN(action.payload.rosterSize[position]) ||
-          action.payload.rosterSize[position] < 0
-        ) {
-          action.payload.rosterSize[position] = RosterSizes[position];
-        }
-      });
+      if (action.payload) {
+        positionsForFantasyList.forEach((key) => {
+          const position = key as keyof State['rosterSize'];
+          if (
+            isNaN(action.payload.rosterSize[position]) ||
+            action.payload.rosterSize[position] < 0
+          ) {
+            action.payload.rosterSize[position] = RosterSizes[position];
+          }
+        });
 
-      action.payload.dataSource = dataSourcesList.includes(
-        action.payload.dataSource
-      )
-        ? action.payload.dataSource
-        : 'boris';
+        action.payload.dataSource = dataSourcesList.includes(
+          action.payload.dataSource
+        )
+          ? action.payload.dataSource
+          : 'boris';
 
-      action.payload.format = formatsList.includes(action.payload.format)
-        ? action.payload.format
-        : 'standard';
+        action.payload.format = formatsList.includes(action.payload.format)
+          ? action.payload.format
+          : 'standard';
 
-      action.payload.hidePlayerAfterDrafting =
-        !!action.payload.hidePlayerAfterDrafting;
-      action.payload.numTeams =
-        isNaN(action.payload.numTeams) || action.payload.numTeams < 4
-          ? 10
-          : action.payload.numTeams;
+        action.payload.hidePlayerAfterDrafting =
+          !!action.payload.hidePlayerAfterDrafting;
+        action.payload.numTeams =
+          isNaN(action.payload.numTeams) || action.payload.numTeams < 4
+            ? 10
+            : action.payload.numTeams;
 
-      newState = action.payload;
+        newState = action.payload;
+        newState.isHydrated = true;
+      } else {
+        newState = { ...state, isHydrated: true };
+      }
       break;
     case 'change-format':
       newState = { ...state, format: action.payload };
@@ -135,12 +141,17 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
     }
   }
 
+  // we don't want to save certain properties to local storage so make a copy and clear them out
+  const stateCopy: Partial<State> = { ...newState };
+  delete stateCopy.isHydrated;
+
   setStorageItem('SETTINGS', newState);
   return newState;
 };
 
 const SettingsProvider = (props: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(settingsReducer, {
+    isHydrated: false,
     format: 'standard',
     dataSource: 'boris',
     hidePlayerAfterDrafting: true,

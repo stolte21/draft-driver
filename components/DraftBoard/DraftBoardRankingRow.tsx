@@ -66,7 +66,26 @@ const DraftBoardRankingRow = (
         textDecoration={isPlayerDrafted ? 'line-through' : 'none'}
       >
         {player.name}
-        {player.isRookie && <StarIcon verticalAlign="super" h={2} />}
+        {player.isRookie && (
+          <Text
+            as="span"
+            verticalAlign="super"
+            marginLeft={2}
+            fontWeight="bold"
+            lineHeight={0}
+          >
+            R
+          </Text>
+        )}
+        {isPlayerFavorite && (
+          <HeartIcon
+            display="inline-block"
+            verticalAlign="super"
+            marginLeft={2}
+            fontSize="xs"
+            filled
+          />
+        )}
       </Text>
       <Box flexGrow={1} textAlign="right">
         <IconButton

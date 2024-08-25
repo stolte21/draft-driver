@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useColorMode, Flex, Box, Heading, Skeleton } from '@chakra-ui/react';
-import { Player, Position } from 'types';
+import { useDraft } from 'providers/DraftProvider';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
 import DraftBoardPositionFilter from 'components/DraftBoard/DraftBoardPositionFilter';
+import { hasOnlySpecialFilters } from 'utils';
+import { Player, Position, SpecialFilter } from 'types';
 
 type DraftBoardListProps = {
   players: Player[];
@@ -28,14 +30,34 @@ function renderLoaderRows(availableHeight: number) {
 
 const DraftBoardList = (props: DraftBoardListProps) => {
   const { colorMode } = useColorMode();
-  const [positionFilters, setPositionFilters] = useState<Set<Position>>(
-    new Set()
-  );
+  const { getters } = useDraft();
+  const [positionFilters, setPositionFilters] = useState<
+    Set<Position | SpecialFilter>
+  >(new Set());
 
-  const filteredPlayers =
-    props.variant === 'picks' || positionFilters.size === 0
-      ? props.players
-      : props.players.filter((player) => positionFilters.has(player.position));
+  let filteredPlayers = props.players;
+
+  if (props.variant === 'rankings' && positionFilters.size > 0) {
+    filteredPlayers = props.players.filter((player) => {
+      const hasRookieFilter = positionFilters.has('R');
+      const rookieFilterCheck = hasRookieFilter ? player.isRookie : true;
+      const hasFavoriteFilter = positionFilters.has('FAV');
+      const favoriteFilterCheck = hasFavoriteFilter
+        ? getters.favoritePlayerIds.has(player.id)
+        : true;
+      const hasOnlySpecial = hasOnlySpecialFilters(positionFilters);
+
+      if (hasOnlySpecial) {
+        return rookieFilterCheck && favoriteFilterCheck;
+      } else {
+        return (
+          positionFilters.has(player.position) &&
+          rookieFilterCheck &&
+          favoriteFilterCheck
+        );
+      }
+    });
+  }
 
   return (
     <Flex flexDirection="column" height="100%">

@@ -1,4 +1,4 @@
-import { DataSource, Format, Position } from 'types';
+import { DataSource, Format, Position, SpecialFilter } from 'types';
 export * from 'utils/boris';
 export * from 'utils/scrape';
 export * from 'utils/storage';
@@ -45,4 +45,10 @@ export function getRankingsName(dataSource: DataSource) {
     case 'fp':
       return 'Fantasy Pros';
   }
+}
+
+export function hasOnlySpecialFilters(filters: Set<Position | SpecialFilter>) {
+  return Array.from(filters.values()).every(
+    (value) => value === 'R' || value === 'FAV'
+  );
 }
