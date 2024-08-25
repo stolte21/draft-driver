@@ -3,8 +3,9 @@ import {
   Heading,
   Text,
   Container,
-  useColorMode,
   Box,
+  Skeleton,
+  useColorMode,
 } from '@chakra-ui/react';
 import ColorModeButton from 'components/ColorMode';
 import SettingsButton from 'components/Settings';
@@ -37,12 +38,16 @@ const AppBar = () => {
           <Heading fontSize="2xl" marginBottom={0.5} whiteSpace="nowrap">
             Draft Driver
           </Heading>
-          <Heading as="h2" size="xs" fontWeight="light">
-            Rankings:&nbsp;
-            <Text as="span" fontWeight="medium">
-              {getRankingsName(state.dataSource)} {getFormatName(state.format)}
-            </Text>
-          </Heading>
+
+          <Skeleton isLoaded={state.isHydrated} maxWidth="200px" height={4}>
+            <Heading as="h2" size="xs" fontWeight="light">
+              Rankings:&nbsp;
+              <Text as="span" fontWeight="medium">
+                {getRankingsName(state.dataSource)}{' '}
+                {getFormatName(state.format)}
+              </Text>
+            </Heading>
+          </Skeleton>
         </Box>
 
         <Flex gap={2}>
