@@ -6,7 +6,7 @@ import {
   fetchBorisData,
   fetchFantasyProsRookies,
 } from 'utils';
-import { Format, DataSource, Player, Position } from 'types';
+import { Format, DataSource, Player, Position, ScrapedRanking } from 'types';
 
 function validateFormat(query: NextApiRequest['query']): Format {
   const { format } = query;
@@ -38,6 +38,35 @@ function validateDataSource(query: NextApiRequest['query']): DataSource {
   }
 }
 
+function parseId(ranking: ScrapedRanking) {
+  return `${ranking.name.toLowerCase().replaceAll(' ', '_')}_${ranking.pos}`;
+}
+
+function parseTeam(
+  ranking: ScrapedRanking,
+  playerMap: Map<string, ScrapedRanking>
+) {
+  const player = playerMap.get(ranking.name);
+  if (player) {
+    return player.team;
+  }
+}
+
+function parseVsAdp(
+  dataSource: DataSource,
+  ranking: ScrapedRanking,
+  playerMap: Map<string, ScrapedRanking>
+) {
+  if (dataSource === 'fp') return;
+
+  // when using boris data, we can calculate the vsAdp by comparing the rank to the fantasy pros rank
+  // since the fantasy pros data we have is based on ADP
+  const player = playerMap.get(ranking.name);
+  if (player) {
+    return player.rank - ranking.rank;
+  }
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Player[]>
@@ -58,7 +87,7 @@ export default async function handler(
     );
     const rankingsToUse =
       dataSource === 'boris' ? await fetchBorisData(format) : fpRankings;
-    const nameMap =
+    const playerMap =
       dataSource === 'boris'
         ? new Map(fpRankings.map((ranking) => [ranking.name, ranking]))
         : new Map<string, (typeof rankingsToUse)[number]>();
@@ -66,12 +95,11 @@ export default async function handler(
     // the boris data doesn't include all the defenses and kickers, so we should add the rest
     // from the fantasy pros data
     if (dataSource === 'boris') {
-      const nextHighestTier: number =
-        //@ts-ignore
-        rankingsToUse.reduce((acc, curr) => {
-          if (curr.tier > acc) return curr.tier;
-          return acc;
-        }, 0) + 1;
+      const nextHighestTier = rankingsToUse.reduce((acc, curr) => {
+        if (curr.tier === undefined) return acc;
+        if (curr.tier > acc) return curr.tier;
+        return acc;
+      }, 1);
 
       const defensesAndKickers = new Set(
         rankingsToUse
@@ -91,7 +119,6 @@ export default async function handler(
           if (!defensesAndKickers.has(ranking.name)) {
             rankingsToUse.push({
               ...ranking,
-              //@ts-expect-error
               tier: nextHighestTier,
               //@ts-ignore
               rank: rankingsToUse.length + 1,
@@ -100,23 +127,18 @@ export default async function handler(
         });
     }
 
-    if (rankingsToUse) {
-      rankingsToUse.forEach((ranking) => {
-        players.push({
-          id: `${ranking.name}_${ranking.pos}`,
-          name: ranking.name,
-          position: ranking.pos as Position,
-          team:
-            ranking.team ??
-            (nameMap.has(ranking.name)
-              ? nameMap.get(ranking.name)!.team!
-              : undefined),
-          rank: ranking.rank,
-          tier: 'tier' in ranking ? ranking.tier : undefined,
-          isRookie: fpRookies.has(ranking.name),
-        });
+    rankingsToUse.forEach((ranking) => {
+      players.push({
+        id: parseId(ranking),
+        name: ranking.name,
+        position: ranking.pos as Position,
+        team: parseTeam(ranking, playerMap),
+        rank: ranking.rank,
+        tier: ranking.tier,
+        isRookie: fpRookies.has(ranking.name),
+        vsAdp: parseVsAdp(dataSource, ranking, playerMap),
       });
-    }
+    });
   } catch (error) {
     //@ts-ignore
     throw new Error(error);

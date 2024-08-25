@@ -7,9 +7,10 @@ export type Player = {
   rank: number;
   name: string;
   position: Position;
+  isRookie: boolean;
   team?: string;
   tier?: number;
-  isRookie?: boolean;
+  vsAdp?: number;
 };
 
 export type RosteredPlayer = Player & {
@@ -18,3 +19,11 @@ export type RosteredPlayer = Player & {
 };
 
 export type DataSource = 'boris' | 'fp';
+
+export type ScrapedRanking = {
+  rank: number;
+  name: string;
+  pos: string;
+  team?: string;
+  tier?: number;
+};

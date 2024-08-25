@@ -1,5 +1,5 @@
 import { parse } from 'csv-parse/sync';
-import { Format } from 'types';
+import { Format, ScrapedRanking } from 'types';
 
 type BorisPlayer = {
   Rank: string;
@@ -15,7 +15,9 @@ const borisWeeklyTiers: Record<Format, string> = {
   'half-ppr': 'weekly-ALL-HALF-PPR.csv',
 };
 
-export const fetchBorisData = async (format: Format) => {
+export const fetchBorisData = async (
+  format: Format
+): Promise<ScrapedRanking[]> => {
   const url = BORIS_BASE_URL + borisWeeklyTiers[format];
 
   const response = await fetch(url);
@@ -28,7 +30,6 @@ export const fetchBorisData = async (format: Format) => {
   return records.map((record) => ({
     rank: Number(record.Rank),
     name: record['Player.Name'],
-    team: null,
     pos: record.Position,
     tier: Number(record.Tier),
   }));

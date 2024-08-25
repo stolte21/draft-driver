@@ -88,6 +88,17 @@ const DraftBoardRankingRow = (
           }}
         />
       </Box>
+      {player.vsAdp !== undefined && player.vsAdp !== 0 && (
+        <Text
+          display={['none', 'none', 'block']}
+          textAlign="right"
+          marginRight={2}
+          color={colorMode === 'dark' ? 'whiteAlpha.500' : 'blackAlpha.700'}
+        >
+          {player.vsAdp > 0 && '+'}
+          {player.vsAdp}
+        </Text>
+      )}
       {player.tier && (
         <Text
           display={['none', 'none', 'block']}

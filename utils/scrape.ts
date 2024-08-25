@@ -1,12 +1,5 @@
 import { parse } from 'node-html-parser';
-import { Format } from 'types';
-
-type FantasyProRow = {
-  rank: number;
-  name: string;
-  team?: string;
-  pos: string;
-};
+import { Format, ScrapedRanking } from 'types';
 
 const TEAM_TO_ABRV_MAP = {
   'Arizona Cardinals': 'ARI',
@@ -55,7 +48,7 @@ const fetchRanks = async (url: string) => {
   const text = await response.text();
   const root = parse(text);
   const table = root.querySelectorAll('.player-table tbody tr');
-  const ranks: FantasyProRow[] = [];
+  const ranks: ScrapedRanking[] = [];
 
   for (const row of table) {
     const [rankHTML, nameHTML, posHTML] = row.querySelectorAll('td');
