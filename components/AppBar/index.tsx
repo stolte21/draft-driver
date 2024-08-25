@@ -6,8 +6,8 @@ import {
   useColorMode,
   Box,
 } from '@chakra-ui/react';
-import ColorModeButton from 'components/AppBar/ColorModeButton';
-import SettingsButton from 'components/AppBar/SettingsButton';
+import ColorModeButton from 'components/ColorMode';
+import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
 import { getFormatName, getRankingsName } from 'utils';
 
