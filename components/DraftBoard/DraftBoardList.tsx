@@ -74,10 +74,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
                 width="100%"
                 itemCount={filteredPlayers.length}
                 itemSize={30}
-                // some obscure players don't have a fantasy data id so fallback to the name.
-                itemKey={(index) =>
-                  filteredPlayers[index].id ?? filteredPlayers[index].name
-                }
+                itemKey={(index) => filteredPlayers[index].id}
                 itemData={{
                   players: filteredPlayers,
                 }}
