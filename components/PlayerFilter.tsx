@@ -41,6 +41,7 @@ const PlayerFilter = (props: PlayerFilterProps) => {
   return (
     <InputGroup>
       <Input
+        name="player_filter"
         isDisabled={props.isDisabled}
         size={['sm', 'md']}
         placeholder="Search for players"
