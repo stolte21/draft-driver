@@ -39,12 +39,8 @@ const Settings = () => {
           <Box
             display="flex"
             alignItems="flex-end"
+            flexDirection={{ base: 'column', lg: 'row' }}
             gap={2}
-            sx={{
-              '& > div': {
-                width: '50%',
-              },
-            }}
           >
             <SettingsFormat />
             <SettingsDataSource />

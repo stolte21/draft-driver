@@ -17,7 +17,11 @@ type SettingsModalProps = {
 
 const SettingsModal = (props: SettingsModalProps) => {
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} size="lg">
+    <Modal
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      size={['xs', 'sm', 'lg']}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
