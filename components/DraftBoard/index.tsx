@@ -11,6 +11,7 @@ const DraftBoard = () => {
   const { element, height } = useElementHeight();
   const bp = useBreakpoint();
   const isXS = bp === 'base';
+  const hasKeepers = draft.keepers.length > 0;
 
   const filteredPlayers = useMemo(() => {
     const players = settings.hidePlayerAfterDrafting
@@ -19,14 +20,15 @@ const DraftBoard = () => {
         )
       : draft.rankings;
 
-    return players.filter((player) =>
-      player.name.toLowerCase().includes(draft.filter)
-    );
+    return players
+      .filter((player) => !getters.keeperPlayerIds.has(player.id))
+      .filter((player) => player.name.toLowerCase().includes(draft.filter));
   }, [
     draft.rankings,
     draft.filter,
     settings.hidePlayerAfterDrafting,
     getters.draftedPlayerIds,
+    getters.keeperPlayerIds,
   ]);
 
   const filteredDraftedPlayers = useMemo(
@@ -37,8 +39,20 @@ const DraftBoard = () => {
     [draft.draftedPlayers, draft.filter]
   );
 
+  const filteredKeepers = useMemo(
+    () =>
+      draft.keepers.filter((player) =>
+        player.name.toLowerCase().includes(draft.filter)
+      ),
+    [draft.keepers, draft.filter]
+  );
+
   const overallHeight = isXS ? height * 0.6 : height;
-  const picksHeight = isXS ? height * 0.4 : height;
+  let picksHeight = isXS ? height * 0.4 : height;
+
+  if (hasKeepers) {
+    picksHeight = picksHeight / 2;
+  }
 
   return (
     <Grid
@@ -65,6 +79,14 @@ const DraftBoard = () => {
           variant="picks"
           isLoading={getters.isLoadingRankings}
         />
+        {hasKeepers && (
+          <DraftBoardList
+            players={filteredKeepers}
+            height={picksHeight}
+            variant="keepers"
+            isLoading={getters.isLoadingRankings}
+          />
+        )}
       </GridItem>
     </Grid>
   );

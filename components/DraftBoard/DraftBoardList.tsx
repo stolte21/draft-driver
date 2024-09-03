@@ -5,6 +5,7 @@ import { useColorMode, Flex, Box, Heading, Skeleton } from '@chakra-ui/react';
 import { useDraft } from 'providers/DraftProvider';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
+import DraftBoardKeeperRow from 'components/DraftBoard/DraftBoardKeeperRow';
 import DraftBoardPositionFilter from 'components/DraftBoard/DraftBoardPositionFilter';
 import { hasOnlySpecialFilters } from 'utils';
 import { Player, Position, SpecialFilter } from 'types';
@@ -13,7 +14,7 @@ type DraftBoardListProps = {
   players: Player[];
   position?: Position;
   height: number;
-  variant: 'rankings' | 'picks';
+  variant: 'rankings' | 'picks' | 'keepers';
   isLoading?: boolean;
 };
 
@@ -59,8 +60,26 @@ const DraftBoardList = (props: DraftBoardListProps) => {
     });
   }
 
+  const renderRow = () => {
+    switch (props.variant) {
+      case 'rankings':
+        return DraftBoardRankingRow;
+      case 'picks':
+        return DraftBoardPickRow;
+      case 'keepers':
+        return DraftBoardKeeperRow;
+    }
+  };
+
   return (
-    <Flex flexDirection="column" height="100%">
+    <Flex
+      flexDirection="column"
+      height={
+        props.variant === 'keepers' || props.variant === 'picks'
+          ? '50%'
+          : '100%'
+      }
+    >
       <Box
         display="flex"
         alignItems="center"
@@ -101,9 +120,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
                   players: filteredPlayers,
                 }}
               >
-                {props.variant === 'rankings'
-                  ? DraftBoardRankingRow
-                  : DraftBoardPickRow}
+                {renderRow()}
               </FixedSizeList>
             )
           }

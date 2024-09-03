@@ -25,6 +25,7 @@ type State = {
   draftedPlayers: Player[];
   roster: RosteredPlayer[];
   favorites: Player['id'][];
+  keepers: Player[];
 };
 
 type PlayersMap = Record<number, Player>;
@@ -44,7 +45,9 @@ type Action =
       payload: { player: Player; round: number; pick: number };
     }
   | { type: 'remove-roster'; payload: string }
-  | { type: 'toggle-favorite'; payload: Player['id'] };
+  | { type: 'toggle-favorite'; payload: Player['id'] }
+  | { type: 'add-keeper'; payload: Player }
+  | { type: 'remove-keeper'; payload: Player['id'] };
 
 type Dispatch = (action: Action) => void;
 
@@ -59,6 +62,7 @@ const DraftContext = createContext<
         draftedPlayerIds: Set<string>;
         teamPlayerIds: Set<string>;
         favoritePlayerIds: Set<string>;
+        keeperPlayerIds: Set<string>;
       };
       dispatch: Dispatch;
     }
@@ -84,6 +88,9 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
         newState.roster = Array.isArray(newState.roster) ? newState.roster : [];
         newState.filter =
           typeof newState.filter === 'string' ? newState.filter : '';
+        newState.keepers = Array.isArray(newState.keepers)
+          ? newState.keepers
+          : [];
         newState.isHydrated = true;
       } else {
         newState = { ...state, isHydrated: true };
@@ -152,6 +159,20 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
         favorites: newFavorites,
       };
       break;
+    case 'add-keeper':
+      newState = {
+        ...state,
+        keepers: [...state.keepers, action.payload].sort(
+          (a, b) => a.rank - b.rank
+        ),
+      };
+      break;
+    case 'remove-keeper':
+      newState = {
+        ...state,
+        keepers: state.keepers.filter((player) => player.id !== action.payload),
+      };
+      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -176,6 +197,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
     draftedPlayers: [],
     roster: [],
     favorites: [],
+    keepers: [],
   });
 
   const playersMap = useMemo(() => {
@@ -247,6 +269,10 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return new Set(state.favorites);
   }, [state.favorites]);
 
+  const keeperPlayerIds = useMemo(() => {
+    return new Set(state.keepers.map((player) => player.id));
+  }, [state.keepers]);
+
   const isInitializing = state.rankings.length === 0;
 
   const { data: rankingsData, isPending } = useRankings({
@@ -277,6 +303,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
           draftedPlayerIds,
           teamPlayerIds,
           favoritePlayerIds,
+          keeperPlayerIds,
         },
       }}
     >
