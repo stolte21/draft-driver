@@ -161,10 +161,7 @@ const SettingsProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     const savedState = getStorageItem('SETTINGS');
-
-    if (savedState) {
-      dispatch({ type: 'hydrate', payload: savedState });
-    }
+    dispatch({ type: 'hydrate', payload: savedState });
   }, []);
 
   return (
