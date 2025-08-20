@@ -144,8 +144,8 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
   // we don't want to save certain properties to local storage so make a copy and clear them out
   const stateCopy: Partial<State> = { ...newState };
   delete stateCopy.isHydrated;
+  setStorageItem('SETTINGS', stateCopy);
 
-  setStorageItem('SETTINGS', newState);
   return newState;
 };
 
