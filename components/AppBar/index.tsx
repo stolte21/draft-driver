@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   Flex,
   Heading,
@@ -7,6 +8,7 @@ import {
   Skeleton,
   useColorMode,
 } from '@chakra-ui/react';
+import ChartsButton from 'components/ChartsButton/ChartsButton';
 import ColorModeButton from 'components/ColorMode';
 import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
@@ -36,7 +38,7 @@ const AppBar = () => {
       >
         <Box flexGrow={1}>
           <Heading fontSize="2xl" marginBottom={0.5} whiteSpace="nowrap">
-            Draft Driver
+            <Link href="/">Draft Driver</Link>
           </Heading>
 
           <Skeleton isLoaded={state.isHydrated} maxWidth="200px" height={4}>
@@ -53,6 +55,7 @@ const AppBar = () => {
         <Flex gap={2}>
           <SettingsButton />
           <ColorModeButton />
+          <ChartsButton />
         </Flex>
       </Container>
     </Flex>

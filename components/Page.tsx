@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Box, BoxProps } from '@chakra-ui/react';
 
 type Meta = {
@@ -14,6 +15,8 @@ type PageProps = {
 };
 
 const Page = (props: PageProps) => {
+  const router = useRouter();
+
   const {
     boxProps = {},
     meta = {
@@ -22,15 +25,23 @@ const Page = (props: PageProps) => {
     },
     children,
   } = props;
+
+  const homePageProps = {
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr',
+    gridTemplateColumns:
+      '1fr min(var(--chakra-sizes-container-xl), calc(100% - 20px)) 1fr',
+    gridColumnGap: '10px',
+  };
+
+  const isHomePage = router.pathname === '/';
+
   return (
     <Box
-      display="grid"
-      gridTemplateRows="auto 1fr auto"
-      gridTemplateColumns="1fr min(var(--chakra-sizes-container-xl), calc(100% - 20px)) 1fr"
-      gridColumnGap="10px"
       height="100%"
       width="100%"
       {...boxProps}
+      {...(isHomePage ? homePageProps : {})}
     >
       <Head>
         <title>{meta.title}</title>
