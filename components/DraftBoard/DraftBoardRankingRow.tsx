@@ -63,6 +63,7 @@ const DraftBoardRankingRow = (
             visibility={isPlayerDrafted ? 'hidden' : 'visible'}
             size="xs"
             marginRight={2}
+            marginLeft={1}
             isDisabled={isPlayerDrafted}
             isRound
             onClick={handleDraftPlayer}
