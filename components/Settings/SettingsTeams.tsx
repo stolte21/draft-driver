@@ -39,6 +39,7 @@ const SettingsTeams = () => {
         max={32}
         precision={0}
         onChange={handleChange}
+        inputMode="numeric"
       >
         <NumberInputField />
         <NumberInputStepper>
