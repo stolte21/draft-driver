@@ -31,6 +31,7 @@ type Action =
   | { type: 'decrement-roster-size'; payload: Position }
   | { type: 'increment-num-teams' }
   | { type: 'decrement-num-teams' }
+  | { type: 'set-num-teams'; payload: number }
   | { type: 'change-data-source'; payload: DataSource }
   | { type: 'hydrate'; payload: State };
 
@@ -127,6 +128,12 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
       newState = {
         ...state,
         numTeams: state.numTeams - 1,
+      };
+      break;
+    case 'set-num-teams':
+      newState = {
+        ...state,
+        numTeams: action.payload,
       };
       break;
     case 'change-data-source':
