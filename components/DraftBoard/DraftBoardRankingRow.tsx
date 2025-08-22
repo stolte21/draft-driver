@@ -3,7 +3,6 @@ import {
   Flex,
   Text,
   IconButton,
-  useColorMode,
   Menu,
   MenuButton,
   MenuList,
@@ -23,7 +22,6 @@ type DraftBoardRankingRowProps = {
 const DraftBoardRankingRow = (
   props: ListChildComponentProps<DraftBoardRankingRowProps>
 ) => {
-  const { colorMode } = useColorMode();
   const { getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
@@ -44,13 +42,9 @@ const DraftBoardRankingRow = (
           cursor={isPlayerDrafted ? 'not-allowed' : 'pointer'}
           backgroundColor={
             isPlayerDrafted
-              ? colorMode === 'dark'
-                ? 'blackAlpha.800'
-                : 'blackAlpha.700'
+              ? 'blackAlpha.800'
               : player.tier && player.tier % 2 === 0
-              ? colorMode === 'dark'
-                ? 'blackAlpha.500'
-                : 'blackAlpha.400'
+              ? 'blackAlpha.500'
               : undefined
           }
           _hover={{
@@ -126,9 +120,7 @@ const DraftBoardRankingRow = (
               <Text
                 display={['none', 'none', 'block']}
                 marginRight={2}
-                color={
-                  colorMode === 'dark' ? 'whiteAlpha.500' : 'blackAlpha.700'
-                }
+                color="whiteAlpha.500"
               >
                 {player.vsAdp > 0 && '+'}
                 {player.vsAdp}
@@ -138,9 +130,7 @@ const DraftBoardRankingRow = (
               <Text
                 display={['none', 'none', 'block']}
                 marginRight={2}
-                color={
-                  colorMode === 'dark' ? 'whiteAlpha.500' : 'blackAlpha.700'
-                }
+                color="whiteAlpha.500"
               >
                 Tier {player.tier}
               </Text>

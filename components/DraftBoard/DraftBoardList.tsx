@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { useColorMode, Flex, Box, Heading, Skeleton } from '@chakra-ui/react';
+import { Flex, Box, Heading, Skeleton } from '@chakra-ui/react';
 import { useDraft } from 'providers/DraftProvider';
 import DraftBoardRankingRow from 'components/DraftBoard/DraftBoardRankingRow';
 import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
@@ -30,7 +30,6 @@ function renderLoaderRows(availableHeight: number) {
 }
 
 const DraftBoardList = (props: DraftBoardListProps) => {
-  const { colorMode } = useColorMode();
   const { getters } = useDraft();
   const [positionFilters, setPositionFilters] = useState<
     Set<Position | SpecialFilter>
@@ -87,9 +86,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         paddingLeft={2}
         marginBottom={1}
         rounded="md"
-        backgroundColor={
-          colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200'
-        }
+        backgroundColor="blackAlpha.300"
       >
         <Box>
           <Heading as="h3" size="sm" textTransform="uppercase">

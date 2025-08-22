@@ -3,7 +3,6 @@ import {
   Box,
   IconButton,
   useDisclosure,
-  useColorMode,
   useBreakpoint,
   BoxProps,
 } from '@chakra-ui/react';
@@ -17,7 +16,6 @@ const OPEN_HEIGHT_MOBILE = '75lvh';
 
 const Roster = () => {
   const bp = useBreakpoint();
-  const { colorMode } = useColorMode();
   const { isOpen, onToggle } = useDisclosure();
   const [isScroll, setScroll] = useState(false);
   const isXS = bp === 'base';
@@ -63,7 +61,7 @@ const Roster = () => {
         width="100vw"
         minWidth="320px"
         paddingTop={1}
-        backgroundColor={colorMode === 'dark' ? 'gray.900' : '#d6d6d6'}
+        backgroundColor="gray.900"
         transition="0.35s height"
         boxShadow="lg"
         onTransitionEnd={toggleScroll}

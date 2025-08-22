@@ -1,8 +1,8 @@
-import { extendTheme, StyleFunctionProps } from '@chakra-ui/react';
+import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
   styles: {
-    global: (props: StyleFunctionProps) => ({
+    global: {
       'html, body, #__next': {
         height: '100%',
         overflow: 'hidden',
@@ -16,20 +16,15 @@ const theme = extendTheme({
         height: '4px',
       },
       '::-webkit-scrollbar-track': {
-        backgroundColor:
-          props.colorMode === 'dark' ? 'blackAlpha.300' : 'blackAlpha.200',
+        backgroundColor: 'blackAlpha.300',
       },
       '::-webkit-scrollbar-thumb': {
-        backgroundColor:
-          props.colorMode === 'dark' ? 'blackAlpha.700' : 'blackAlpha.600',
+        backgroundColor: 'blackAlpha.700',
       },
       '*': {
-        scrollbarColor:
-          props.colorMode === 'dark'
-            ? 'var(--chakra-colors-blackAlpha-700) var(--chakra-colors-blackAlpha-300)'
-            : 'var(--chakra-colors-blackAlpha-600) var(--chakra-colors-blackAlpha-200)',
+        scrollbarColor: 'var(--chakra-colors-blackAlpha-700) var(--chakra-colors-blackAlpha-300)',
       },
-    }),
+    },
   },
   colors: {
     gray: {
@@ -44,9 +39,6 @@ const theme = extendTheme({
       800: '#212121',
       900: '#1a1a1a',
     },
-  },
-  config: {
-    initialColorMode: 'dark',
   },
 });
 

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useColorMode, Flex, Text, keyframes } from '@chakra-ui/react';
+import { Flex, Text, keyframes } from '@chakra-ui/react';
 import { Position } from 'types';
 
 type PositionCircleProps = {
@@ -14,17 +14,9 @@ const darkPing = keyframes`
   100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 `;
 
-const lightPing = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(155, 155, 155, 0.5); }
-  50% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
-`;
 
 const PositionCircle = (props: PositionCircleProps) => {
-  const { colorMode } = useColorMode();
-  const pingAnimation = `${
-    colorMode === 'dark' ? darkPing : lightPing
-  } 1s linear`;
+  const pingAnimation = `${darkPing} 1s linear`;
   const prevNumPlayers = useRef(props.numPlayers);
 
   useEffect(() => {
@@ -42,9 +34,7 @@ const PositionCircle = (props: PositionCircleProps) => {
       height="40px"
       justifyContent="center"
       alignItems="center"
-      backgroundColor={
-        colorMode === 'dark' ? 'blackAlpha.500' : 'blackAlpha.200'
-      }
+      backgroundColor="blackAlpha.500"
       rounded="full"
       fontSize="xs"
     >

@@ -1,5 +1,4 @@
 import {
-  useColorMode,
   Flex,
   Text,
   Checkbox,
@@ -17,7 +16,6 @@ type DraftBoardKeeperRowProps = {
 const DraftBoardKeeperRow = (
   props: ListChildComponentProps<DraftBoardKeeperRowProps>
 ) => {
-  const { colorMode } = useColorMode();
   const { getters, dispatch } = useDraft();
   const player = props.data.players[props.index];
   const checked = getters.teamPlayerIds.has(player.id);
@@ -46,13 +44,7 @@ const DraftBoardKeeperRow = (
       justifyContent="space-between"
       alignItems="center"
       cursor="pointer"
-      backgroundColor={
-        checked
-          ? colorMode === 'dark'
-            ? 'blackAlpha.400'
-            : 'blackAlpha.300'
-          : undefined
-      }
+      backgroundColor={checked ? 'blackAlpha.400' : undefined}
       _hover={{
         backdropFilter: !checked ? 'brightness(90%)' : undefined,
       }}

@@ -6,16 +6,13 @@ import {
   Container,
   Box,
   Skeleton,
-  useColorMode,
 } from '@chakra-ui/react';
 import ChartsButton from 'components/ChartsButton/ChartsButton';
-import ColorModeButton from 'components/ColorMode';
 import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
 import { getFormatName, getRankingsName } from 'utils';
 
 const AppBar = () => {
-  const { colorMode } = useColorMode();
   const { state } = useSettings();
 
   return (
@@ -24,9 +21,7 @@ const AppBar = () => {
       paddingY={2}
       paddingX={[3]}
       position="relative"
-      backgroundColor={
-        colorMode === 'dark' ? 'blackAlpha.400' : 'blackAlpha.300'
-      }
+      backgroundColor="blackAlpha.400"
       shadow="lg"
     >
       <Container
@@ -54,7 +49,6 @@ const AppBar = () => {
 
         <Flex gap={2}>
           <SettingsButton />
-          <ColorModeButton />
           <ChartsButton />
         </Flex>
       </Container>
