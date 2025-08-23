@@ -7,7 +7,8 @@ import {
   Box,
   Skeleton,
 } from '@chakra-ui/react';
-import ChartsButton from 'components/ChartsButton/ChartsButton';
+import HomeButton from 'components/HomeButton';
+import ChartsButton from 'components/ChartsButton';
 import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
 import { getFormatName, getRankingsName } from 'utils';
@@ -17,10 +18,12 @@ const AppBar = () => {
 
   return (
     <Flex
+      position="sticky"
+      top={0}
+      backdropFilter="blur(5px)"
       gridColumn="1 / -1"
       paddingY={2}
       paddingX={[3]}
-      position="relative"
       backgroundColor="blackAlpha.400"
       shadow="lg"
     >
@@ -48,8 +51,9 @@ const AppBar = () => {
         </Box>
 
         <Flex gap={2}>
-          <SettingsButton />
+          <HomeButton />
           <ChartsButton />
+          <SettingsButton />
         </Flex>
       </Container>
     </Flex>

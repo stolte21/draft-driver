@@ -1,6 +1,10 @@
-import { DataSource, Format, Position, SpecialFilter } from 'types';
-export * from 'utils/boris';
-export * from 'utils/scrape';
+import {
+  DataSource,
+  Format,
+  Position,
+  SpecialFilter,
+  ScrapedRanking,
+} from 'types';
 export * from 'utils/storage';
 
 export const formatsList: Format[] = ['standard', 'half-ppr', 'ppr'];
@@ -51,4 +55,8 @@ export function hasOnlySpecialFilters(filters: Set<Position | SpecialFilter>) {
   return Array.from(filters.values()).every(
     (value) => value === 'R' || value === 'FAV'
   );
+}
+
+export function parseId(ranking: ScrapedRanking) {
+  return `${ranking.name.toLowerCase().replaceAll(' ', '_')}_${ranking.pos}`;
 }

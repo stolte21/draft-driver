@@ -29,6 +29,7 @@ type Action =
   | { type: 'toggle-hide-player' }
   | { type: 'increment-roster-size'; payload: Position }
   | { type: 'decrement-roster-size'; payload: Position }
+  | { type: 'set-roster-size'; payload: { size: number; type: Position } }
   | { type: 'increment-num-teams' }
   | { type: 'decrement-num-teams' }
   | { type: 'set-num-teams'; payload: number }
@@ -115,6 +116,15 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
         rosterSize: {
           ...state.rosterSize,
           [action.payload]: state.rosterSize[action.payload] - 1,
+        },
+      };
+      break;
+    case 'set-roster-size':
+      newState = {
+        ...state,
+        rosterSize: {
+          ...state.rosterSize,
+          [action.payload.type]: action.payload.size,
         },
       };
       break;

@@ -15,6 +15,7 @@ const SettingsDataSource = () => {
     <FormControl>
       <FormLabel>Data Source</FormLabel>
       <Select
+        isDisabled
         size={['sm', 'md']}
         value={state.dataSource}
         onChange={(e) =>

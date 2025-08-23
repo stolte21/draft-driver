@@ -28,7 +28,7 @@ type State = {
   keepers: Player[];
 };
 
-type PlayersMap = Record<number, Player>;
+type PlayersMap = Record<string, Player>;
 
 type Action =
   | { type: 'hydrate'; payload: State | null }

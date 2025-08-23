@@ -6,6 +6,8 @@ export type SpecialFilter = 'R' | 'FAV';
 export type Player = {
   id: string;
   rank: number;
+  pRank: number;
+  adp: number;
   name: string;
   position: Position;
   isRookie: boolean;
@@ -27,4 +29,16 @@ export type ScrapedRanking = {
   pos: string;
   team?: string;
   tier?: number;
+};
+
+export type DepthChartPlayer = {
+  id: string;
+  name: string;
+  ecr: number;
+  pos: Position;
+};
+
+export type DepthChart = {
+  team: string;
+  players: DepthChartPlayer[];
 };

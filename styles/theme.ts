@@ -3,10 +3,6 @@ import { extendTheme } from '@chakra-ui/react';
 const theme = extendTheme({
   styles: {
     global: {
-      'html, body, #__next': {
-        height: '100%',
-        overflow: 'hidden',
-      },
       body: {
         minWidth: '320px',
         minHeight: '600px',
@@ -22,7 +18,8 @@ const theme = extendTheme({
         backgroundColor: 'blackAlpha.700',
       },
       '*': {
-        scrollbarColor: 'var(--chakra-colors-blackAlpha-700) var(--chakra-colors-blackAlpha-300)',
+        scrollbarColor:
+          'var(--chakra-colors-blackAlpha-700) var(--chakra-colors-blackAlpha-300)',
       },
     },
   },

@@ -43,6 +43,16 @@ const Page = (props: PageProps) => {
       {...boxProps}
       {...(isHomePage ? homePageProps : {})}
     >
+      {isHomePage && (
+        <style jsx global>{`
+          html,
+          body,
+          #__next {
+            height: 100%;
+            overflow: hidden;
+          }
+        `}</style>
+      )}
       <Head>
         <title>{meta.title}</title>
         <meta content={meta.description} name="description" />

@@ -14,13 +14,12 @@ const SettingsTeams = () => {
   const { state, dispatch } = useSettings();
 
   const handleChange = (_: string, valueNumber: number) => {
-    const newValue = isNaN(valueNumber) ? state.numTeams : valueNumber;
-    if (newValue !== state.numTeams) {
-      dispatch({
-        type: 'set-num-teams',
-        payload: newValue,
-      });
-    }
+    if (valueNumber < 1 || valueNumber > 32) return;
+
+    dispatch({
+      type: 'set-num-teams',
+      payload: valueNumber,
+    });
   };
 
   return (

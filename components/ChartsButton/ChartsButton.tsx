@@ -15,16 +15,16 @@ const ChartIcon = createIcon({
 
 const ChartsButton = () => {
   const router = useRouter();
-  const isActive = router.pathname === '/charts';
+  const isActive = router.pathname === '/depth-charts';
 
   return (
-    <Link href="/charts" passHref>
+    <Link href="/depth-charts" passHref>
       <IconButton
-        aria-label="charts"
+        aria-label="depth charts"
         variant="ghost"
         icon={<ChartIcon />}
         as="a"
-        _hover={{ bg: 'gray.700', _dark: { bg: 'gray.700' } }}
+        _hover={{ bg: 'gray.700' }}
         bg={isActive ? 'gray.700' : 'transparent'}
       />
     </Link>
