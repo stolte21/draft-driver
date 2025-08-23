@@ -7,11 +7,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Tooltip,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
+import { useSettings } from 'providers/SettingsProvider';
 import { Player } from 'types';
 import { MouseEventHandler } from 'react';
 
@@ -19,10 +21,48 @@ type DraftBoardRankingRowProps = {
   players: Player[];
 };
 
+const getExpectedRound = (adp: number, numTeams: number): string => {
+  if (!adp || adp === 0) return '';
+
+  const round = Math.ceil(adp / numTeams);
+  const pickInRound = ((adp - 1) % numTeams) + 1;
+  const thirdOfRound = Math.ceil(numTeams / 3);
+
+  let position: string;
+  if (pickInRound <= thirdOfRound) {
+    position = 'early';
+  } else if (pickInRound <= thirdOfRound * 2) {
+    position = 'mid';
+  } else {
+    position = 'late';
+  }
+
+  const roundSuffix = getRoundSuffix(round);
+  return `${position} ${round}${roundSuffix}`;
+};
+
+const getRoundSuffix = (round: number): string => {
+  if (round >= 11 && round <= 13) return 'th';
+  const lastDigit = round % 10;
+  switch (lastDigit) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+};
+
 const DraftBoardRankingRow = (
   props: ListChildComponentProps<DraftBoardRankingRowProps>
 ) => {
   const { getters, dispatch } = useDraft();
+  const {
+    state: { numTeams },
+  } = useSettings();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
@@ -76,10 +116,7 @@ const DraftBoardRankingRow = (
               },
             }}
           >
-            <Text flexShrink={0} marginLeft={1} flexBasis={10}>
-              {player.rank}
-            </Text>
-            <Text flexShrink={0} flexBasis={10}>
+            <Text marginLeft={1} flexShrink={0} flexBasis={10}>
               {player.team}
             </Text>
             <Text flexShrink={0} flexBasis={10}>
@@ -116,6 +153,18 @@ const DraftBoardRankingRow = (
                 />
               )}
             </Text>
+            {player.adp && player.adp > 0 && (
+              <Tooltip label="Expected Round" hasArrow>
+                <Text
+                  display={['none', 'none', 'block']}
+                  marginRight={2}
+                  color="whiteAlpha.500"
+                  fontSize="sm"
+                >
+                  {getExpectedRound(player.adp, numTeams)}
+                </Text>
+              </Tooltip>
+            )}
             {player.vsAdp !== undefined && player.vsAdp !== 0 && (
               <Text
                 display={['none', 'none', 'block']}
