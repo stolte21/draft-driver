@@ -1,4 +1,4 @@
-import { Flex, Text, Checkbox } from '@chakra-ui/react';
+import { Flex, Text, Checkbox, Tooltip } from '@chakra-ui/react';
 import { ListChildComponentProps } from 'react-window';
 import { useSettings } from 'providers/SettingsProvider';
 import { useDraft } from 'providers/DraftProvider';
@@ -29,39 +29,41 @@ const DraftBoardPickRow = (
   };
 
   return (
-    <Flex
-      style={props.style}
-      justifyContent="space-between"
-      alignItems="center"
-      cursor="pointer"
-      onClick={handleClick}
-      onMouseDown={handlePreventDoubleClickHighlight}
-      backgroundColor={checked ? 'blackAlpha.400' : undefined}
-      _hover={{
-        backdropFilter: !checked ? 'brightness(90%)' : undefined,
-      }}
-    >
-      <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
-        <Text flexShrink={0} flexBasis={10}>
-          {`${round}.${pick}`}
-        </Text>
-        <Text
-          flexGrow={1}
-          whiteSpace="nowrap"
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          {player.name}
-        </Text>
-      </Flex>
-
-      <Checkbox
+    <Tooltip label={checked ? 'Remove from roster' : 'Add to roster'} hasArrow>
+      <Flex
+        style={props.style}
+        justifyContent="space-between"
+        alignItems="center"
+        cursor="pointer"
         onClick={handleClick}
-        isChecked={checked}
-        marginLeft={1}
-        marginRight={2}
-      />
-    </Flex>
+        onMouseDown={handlePreventDoubleClickHighlight}
+        backgroundColor={checked ? 'blackAlpha.400' : undefined}
+        _hover={{
+          backdropFilter: !checked ? 'brightness(90%)' : undefined,
+        }}
+      >
+        <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
+          <Text flexShrink={0} flexBasis={10}>
+            {`${round}.${pick}`}
+          </Text>
+          <Text
+            flexGrow={1}
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textOverflow="ellipsis"
+          >
+            {player.name}
+          </Text>
+        </Flex>
+
+        <Checkbox
+          onClick={handleClick}
+          isChecked={checked}
+          marginLeft={1}
+          marginRight={2}
+        />
+      </Flex>
+    </Tooltip>
   );
 };
 

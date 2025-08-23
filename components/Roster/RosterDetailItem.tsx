@@ -48,7 +48,7 @@ const RosterDetailItem = (props: RosterDetailItemProps) => {
           </Tag>
         )}
       </Box>
-      {player?.round && (
+      {!!player?.round && (
         <Box textAlign="center">
           <Text
             fontSize="sm"
@@ -58,6 +58,11 @@ const RosterDetailItem = (props: RosterDetailItemProps) => {
             pick
           </Text>
         </Box>
+      )}
+      {player?.round === 0 && (
+        <Text fontSize="sm" textColor="gray">
+          Keeper
+        </Text>
       )}
     </ListItem>
   );
