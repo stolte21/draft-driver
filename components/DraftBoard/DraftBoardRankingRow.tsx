@@ -7,7 +7,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Tooltip,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
@@ -154,16 +153,14 @@ const DraftBoardRankingRow = (
               )}
             </Text>
             {player.adp && player.adp > 0 && (
-              <Tooltip label="Expected Round" hasArrow>
-                <Text
-                  display={['none', 'none', 'block']}
-                  marginRight={2}
-                  color="whiteAlpha.500"
-                  fontSize="sm"
-                >
-                  {getExpectedRound(player.adp, numTeams)}
-                </Text>
-              </Tooltip>
+              <Text
+                display={['none', 'none', 'block']}
+                marginRight={2}
+                color="whiteAlpha.500"
+                fontSize="sm"
+              >
+                {getExpectedRound(player.adp, numTeams)}
+              </Text>
             )}
             {player.vsAdp !== undefined && player.vsAdp !== 0 && (
               <Text
