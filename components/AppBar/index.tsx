@@ -40,7 +40,7 @@ const AppBar = () => {
           </Heading>
 
           <Skeleton isLoaded={state.isHydrated} maxWidth="200px" height={4}>
-            <Heading as="h2" size="xs" fontWeight="light">
+            <Heading as="h2" size="xs" fontWeight="light" whiteSpace="nowrap">
               Rankings:&nbsp;
               <Text as="span" fontWeight="medium">
                 {getRankingsName(state.dataSource)}{' '}

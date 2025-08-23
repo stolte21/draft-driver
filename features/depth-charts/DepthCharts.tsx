@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useDepthCharts } from 'providers/DepthChartsProvider';
 import { useDraft } from 'providers/DraftProvider';
+import { DepthChartTable } from './components/DepthChartTable';
 import { DepthChart, DepthChartPlayer, Position } from 'types';
 
 const POSITION_ORDER: Position[] = ['QB', 'RB', 'WR', 'TE'];
@@ -35,50 +36,29 @@ export function DepthCharts() {
     return players.filter((player) => player.pos === position);
   };
 
-  const getPositionalRanking = (player: DepthChartPlayer) => {
-    const rankedPlayer = playersMap[player.id];
+  const getPlayerWithAdp = (player: DepthChartPlayer) => {
+    const rankedPlayer = playersMap[player.id] ?? {};
 
-    if (!rankedPlayer) {
-      return '—';
-    }
-
-    return rankedPlayer.pRank;
+    return {
+      ...player,
+      ...rankedPlayer,
+    };
   };
 
   const renderTeamDepthChart = (team: DepthChart) => (
-    <Box key={team.team} mb={8}>
-      <Heading size="md" mb={4}>
+    <Box key={team.team} mb={4}>
+      <Heading size="md" mb={4} p={2} borderRadius="md" bg="gray.700">
         {team.team}
       </Heading>
 
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
         {POSITION_ORDER.map((position) => {
           const positionPlayers = getPlayersByPosition(team.players, position);
+          const rankedPlayers = positionPlayers.map(getPlayerWithAdp);
 
           return (
             <VStack key={position} align="stretch" spacing={2}>
-              <Text fontSize="sm" fontWeight="semibold">
-                {POSITION_LABELS[position]}
-              </Text>
-
-              <UnorderedList styleType="none" ml={0} spacing={1}>
-                {positionPlayers.map((player) => (
-                  <ListItem key={`${team.team}-${player.name}`}>
-                    <HStack spacing={2}>
-                      <Text fontSize="sm" fontWeight="bold" minW="6">
-                        {getPositionalRanking(player)}
-                      </Text>
-                      <Text
-                        fontSize="sm"
-                        cursor="pointer"
-                        _hover={{ textDecoration: 'underline' }}
-                      >
-                        {player.name}
-                      </Text>
-                    </HStack>
-                  </ListItem>
-                ))}
-              </UnorderedList>
+              <DepthChartTable position={position} players={rankedPlayers} />
             </VStack>
           );
         })}
