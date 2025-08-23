@@ -13,19 +13,26 @@ import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
-import { Player } from 'types';
+import { Player, Position } from 'types';
 import { MouseEventHandler } from 'react';
 
 type DraftBoardRankingRowProps = {
   players: Player[];
 };
 
-const getExpectedRound = (adp: number, numTeams: number): string => {
+const getExpectedRound = (
+  adp: number,
+  numTeams: number,
+  rosterSize: Record<Position, number>
+): string => {
   if (!adp || adp === 0) return '';
 
   const round = Math.ceil(adp / numTeams);
   const pickInRound = ((adp - 1) % numTeams) + 1;
   const thirdOfRound = Math.ceil(numTeams / 3);
+  const totalPicks = Object.values(rosterSize).reduce((a, b) => a + b, 0);
+
+  if (round > totalPicks) return 'undrafted';
 
   let position: string;
   if (pickInRound <= thirdOfRound) {
@@ -60,7 +67,7 @@ const DraftBoardRankingRow = (
 ) => {
   const { getters, dispatch } = useDraft();
   const {
-    state: { numTeams },
+    state: { numTeams, rosterSize },
   } = useSettings();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
@@ -159,7 +166,7 @@ const DraftBoardRankingRow = (
                 color="whiteAlpha.500"
                 fontSize="sm"
               >
-                {getExpectedRound(player.adp, numTeams)}
+                {getExpectedRound(player.adp, numTeams, rosterSize)}
               </Text>
             )}
             {player.vsAdp !== undefined && player.vsAdp !== 0 && (
