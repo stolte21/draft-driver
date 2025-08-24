@@ -14,6 +14,16 @@ export type DepthChartTableProps = {
   players: Player[];
 };
 
+function playerIsValue(player: Player) {
+  return (
+    player.rank !== undefined &&
+    player.adp !== undefined &&
+    player.rank > 0 &&
+    player.adp > 0 &&
+    player.rank < player.adp
+  );
+}
+
 export function DepthChartTable(props: DepthChartTableProps) {
   return (
     <TableContainer
@@ -33,10 +43,13 @@ export function DepthChartTable(props: DepthChartTableProps) {
         </Thead>
         <Tbody>
           {props.players.map((player) => (
-            <Tr key={player.id}>
+            <Tr
+              key={player.id}
+              bg={playerIsValue(player) ? 'blue.900' : undefined}
+            >
               <Td>{player.name}</Td>
-              <Td isNumeric>{player.rank}</Td>
-              <Td isNumeric>{player.adp}</Td>
+              <Td isNumeric>{player.rank ?? '—'}</Td>
+              <Td isNumeric>{player.adp ?? '—'}</Td>
             </Tr>
           ))}
         </Tbody>

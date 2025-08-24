@@ -5,8 +5,6 @@ import {
   VStack,
   Text,
   HStack,
-  UnorderedList,
-  ListItem,
 } from '@chakra-ui/react';
 import { useDepthCharts } from 'providers/DepthChartsProvider';
 import { useDraft } from 'providers/DraftProvider';
@@ -14,12 +12,6 @@ import { DepthChartTable } from './components/DepthChartTable';
 import { DepthChart, DepthChartPlayer, Position } from 'types';
 
 const POSITION_ORDER: Position[] = ['QB', 'RB', 'WR', 'TE'];
-const POSITION_LABELS: Partial<Record<Position, string>> = {
-  QB: 'ECR Quarterbacks',
-  RB: 'ECR Running Backs',
-  WR: 'ECR Wide Receivers',
-  TE: 'ECR Tight Ends',
-};
 
 export function DepthCharts() {
   const {
@@ -47,7 +39,15 @@ export function DepthCharts() {
 
   const renderTeamDepthChart = (team: DepthChart) => (
     <Box key={team.team} mb={4}>
-      <Heading size="md" mb={4} p={2} borderRadius="md" bg="gray.700">
+      <Heading
+        size="md"
+        mb={4}
+        p={2}
+        borderRadius="md"
+        bg="gray.700"
+        border="1px"
+        borderColor="gray.600"
+      >
         {team.team}
       </Heading>
 
@@ -66,5 +66,26 @@ export function DepthCharts() {
     </Box>
   );
 
-  return <Box>{depthCharts.map(renderTeamDepthChart)}</Box>;
+  return (
+    <Box>
+      <Box display="flex" justifyContent="flex-end">
+        <HStack
+          display="inline-flex"
+          spacing={3}
+          mb={4}
+          p={3}
+          bg="gray.700"
+          border="1px"
+          borderColor="gray.600"
+          borderRadius="md"
+        >
+          <Box w={4} h={4} bg="blue.900" borderRadius="sm" />
+          <Text fontSize="sm" fontWeight="bold" color="gray.300">
+            Value Pick
+          </Text>
+        </HStack>
+      </Box>
+      {depthCharts.map(renderTeamDepthChart)}
+    </Box>
+  );
 }
