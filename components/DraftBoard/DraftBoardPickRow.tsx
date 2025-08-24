@@ -57,6 +57,8 @@ const DraftBoardPickRow = (
         </Flex>
 
         <Checkbox
+          name="roster_toggle"
+          aria-label={`Toggle ${player.name} on roster`}
           onClick={handleClick}
           isChecked={checked}
           marginLeft={1}

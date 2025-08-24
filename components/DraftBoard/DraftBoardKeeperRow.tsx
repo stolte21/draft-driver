@@ -34,48 +34,53 @@ const DraftBoardKeeperRow = (
   };
 
   return (
-    <Tooltip label={checked ? 'Remove from roster' : 'Add to roster'} hasArrow>
-      <Flex
-        style={props.style}
-        justifyContent="space-between"
-        alignItems="center"
-        cursor="pointer"
-        backgroundColor={checked ? 'blackAlpha.400' : undefined}
-        _hover={{
-          backdropFilter: !checked ? 'brightness(90%)' : undefined,
-        }}
-        onClick={handleClickCheckbox}
-      >
-        <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
+    <Flex
+      style={props.style}
+      justifyContent="space-between"
+      alignItems="center"
+      cursor="pointer"
+      backgroundColor={checked ? 'blackAlpha.400' : undefined}
+      _hover={{
+        backdropFilter: !checked ? 'brightness(90%)' : undefined,
+      }}
+      onClick={handleClickCheckbox}
+    >
+      <Flex width="100%" marginLeft={1} gap={2} overflow="hidden">
+        <Tooltip label="Remove keeper" placement="top" hasArrow>
           <IconButton
             aria-label={`Remove keeper ${player.name}`}
             icon={<MinusIcon />}
             size="xs"
             marginRight={2}
             isRound
-            onClick={handleRemoveKeeper}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemoveKeeper();
+            }}
           />
-          <Text flexShrink={0} flexBasis={10}>
-            {player.rank}
-          </Text>
-          <Text
-            flexGrow={1}
-            whiteSpace="nowrap"
-            overflow="hidden"
-            textOverflow="ellipsis"
-          >
-            {player.name}
-          </Text>
-        </Flex>
-
-        <Checkbox
-          onClick={handleClickCheckbox}
-          isChecked={checked}
-          marginLeft={1}
-          marginRight={2}
-        />
+        </Tooltip>
+        <Text flexShrink={0} flexBasis={10}>
+          {player.rank}
+        </Text>
+        <Text
+          flexGrow={1}
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
+        >
+          {player.name}
+        </Text>
       </Flex>
-    </Tooltip>
+
+      <Checkbox
+        name="roster_toggle"
+        aria-label={`Toggle ${player.name} on roster`}
+        onClick={handleClickCheckbox}
+        isChecked={checked}
+        marginLeft={1}
+        marginRight={2}
+      />
+    </Flex>
   );
 };
 
