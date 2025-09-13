@@ -69,6 +69,8 @@ function calculatePositionalRankings(players: Player[]) {
     RB: 0,
     WR: 0,
     TE: 0,
+    DST: 0,
+    K: 0,
   };
 
   const sortedPlayers = [...players].sort((a, b) => a.rank - b.rank);

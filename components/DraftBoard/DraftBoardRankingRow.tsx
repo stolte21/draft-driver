@@ -122,11 +122,12 @@ const DraftBoardRankingRow = (
               },
             }}
           >
-            <Text marginLeft={1} flexShrink={0} flexBasis={10}>
-              {player.team}
-            </Text>
-            <Text flexShrink={0} flexBasis={10}>
+            <Text flexShrink={0} flexBasis={10} textAlign={'right'}>
               {player.position}
+              {player.pRank}
+            </Text>
+            <Text marginLeft={4} flexShrink={0} flexBasis={10}>
+              {player.team}
             </Text>
             <Text
               flexGrow={1}
@@ -190,7 +191,7 @@ const DraftBoardRankingRow = (
             )}
           </MenuButton>
         </Flex>
-        <MenuList>
+        <MenuList fontFamily="body">
           <MenuItem
             onClick={() =>
               dispatch({ type: 'toggle-favorite', payload: player.id })
