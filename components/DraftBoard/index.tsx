@@ -63,7 +63,6 @@ const DraftBoard = () => {
       gridGap={2}
       flexGrow={1}
       overflow="hidden"
-      fontFamily={'monospace'}
       fontSize="md"
     >
       <GridItem colSpan={[12, 8]}>

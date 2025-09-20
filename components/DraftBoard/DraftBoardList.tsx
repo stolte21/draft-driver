@@ -101,7 +101,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         )}
       </Box>
 
-      <Box height="100%">
+      <Box height="100%" fontFamily="monospace">
         <AutoSizer disableWidth>
           {({ height }: { height: number }) =>
             props.isLoading ? (
