@@ -14,6 +14,7 @@ export type Player = {
   team?: string;
   tier?: number;
   vsAdp?: number;
+  projectedPoints?: number;
 };
 
 export type RosteredPlayer = Player & {
@@ -41,4 +42,12 @@ export type DepthChartPlayer = {
 export type DepthChart = {
   team: string;
   players: DepthChartPlayer[];
+};
+
+export type ProjectedPlayer = {
+  name: string;
+  normalizedName: string;
+  pos: Position;
+  team?: string;
+  points: Record<Format, number>;
 };
