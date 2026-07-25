@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { computeReplacementLevels } from 'utils/vorp';
+import {
+  computeReplacementLevels,
+  computeValueTiers,
+  applyScarcityAdjustment,
+} from 'utils/vorp';
 import { Player, Position } from 'types';
 
 let nextId = 0;
@@ -191,5 +195,131 @@ describe('computeReplacementLevels', () => {
     const players = [...position('QB', 5, 400, 10)];
     const levels = computeReplacementLevels(players, baseRoster, 10);
     expect(levels.RB).toBeUndefined();
+  });
+});
+
+describe('computeValueTiers', () => {
+  it('returns an empty array for no values', () => {
+    expect(computeValueTiers([])).toEqual([]);
+  });
+
+  it('starts a new tier at large value gaps', () => {
+    // gaps: 1,1,20,1 — with many small gaps the 20 clearly exceeds threshold
+    const values = [100, 99, 98, 78, 77];
+    const tiers = computeValueTiers(values);
+    expect(tiers).toEqual([1, 1, 1, 2, 2]);
+  });
+
+  it('keeps one tier for a perfectly smooth distribution', () => {
+    const values = Array.from({ length: 50 }, (_, i) => 100 - i);
+    expect(new Set(computeValueTiers(values)).size).toBe(1);
+  });
+
+  it('is non-decreasing (tiers are contiguous)', () => {
+    const values = [200, 150, 149, 100, 99, 98, 40];
+    const tiers = computeValueTiers(values);
+    for (let i = 1; i < tiers.length; i++) {
+      expect(tiers[i]).toBeGreaterThanOrEqual(tiers[i - 1]);
+    }
+  });
+
+  it('produces a sane tier count on a realistic distribution', () => {
+    // ~200 players: steep elite top flattening into a long tail, with
+    // occasional cliffs — the shape of a real VORP distribution
+    const values = Array.from({ length: 200 }, (_, i) =>
+      250 * Math.exp(-i / 40) + (i % 25 === 0 ? 20 : 0)
+    ).sort((a, b) => b - a);
+
+    const tierCount = new Set(computeValueTiers(values)).size;
+    expect(tierCount).toBeGreaterThanOrEqual(4);
+    expect(tierCount).toBeLessThanOrEqual(30);
+  });
+});
+
+describe('applyScarcityAdjustment', () => {
+  const roster: Record<Position, number> = {
+    QB: 2,
+    RB: 2,
+    WR: 2,
+    TE: 1,
+    FLX: 0,
+    K: 0,
+    DST: 0,
+    BN: 0,
+  };
+
+  it('re-orders by value over replacement, not raw points', () => {
+    const players = [
+      // QBs score more raw points but RB replacement is much lower here
+      ...position('QB', 6, 320, 2), // flat position: little value spread
+      ...position('RB', 6, 300, 40), // steep position: huge value spread
+      ...position('WR', 6, 200, 10),
+      ...position('TE', 6, 150, 10),
+    ];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 2);
+
+    // RB1 value = 300 - 180 = 120; QB1 value = 320 - 314 = 6
+    expect(adjusted[0].position).toBe('RB');
+  });
+
+  it('lifts QBs when roster demands two of them', () => {
+    const players = [
+      ...position('QB', 30, 400, 12), // steep QB decay
+      ...position('RB', 50, 310, 5),
+      ...position('WR', 50, 300, 4),
+      ...position('TE', 20, 180, 8),
+    ];
+    const oneQbRoster = { ...roster, QB: 1 };
+
+    const oneQb = applyScarcityAdjustment(players, oneQbRoster, 12);
+    const twoQb = applyScarcityAdjustment(players, roster, 12);
+
+    const qbsInTop24 = (list: Player[]) =>
+      list.slice(0, 24).filter((p) => p.position === 'QB').length;
+
+    expect(qbsInTop24(twoQb)).toBeGreaterThan(qbsInTop24(oneQb));
+  });
+
+  it('sends players without projections to the bottom in rank order', () => {
+    const players = [
+      makePlayer('QB', 300, 5),
+      makePlayer('RB', undefined, 2),
+      makePlayer('WR', undefined, 1),
+      makePlayer('RB', 200, 4),
+    ];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 1);
+    const tailRanks = adjusted.slice(-2).map((p) => p.rank);
+    expect(tailRanks).toEqual([1, 2]); // unprojected players last, by rank
+  });
+
+  it('recomputes contiguous positional ranks in the new order', () => {
+    const players = [
+      makePlayer('QB', 250, 1), // source rank says this QB is first...
+      makePlayer('QB', 300, 2), // ...but projections disagree
+    ];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 1);
+    expect(adjusted[0].projectedPoints).toBe(300);
+    expect(adjusted[0].pRank).toBe(1);
+    expect(adjusted[1].pRank).toBe(2);
+  });
+
+  it('does not mutate the input players', () => {
+    const players = [makePlayer('QB', 300, 1), makePlayer('QB', 250, 2)];
+    const before = JSON.parse(JSON.stringify(players));
+    applyScarcityAdjustment(players, roster, 1);
+    expect(players).toEqual(before);
+  });
+
+  it('breaks value ties by original rank', () => {
+    const players = [
+      makePlayer('WR', 200, 9),
+      makePlayer('WR', 200, 3),
+    ];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 1);
+    expect(adjusted[0].rank).toBe(3);
   });
 });
