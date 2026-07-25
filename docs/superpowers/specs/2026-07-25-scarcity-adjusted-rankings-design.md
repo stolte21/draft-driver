@@ -23,8 +23,8 @@ stays meaningful.
 
 Data flow:
 
-1. Server: scrape FantasyPros draft projections, attach `projectedPoints` to each
-   player in the `/api/rankings` response (cached daily).
+1. Server: fetch season projections from the Sleeper API, attach `projectedPoints`
+   to each player in the `/api/rankings` response (cached daily).
 2. Client: when the settings toggle is on, a pure value engine computes replacement
    levels from `rosterSize` × `numTeams`, derives each player's value, re-sorts the
    board, and recomputes tiers via value-gap clustering.
@@ -32,23 +32,34 @@ Data flow:
 The API stays roster-config-agnostic; changing roster settings re-ranks instantly on
 the client with no refetch.
 
-## 1. Data Layer — Projections Scraper
+## 1. Data Layer — Projections Fetcher (Sleeper API)
 
-New `utils/projections.ts`, following the pattern of `utils/scrape.ts`:
+> **Amended 2026-07-25:** The original design scraped FantasyPros draft projections
+> pages, but those pages now serve only the top 10 players per position to
+> anonymous requests (full tables are behind a sign-in gate). The Sleeper API
+> replaces them: free, unauthenticated JSON with full player depth (~355 QBs,
+> 32 DSTs) and all three scoring formats in a single payload.
 
-- Fetches FantasyPros **draft projections** per position:
-  `https://www.fantasypros.com/nfl/projections/{qb,rb,wr,te,k,dst}.php?week=draft`.
-- The `scoring` query param is mapped from `Format` (`PPR`, `HALF`, default for
-  standard) since receptions affect RB/WR/TE totals. QB/K/DST are unaffected by
-  scoring but fetched the same way for uniformity.
-- Parses each table row into `{ name, pos, points }` where `points` is the FPTS
-  column. Malformed rows are skipped individually.
-- All six fetches run in parallel, and in parallel with the existing ADP/rookies/
-  Boris fetches, via `Promise.all`.
+New `utils/projections.ts`:
 
-Name matching is by player name, same as the existing Boris↔FantasyPros merge.
-Projections come from the same site as the ADP data, so names agree with the `fp`
-source nearly perfectly; Boris names already match FantasyPros names today.
+- Fetches season projections per position from
+  `https://api.sleeper.com/projections/nfl/<year>?season_type=regular&position[]=<POS>&order_by=pts_half_ppr`
+  for positions `QB, RB, WR, TE, K, DEF` (six requests, run in parallel with the
+  existing ADP/rookies/Boris fetches via `Promise.all`).
+- Each record carries `stats.pts_std`, `stats.pts_ppr`, and `stats.pts_half_ppr`,
+  so **one fetch serves every scoring format** — the format is resolved at lookup
+  time, not fetch time.
+- Records also include `player.first_name`/`last_name`, `player.position`, and
+  `team` (abbreviation). Records with no points for any format are dropped.
+- Sleeper's `DEF` position maps to the app's `DST`; defenses are identified by
+  **team abbreviation** (e.g., `BAL`), matching the `team` field the app already
+  sets for DSTs, rather than by name.
+- Skill players are matched by **normalized name**: lowercase, punctuation
+  stripped, and generational suffixes (Jr, Sr, II–V) removed — Sleeper and
+  FantasyPros/Boris differ on these. Unmatched players simply lack
+  `projectedPoints` (non-fatal).
+- Bonus available for future work: records include `stats.adp_2qb` (real 2QB
+  market ADP), useful later as a sanity-check overlay against computed VORP order.
 
 ## 2. API Change
 
@@ -118,8 +129,9 @@ the row display are unchanged.
 - New `utils/cache.ts`: generic `cached(key, ttlMs, fetcher)` backed by a
   module-scope `Map` of `{ value, fetchedAt }`, with in-flight promise dedupe so
   concurrent requests trigger a single scrape.
-- Projections are wrapped with a **24-hour TTL, keyed by format**
-  (`projections:ppr`, etc.). Projections barely move day to day.
+- Projections are wrapped with a **24-hour TTL under a single key**
+  (`projections`) — the Sleeper payload contains all three scoring formats, so no
+  per-format entries are needed. Projections barely move day to day.
 - Caveats: in-memory, so it resets on server restart; on a serverless deploy it
   would persist only per warm instance. Acceptable for how this app runs
   (`next dev` / `next start`); no new infra.
@@ -155,7 +167,7 @@ the row display are unchanged.
 | --- | --- |
 | Output UX | Re-ordered rankings (single adjusted list; original rank shown dimmed) |
 | Scope | Generalized to any roster config, not 2QB-specific |
-| Value model | Projections-based VORP (FantasyPros draft projections) |
+| Value model | Projections-based VORP (Sleeper API season projections; FantasyPros pages are login-gated) |
 | Computation location | Client-side from `projectedPoints`; API stays config-agnostic |
 | Activation | Settings toggle, off by default |
 | Tiers under adjustment | Recomputed client-side via value-gap clustering |
