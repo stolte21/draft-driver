@@ -23,7 +23,7 @@ type DraftBoardRankingRowProps = {
 const getExpectedRound = (
   adp: number,
   numTeams: number,
-  rosterSize: Record<Position, number>
+  rosterSize: Record<Position, number>,
 ): string => {
   if (!adp || adp === 0) return '';
 
@@ -63,7 +63,7 @@ const getRoundSuffix = (round: number): string => {
 };
 
 const DraftBoardRankingRow = (
-  props: ListChildComponentProps<DraftBoardRankingRowProps>
+  props: ListChildComponentProps<DraftBoardRankingRowProps>,
 ) => {
   const { getters, dispatch } = useDraft();
   const {
@@ -90,8 +90,8 @@ const DraftBoardRankingRow = (
             isPlayerDrafted
               ? 'blackAlpha.800'
               : player.tier && player.tier % 2 === 0
-              ? 'blackAlpha.500'
-              : undefined
+                ? 'blackAlpha.500'
+                : undefined
           }
           _hover={{
             backdropFilter: !isPlayerDrafted ? 'brightness(90%)' : undefined,
@@ -160,7 +160,7 @@ const DraftBoardRankingRow = (
                 />
               )}
             </Text>
-            {player.adp && player.adp > 0 && (
+            {player.adp > 0 && (
               <Text
                 display={['none', 'none', 'block']}
                 marginRight={2}
@@ -180,7 +180,7 @@ const DraftBoardRankingRow = (
                 {player.vsAdp}
               </Text>
             )}
-            {player.tier && (
+            {Boolean(player.tier) && (
               <Text
                 display={['none', 'none', 'block']}
                 marginRight={2}
