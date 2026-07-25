@@ -125,6 +125,11 @@ export default async function handler(
     const rankingsToUse: ScrapedRanking[] =
       dataSource === 'boris' ? borisData : adpRankings;
 
+    // Keyed by normalized name only (no position), which is a deliberate
+    // tradeoff: name-only keys can collide across positions (last write
+    // wins), but normalizing materially improves the match rate between
+    // sleeper (adp) and boris names. isRookie below uses a name|pos key
+    // instead, since that lookup needs to stay position-specific.
     const playerMap = new Map(
       adpRankings.map((ranking) => [
         normalizePlayerName(ranking.name),
@@ -165,7 +170,6 @@ export default async function handler(
           rankingsToUse.push({
             name: proj.name,
             pos: proj.pos,
-            team: proj.team,
             tier: nextHighestTier,
             rank: rankingsToUse.length + 1,
           });
