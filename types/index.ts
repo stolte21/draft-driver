@@ -50,4 +50,6 @@ export type ProjectedPlayer = {
   pos: Position;
   team?: string;
   points: Record<Format, number>;
+  adp: Partial<Record<Format, number>>;
+  isRookie: boolean;
 };

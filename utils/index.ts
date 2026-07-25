@@ -47,7 +47,7 @@ export function getRankingsName(dataSource: DataSource) {
     case 'boris':
       return 'Boris Chen';
     case 'fp':
-      return 'Fantasy Pros';
+      return 'ADP';
   }
 }
 

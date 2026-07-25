@@ -3,6 +3,7 @@ import {
   normalizePlayerName,
   parseProjection,
   attachProjections,
+  buildAdpRankings,
 } from 'utils/projections';
 import { Player, ProjectedPlayer } from 'types';
 
@@ -24,6 +25,8 @@ const makeProjection = (
   normalizedName: 'x',
   pos: 'QB',
   points: { standard: 100, ppr: 110, 'half-ppr': 105 },
+  adp: {},
+  isRookie: false,
   ...overrides,
 });
 
@@ -58,6 +61,8 @@ describe('parseProjection', () => {
       pos: 'QB',
       team: 'BUF',
       points: { standard: 300.1, ppr: 310.5, 'half-ppr': 305.3 },
+      adp: {},
+      isRookie: false,
     });
   });
 
@@ -110,7 +115,126 @@ describe('parseProjection', () => {
       pos: 'QB',
       team: 'BUF',
       points: { standard: 0, ppr: 0, 'half-ppr': 0 },
+      adp: {},
+      isRookie: false,
     });
+  });
+
+  it('populates adp for formats with a real (< 900) adp value', () => {
+    const parsed = parseProjection({
+      stats: {
+        pts_std: 300.1,
+        pts_ppr: 310.5,
+        pts_half_ppr: 305.3,
+        adp_std: 30.6,
+        adp_ppr: 28.2,
+        adp_half_ppr: 24.2,
+      },
+      player: record.player,
+      team: 'BUF',
+    });
+
+    expect(parsed?.adp).toEqual({
+      standard: 30.6,
+      ppr: 28.2,
+      'half-ppr': 24.2,
+    });
+  });
+
+  it('omits an adp format when the raw value is 999 (undrafted) or null', () => {
+    const parsed = parseProjection({
+      stats: {
+        pts_std: 300.1,
+        pts_ppr: 310.5,
+        pts_half_ppr: 305.3,
+        adp_std: 30.6,
+        adp_ppr: 999,
+        adp_half_ppr: null,
+      },
+      player: record.player,
+      team: 'BUF',
+    });
+
+    expect(parsed?.adp).toEqual({ standard: 30.6 });
+  });
+
+  it('sets isRookie true when years_exp is 0', () => {
+    const parsed = parseProjection({
+      stats: record.stats,
+      player: { ...record.player, years_exp: 0 },
+      team: 'BUF',
+    });
+
+    expect(parsed?.isRookie).toBe(true);
+  });
+
+  it('sets isRookie false when years_exp is a positive number or missing', () => {
+    const veteran = parseProjection({
+      stats: record.stats,
+      player: { ...record.player, years_exp: 3 },
+      team: 'BUF',
+    });
+    const missingExp = parseProjection({
+      stats: record.stats,
+      player: record.player,
+      team: 'BUF',
+    });
+
+    expect(veteran?.isRookie).toBe(false);
+    expect(missingExp?.isRookie).toBe(false);
+  });
+});
+
+describe('buildAdpRankings', () => {
+  it('sorts ascending by the format adp and excludes players lacking that format adp', () => {
+    const projections = [
+      makeProjection({ name: 'B Player', normalizedName: 'b player', adp: { ppr: 20 } }),
+      makeProjection({ name: 'A Player', normalizedName: 'a player', adp: { ppr: 5 } }),
+      makeProjection({ name: 'No Adp', normalizedName: 'no adp', adp: {} }),
+      makeProjection({ name: 'Standard Only', normalizedName: 'standard only', adp: { standard: 3 } }),
+    ];
+
+    const rankings = buildAdpRankings(projections, 'ppr');
+
+    expect(rankings.map((r) => r.name)).toEqual(['A Player', 'B Player']);
+  });
+
+  it('assigns contiguous ranks starting at 1', () => {
+    const projections = [
+      makeProjection({ name: 'B Player', normalizedName: 'b player', adp: { ppr: 20 } }),
+      makeProjection({ name: 'A Player', normalizedName: 'a player', adp: { ppr: 5 } }),
+    ];
+
+    const rankings = buildAdpRankings(projections, 'ppr');
+
+    expect(rankings.map((r) => r.rank)).toEqual([1, 2]);
+  });
+
+  it('maps team and pos onto the ranking', () => {
+    const projections = [
+      makeProjection({
+        name: 'A Player',
+        normalizedName: 'a player',
+        pos: 'RB',
+        team: 'BUF',
+        adp: { ppr: 5 },
+      }),
+    ];
+
+    const rankings = buildAdpRankings(projections, 'ppr');
+
+    expect(rankings[0]).toEqual({ rank: 1, name: 'A Player', team: 'BUF', pos: 'RB' });
+  });
+
+  it('tie-breaks equal adp values by name', () => {
+    const projections = [
+      makeProjection({ name: 'Zeb Player', normalizedName: 'zeb player', adp: { ppr: 10 } }),
+      makeProjection({ name: 'Alan Player', normalizedName: 'alan player', adp: { ppr: 10 } }),
+    ];
+
+    const rankings = buildAdpRankings(projections, 'ppr');
+
+    expect(rankings.map((r) => r.name)).toEqual(['Alan Player', 'Zeb Player']);
   });
 });
 

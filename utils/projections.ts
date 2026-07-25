@@ -1,4 +1,10 @@
-import { Format, Player, Position, ProjectedPlayer } from 'types';
+import {
+  Format,
+  Player,
+  Position,
+  ProjectedPlayer,
+  ScrapedRanking,
+} from 'types';
 import { cached } from 'utils/cache';
 
 const SLEEPER_BASE_URL = 'https://api.sleeper.com/projections/nfl';
@@ -29,11 +35,15 @@ export type SleeperProjection = {
     pts_std?: number | null;
     pts_ppr?: number | null;
     pts_half_ppr?: number | null;
+    adp_std?: number | null;
+    adp_ppr?: number | null;
+    adp_half_ppr?: number | null;
   } | null;
   player: {
     first_name: string;
     last_name: string;
     position: string;
+    years_exp?: number | null;
   } | null;
   team: string | null;
 };
@@ -46,13 +56,28 @@ export function normalizePlayerName(name: string) {
     .replace(/\s+(jr|sr|ii|iii|iv|v)$/, '');
 }
 
+// Sleeper uses 999 to signal "undrafted" for a format's adp instead of
+// omitting the field, so anything at or above that threshold (as well as
+// null/missing values) is treated as "no adp for this format".
+function parseAdp(value: number | null | undefined): number | undefined {
+  if (typeof value !== 'number' || value >= 900) return undefined;
+  return value;
+}
+
 export function parseProjection(
   record: SleeperProjection
 ): ProjectedPlayer | null {
   if (!record.player || !record.stats) return null;
   if (!VALID_SLEEPER_POSITIONS.has(record.player.position)) return null;
 
-  const { pts_std, pts_ppr, pts_half_ppr } = record.stats;
+  const {
+    pts_std,
+    pts_ppr,
+    pts_half_ppr,
+    adp_std,
+    adp_ppr,
+    adp_half_ppr,
+  } = record.stats;
   if (pts_std == null && pts_ppr == null && pts_half_ppr == null) return null;
 
   const name = `${record.player.first_name} ${record.player.last_name}`;
@@ -64,6 +89,14 @@ export function parseProjection(
     ? SLEEPER_TEAM_ALIASES[record.team] ?? record.team
     : undefined;
 
+  const adp: Partial<Record<Format, number>> = {};
+  const standardAdp = parseAdp(adp_std);
+  if (standardAdp !== undefined) adp.standard = standardAdp;
+  const pprAdp = parseAdp(adp_ppr);
+  if (pprAdp !== undefined) adp.ppr = pprAdp;
+  const halfPprAdp = parseAdp(adp_half_ppr);
+  if (halfPprAdp !== undefined) adp['half-ppr'] = halfPprAdp;
+
   return {
     name,
     normalizedName: normalizePlayerName(name),
@@ -74,6 +107,8 @@ export function parseProjection(
       ppr: pts_ppr ?? 0,
       'half-ppr': pts_half_ppr ?? 0,
     },
+    adp,
+    isRookie: record.player.years_exp === 0,
   };
 }
 
@@ -143,4 +178,27 @@ export function attachProjections(
       player.projectedPoints = proj.points[format];
     }
   });
+}
+
+/**
+ * Build an ADP-ordered ranking list (the "fp" data source) from projections.
+ * Players without an ADP for the format are excluded (undrafted).
+ */
+export function buildAdpRankings(
+  projections: ProjectedPlayer[],
+  format: Format
+): ScrapedRanking[] {
+  return projections
+    .filter((proj) => proj.adp[format] !== undefined)
+    .sort((a, b) => {
+      const diff = a.adp[format]! - b.adp[format]!;
+      if (diff !== 0) return diff;
+      return a.name.localeCompare(b.name);
+    })
+    .map((proj, index) => ({
+      rank: index + 1,
+      name: proj.name,
+      team: proj.team,
+      pos: proj.pos,
+    }));
 }

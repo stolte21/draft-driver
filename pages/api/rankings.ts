@@ -1,8 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { formatsList, dataSourcesList, parseId } from 'utils';
-import { fetchFantasyProsDataAdp, fetchFantasyProsRookies } from 'utils/scrape';
 import { fetchBorisData } from 'utils/boris';
-import { fetchProjections, attachProjections } from 'utils/projections';
+import {
+  fetchProjections,
+  attachProjections,
+  buildAdpRankings,
+  normalizePlayerName,
+} from 'utils/projections';
+import { TEAM_TO_ABRV_MAP } from 'utils/scrape';
 import {
   Format,
   DataSource,
@@ -46,7 +51,7 @@ function parseTeam(
   ranking: ScrapedRanking,
   playerMap: Map<string, ScrapedRanking>
 ) {
-  const player = playerMap.get(ranking.name);
+  const player = playerMap.get(normalizePlayerName(ranking.name));
   if (player) {
     return player.team;
   }
@@ -59,9 +64,9 @@ function parseVsAdp(
 ) {
   if (dataSource === 'fp') return;
 
-  // when using boris data, we can calculate the vsAdp by comparing the rank to the fantasy pros rank
-  // since the fantasy pros data we have is based on ADP
-  const player = playerMap.get(ranking.name);
+  // when using boris data, we can calculate the vsAdp by comparing the rank to the adp rank
+  // since the adp data we have is based on ADP
+  const player = playerMap.get(normalizePlayerName(ranking.name));
   if (player) {
     return player.rank - ranking.rank;
   }
@@ -102,30 +107,40 @@ export default async function handler(
   const players: Player[] = [];
 
   try {
-    /**
-     * The fantasy pros rankings have each player's current team, while the Boris
-     * data does not. We should fetch the fp data regardless so we can insert the team
-     * for each player in case we want to use the Boris data as the source.
-     */
-    const [fpAdp, fpRookiesList, projections] = await Promise.all([
-      fetchFantasyProsDataAdp(format),
-      fetchFantasyProsRookies(),
+    const [borisData, projections] = await Promise.all([
+      dataSource === 'boris'
+        ? fetchBorisData(format)
+        : Promise.resolve<ScrapedRanking[]>([]),
       // projections are an enhancement — rankings must still work without them
       fetchProjections().catch((error): ProjectedPlayer[] => {
         console.error('Failed to fetch projections:', error);
         return [];
       }),
     ]);
-    const fpRookies = new Set(fpRookiesList.map((rookie) => rookie.name));
-    const rankingsToUse =
-      dataSource === 'boris' ? await fetchBorisData(format) : fpAdp;
-    const playerMap =
-      dataSource === 'boris'
-        ? new Map(fpAdp.map((ranking) => [ranking.name, ranking]))
-        : new Map<string, (typeof rankingsToUse)[number]>();
+
+    // the adp rankings (derived from sleeper projections) double as the "fp"
+    // data source and as the source of team/rookie info when using boris data
+    const adpRankings = buildAdpRankings(projections, format);
+
+    const rankingsToUse: ScrapedRanking[] =
+      dataSource === 'boris' ? borisData : adpRankings;
+
+    const playerMap = new Map(
+      adpRankings.map((ranking) => [
+        normalizePlayerName(ranking.name),
+        ranking,
+      ])
+    );
+
+    const projectionsByNormalizedName = new Map<string, ProjectedPlayer>();
+    const projectionsByNameAndPos = new Map<string, ProjectedPlayer>();
+    projections.forEach((proj) => {
+      projectionsByNormalizedName.set(proj.normalizedName, proj);
+      projectionsByNameAndPos.set(`${proj.normalizedName}|${proj.pos}`, proj);
+    });
 
     // the boris data doesn't include all the defenses and kickers, so we should add the rest
-    // from the fantasy pros data
+    // from the projections data
     if (dataSource === 'boris') {
       const nextHighestTier = rankingsToUse.reduce((acc, curr) => {
         if (curr.tier === undefined) return acc;
@@ -135,41 +150,57 @@ export default async function handler(
 
       const defensesAndKickers = new Set(
         rankingsToUse
-          //@ts-ignore
           .filter((ranking) => {
             return ranking.pos === 'DST' || ranking.pos === 'K';
           })
-          //@ts-ignore
           .map((ranking) => ranking.name)
       );
 
-      fpAdp
-        .filter((ranking) => {
-          return ranking.pos === 'DST' || ranking.pos === 'K';
-        })
-        .forEach((ranking) => {
-          if (!defensesAndKickers.has(ranking.name)) {
-            rankingsToUse.push({
-              ...ranking,
-              tier: nextHighestTier,
-              //@ts-ignore
-              rank: rankingsToUse.length + 1,
-            });
-          }
-        });
+      const dstAndKProjections = projections
+        .filter((proj) => proj.pos === 'DST' || proj.pos === 'K')
+        .sort((a, b) => b.points[format] - a.points[format]);
+
+      dstAndKProjections.forEach((proj) => {
+        if (!defensesAndKickers.has(proj.name)) {
+          rankingsToUse.push({
+            name: proj.name,
+            pos: proj.pos,
+            team: proj.team,
+            tier: nextHighestTier,
+            rank: rankingsToUse.length + 1,
+          });
+        }
+      });
     }
 
     rankingsToUse.forEach((ranking) => {
+      let team = parseTeam(ranking, playerMap);
+      if (!team) {
+        if (ranking.pos === 'DST') {
+          team =
+            TEAM_TO_ABRV_MAP[ranking.name as keyof typeof TEAM_TO_ABRV_MAP];
+        } else {
+          team = projectionsByNormalizedName.get(
+            normalizePlayerName(ranking.name)
+          )?.team;
+        }
+      }
+
+      const isRookie =
+        projectionsByNameAndPos.get(
+          `${normalizePlayerName(ranking.name)}|${ranking.pos}`
+        )?.isRookie ?? false;
+
       players.push({
         id: parseId(ranking),
         name: ranking.name,
         position: ranking.pos as Position,
-        team: parseTeam(ranking, playerMap),
+        team,
         rank: ranking.rank,
         pRank: 0, // will be calculated after
-        adp: playerMap.get(ranking.name)?.rank ?? 0,
+        adp: playerMap.get(normalizePlayerName(ranking.name))?.rank ?? 0,
         tier: ranking.tier,
-        isRookie: fpRookies.has(ranking.name),
+        isRookie,
         vsAdp: parseVsAdp(dataSource, ranking, playerMap),
       });
     });

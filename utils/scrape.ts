@@ -1,16 +1,10 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { parse } from 'node-html-parser';
-import {
-  Format,
-  Position,
-  ScrapedRanking,
-  DepthChart,
-  DepthChartPlayer,
-} from 'types';
+import { Position, DepthChart, DepthChartPlayer } from 'types';
 import { parseId } from 'utils';
 
-const TEAM_TO_ABRV_MAP = {
+export const TEAM_TO_ABRV_MAP = {
   'Arizona Cardinals': 'ARI',
   'Atlanta Falcons': 'ATL',
   'Baltimore Ravens': 'BAL',
@@ -43,49 +37,6 @@ const TEAM_TO_ABRV_MAP = {
   'Tampa Bay Buccaneers': 'TB',
   'Tennessee Titans': 'TEN',
   'Washington Commanders': 'WSH',
-};
-
-const FANTASY_PROS_BASE_URL = 'https://www.fantasypros.com/nfl/adp';
-const fantasyProsFormatPages: Record<Format, string> = {
-  standard: '/overall.php',
-  ppr: '/ppr-overall.php',
-  'half-ppr': '/half-point-ppr-overall.php',
-};
-
-const fetchRanks = async (url: string) => {
-  const response = await fetch(url);
-  const text = await response.text();
-  const root = parse(text);
-  const table = root.querySelectorAll('.player-table tbody tr');
-  const ranks: ScrapedRanking[] = [];
-
-  for (const row of table) {
-    const [rankHTML, nameHTML, posHTML] = row.querySelectorAll('td');
-    const rank = Number(rankHTML.text);
-    let name = nameHTML.childNodes[0].text;
-    let team = nameHTML.querySelector('small')?.text;
-    const pos = posHTML.text.replace(/\d+/g, '');
-
-    if (pos === 'DST') {
-      name = name.replace(' DST', '');
-      //@ts-expect-error
-      team = TEAM_TO_ABRV_MAP[name];
-    }
-
-    ranks.push({ rank, name, team, pos });
-  }
-
-  return ranks;
-};
-
-export const fetchFantasyProsDataAdp = async (format: Format) => {
-  const url = FANTASY_PROS_BASE_URL + fantasyProsFormatPages[format];
-  return fetchRanks(url);
-};
-
-export const fetchFantasyProsRookies = async () => {
-  const url = FANTASY_PROS_BASE_URL + '/rookies.php';
-  return fetchRanks(url);
 };
 
 const depthChartPositionMap: Record<string, Position> = {
