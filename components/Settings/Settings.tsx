@@ -9,6 +9,7 @@ import SettingsModal from './SettingsModal';
 import SettingsFormat from './SettingsFormat';
 import SettingsDataSource from './SettingsDataSource';
 import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
+import SettingsScarcitySwitch from './SettingsScarcitySwitch';
 import SettingsTeams from './SettingsTeams';
 import SettingsRoster from './SettingsRoster';
 
@@ -46,6 +47,7 @@ const Settings = () => {
             <SettingsDataSource />
           </Box>
           <SettingsHidePlayersSwitch />
+          <SettingsScarcitySwitch />
           <SettingsTeams />
           <SettingsRoster />
         </Flex>

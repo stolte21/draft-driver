@@ -20,6 +20,7 @@ type State = {
   format: Format;
   dataSource: DataSource;
   hidePlayerAfterDrafting: boolean;
+  useScarcityAdjustment: boolean;
   rosterSize: Record<Position, number>;
   numTeams: number;
 };
@@ -27,6 +28,7 @@ type State = {
 type Action =
   | { type: 'change-format'; payload: Format }
   | { type: 'toggle-hide-player' }
+  | { type: 'toggle-scarcity-adjustment' }
   | { type: 'increment-roster-size'; payload: Position }
   | { type: 'decrement-roster-size'; payload: Position }
   | { type: 'set-roster-size'; payload: { size: number; type: Position } }
@@ -81,6 +83,8 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
 
         action.payload.hidePlayerAfterDrafting =
           !!action.payload.hidePlayerAfterDrafting;
+        action.payload.useScarcityAdjustment =
+          !!action.payload.useScarcityAdjustment;
         action.payload.numTeams =
           isNaN(action.payload.numTeams) || action.payload.numTeams < 4
             ? 10
@@ -99,6 +103,12 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
       newState = {
         ...state,
         hidePlayerAfterDrafting: !state.hidePlayerAfterDrafting,
+      };
+      break;
+    case 'toggle-scarcity-adjustment':
+      newState = {
+        ...state,
+        useScarcityAdjustment: !state.useScarcityAdjustment,
       };
       break;
     case 'increment-roster-size':
@@ -172,6 +182,7 @@ const SettingsProvider = (props: { children: ReactNode }) => {
     format: 'standard',
     dataSource: 'boris',
     hidePlayerAfterDrafting: true,
+    useScarcityAdjustment: false,
     rosterSize: RosterSizes,
     numTeams: 10,
   });
