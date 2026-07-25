@@ -5,6 +5,19 @@ const SLEEPER_BASE_URL = 'https://api.sleeper.com/projections/nfl';
 const SLEEPER_POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 const PROJECTIONS_TTL_MS = 24 * 60 * 60 * 1000;
 
+// Sleeper's position[] query filter is not fully reliable and can leak
+// records for other positions (e.g. a TE showing up in the QB query), so
+// every record's position is validated against this allowlist before it's
+// trusted.
+const VALID_SLEEPER_POSITIONS = new Set([
+  'QB',
+  'RB',
+  'WR',
+  'TE',
+  'K',
+  'DEF',
+]);
+
 // sleeper team abbreviations that differ from the ones this app uses
 const SLEEPER_TEAM_ALIASES: Record<string, string> = {
   WAS: 'WSH',
@@ -36,6 +49,7 @@ export function parseProjection(
   record: SleeperProjection
 ): ProjectedPlayer | null {
   if (!record.player || !record.stats) return null;
+  if (!VALID_SLEEPER_POSITIONS.has(record.player.position)) return null;
 
   const { pts_std, pts_ppr, pts_half_ppr } = record.stats;
   if (pts_std == null && pts_ppr == null && pts_half_ppr == null) return null;

@@ -86,6 +86,32 @@ describe('parseProjection', () => {
       })
     ).toBeNull();
   });
+
+  it('returns null for a position outside the sleeper allowlist, even with real stats', () => {
+    expect(
+      parseProjection({
+        stats: { pts_std: 40, pts_ppr: 40, pts_half_ppr: 40 },
+        player: { first_name: 'Some', last_name: 'LongSnapper', position: 'LS' },
+        team: 'BUF',
+      })
+    ).toBeNull();
+  });
+
+  it('returns a ProjectedPlayer with all-zero points rather than null', () => {
+    expect(
+      parseProjection({
+        stats: { pts_std: 0, pts_ppr: 0, pts_half_ppr: 0 },
+        player: record.player,
+        team: 'BUF',
+      })
+    ).toEqual({
+      name: 'Josh Allen',
+      normalizedName: 'josh allen',
+      pos: 'QB',
+      team: 'BUF',
+      points: { standard: 0, ppr: 0, 'half-ppr': 0 },
+    });
+  });
 });
 
 describe('attachProjections', () => {
@@ -136,5 +162,21 @@ describe('attachProjections', () => {
     const players = [makePlayer({ name: 'Unknown Guy', position: 'RB' })];
     attachProjections(players, [], 'ppr');
     expect(players[0].projectedPoints).toBeUndefined();
+  });
+
+  it('sets projectedPoints to 0 for a matching player with zero projected points', () => {
+    const players = [makePlayer({ name: 'Zero Guy', position: 'RB' })];
+    const projections = [
+      makeProjection({
+        name: 'Zero Guy',
+        normalizedName: 'zero guy',
+        pos: 'RB',
+        points: { standard: 0, ppr: 0, 'half-ppr': 0 },
+      }),
+    ];
+
+    attachProjections(players, projections, 'ppr');
+    expect(players[0].projectedPoints).toBe(0);
+    expect(players[0].projectedPoints).not.toBeUndefined();
   });
 });
