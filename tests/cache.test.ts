@@ -57,6 +57,33 @@ describe('cached', () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
+  it('dedupes concurrent calls onto a rejecting fetcher', async () => {
+    let rejectFetch: (error: Error) => void;
+    const fetcher = vi.fn().mockImplementation(
+      () =>
+        new Promise<string>((_resolve, reject) => {
+          rejectFetch = reject;
+        })
+    );
+
+    const first = cached('key', 1000, fetcher);
+    const second = cached('key', 1000, fetcher);
+    first.catch(() => {});
+    second.catch(() => {});
+
+    const error = new Error('boom');
+    rejectFetch!(error);
+
+    await expect(first).rejects.toThrow('boom');
+    await expect(second).rejects.toThrow('boom');
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    const recovered = vi.fn().mockResolvedValueOnce('recovered');
+    const result = await cached('key', 1000, recovered);
+    expect(result).toBe('recovered');
+    expect(recovered).toHaveBeenCalledTimes(1);
+  });
+
   it('does not cache failures', async () => {
     const fetcher = vi
       .fn()
