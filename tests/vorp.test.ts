@@ -98,6 +98,36 @@ describe('computeReplacementLevels', () => {
     expect(levels.RB).toBe(90); // still 2 RB starters → last is RB2
   });
 
+  it('reallocates each flex slot against updated next players', () => {
+    const players = [
+      makePlayer('RB', 100),
+      makePlayer('RB', 60),
+      makePlayer('RB', 55),
+      makePlayer('WR', 90),
+      makePlayer('WR', 85),
+      makePlayer('WR', 50),
+    ];
+    const roster: Record<Position, number> = {
+      QB: 0,
+      RB: 1,
+      WR: 1,
+      TE: 0,
+      FLX: 2,
+      K: 0,
+      DST: 0,
+      BN: 0,
+    };
+
+    // Slot 1: next WR (85) beats next RB (60) → WR gets 2 starters.
+    // Slot 2: re-evaluated against the NEW next players — next RB (60)
+    // now beats next WR (50) → RB gets 2 starters. A regression that
+    // only computes the best flex position once (instead of per slot)
+    // would give both slots to WR and fail this assertion.
+    const levels = computeReplacementLevels(players, roster, 1);
+    expect(levels.RB).toBe(60);
+    expect(levels.WR).toBe(85);
+  });
+
   it('uses the best player as replacement for zero-slot positions', () => {
     const players = [
       ...position('QB', 10, 400, 10),
