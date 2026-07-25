@@ -987,9 +987,12 @@ describe('computeValueTiers', () => {
   });
 
   it('produces a sane tier count on a realistic distribution', () => {
-    // ~200 players: exponential-ish decay from 250 to ~0 with occasional cliffs
+    // ~200 players: steep elite top flattening into a long tail, with
+    // occasional cliffs — the shape of a real VORP distribution
+    // (Amended during execution: the original Math.round(-i/60, +15) generator
+    // compressed gaps below the tier threshold and produced only 3 tiers.)
     const values = Array.from({ length: 200 }, (_, i) =>
-      Math.round(250 * Math.exp(-i / 60) + (i % 25 === 0 ? 15 : 0))
+      250 * Math.exp(-i / 40) + (i % 25 === 0 ? 20 : 0)
     ).sort((a, b) => b - a);
 
     const tierCount = new Set(computeValueTiers(values)).size;
