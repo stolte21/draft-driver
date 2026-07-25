@@ -2,7 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { formatsList, dataSourcesList, parseId } from 'utils';
 import { fetchFantasyProsDataAdp, fetchFantasyProsRookies } from 'utils/scrape';
 import { fetchBorisData } from 'utils/boris';
-import { Format, DataSource, Player, Position, ScrapedRanking } from 'types';
+import { fetchProjections, attachProjections } from 'utils/projections';
+import {
+  Format,
+  DataSource,
+  Player,
+  Position,
+  ScrapedRanking,
+  ProjectedPlayer,
+} from 'types';
 
 function validateFormat(query: NextApiRequest['query']): Format {
   const { format } = query;
@@ -99,10 +107,16 @@ export default async function handler(
      * data does not. We should fetch the fp data regardless so we can insert the team
      * for each player in case we want to use the Boris data as the source.
      */
-    const fpAdp = await fetchFantasyProsDataAdp(format);
-    const fpRookies = new Set(
-      (await fetchFantasyProsRookies()).map((rookie) => rookie.name)
-    );
+    const [fpAdp, fpRookiesList, projections] = await Promise.all([
+      fetchFantasyProsDataAdp(format),
+      fetchFantasyProsRookies(),
+      // projections are an enhancement — rankings must still work without them
+      fetchProjections().catch((error): ProjectedPlayer[] => {
+        console.error('Failed to fetch projections:', error);
+        return [];
+      }),
+    ]);
+    const fpRookies = new Set(fpRookiesList.map((rookie) => rookie.name));
     const rankingsToUse =
       dataSource === 'boris' ? await fetchBorisData(format) : fpAdp;
     const playerMap =
@@ -159,6 +173,8 @@ export default async function handler(
         vsAdp: parseVsAdp(dataSource, ranking, playerMap),
       });
     });
+
+    attachProjections(players, projections, format);
   } catch (error) {
     //@ts-ignore
     throw new Error(error);
