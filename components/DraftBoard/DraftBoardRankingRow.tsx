@@ -67,7 +67,7 @@ const DraftBoardRankingRow = (
 ) => {
   const { getters, dispatch } = useDraft();
   const {
-    state: { numTeams, rosterSize },
+    state: { numTeams, rosterSize, useScarcityAdjustment },
   } = useSettings();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
@@ -160,6 +160,16 @@ const DraftBoardRankingRow = (
                 />
               )}
             </Text>
+            {useScarcityAdjustment && (
+              <Text
+                display={['none', 'none', 'block']}
+                marginRight={2}
+                color="whiteAlpha.500"
+                fontSize="sm"
+              >
+                #{player.rank}
+              </Text>
+            )}
             {player.adp > 0 && (
               <Text
                 display={['none', 'none', 'block']}
