@@ -3,6 +3,14 @@
 **Date:** 2026-07-25
 **Status:** Approved
 
+> **Post-implementation amendment (2026-07-25):** During execution, FantasyPros
+> was found to login-gate its ADP pages as well (5 teaser rows only), so the
+> FantasyPros scraper could not be repaired. The branch additionally replaced
+> FantasyPros as the ADP/team/rookie source with fields from the same Sleeper
+> projections payload (`adp_std/adp_ppr/adp_half_ppr`, `team`,
+> `years_exp === 0`). The `fp` data source is now labeled "ADP" and built from
+> Sleeper ADP. References to FantasyPros ADP below reflect the original design.
+
 ## Problem
 
 The roster size/configuration setting (e.g., 2 QBs for a 2QB league) currently only
