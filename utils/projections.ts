@@ -4,6 +4,7 @@ import { cached } from 'utils/cache';
 const SLEEPER_BASE_URL = 'https://api.sleeper.com/projections/nfl';
 const SLEEPER_POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 const PROJECTIONS_TTL_MS = 24 * 60 * 60 * 1000;
+const SLEEPER_TIMEOUT_MS = 10_000;
 
 // Sleeper's position[] query filter is not fully reliable and can leak
 // records for other positions (e.g. a TE showing up in the QB query), so
@@ -81,7 +82,11 @@ async function fetchPositionProjections(
   position: string
 ): Promise<SleeperProjection[]> {
   const url = `${SLEEPER_BASE_URL}/${year}?season_type=regular&position%5B%5D=${position}&order_by=pts_half_ppr`;
-  const response = await fetch(url);
+  // AbortSignal.timeout is supported at runtime (Node 18+, this repo runs
+  // Node 25) but isn't in the DOM lib types bundled with this TS version.
+  const response = await fetch(url, {
+    signal: (AbortSignal as any).timeout(SLEEPER_TIMEOUT_MS),
+  });
 
   if (!response.ok) {
     throw new Error(`Sleeper projections request failed: ${response.status}`);
