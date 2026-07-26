@@ -22,6 +22,7 @@ type State = {
   isHydrated: boolean;
   filter: string;
   rankings: Player[];
+  rankingsLastModified?: string;
   draftedPlayers: Player[];
   roster: RosteredPlayer[];
   favorites: Player['id'][];
@@ -33,7 +34,10 @@ type PlayersMap = Record<string, Player>;
 type Action =
   | { type: 'hydrate'; payload: State | null }
   | { type: 'update-filter'; payload: string }
-  | { type: 'set-rankings'; payload: Player[] }
+  | {
+      type: 'set-rankings';
+      payload: { players: Player[]; lastModified?: string };
+    }
   | {
       type: 'draft';
       payload: Player;
@@ -63,6 +67,7 @@ const DraftContext = createContext<
         teamPlayerIds: Set<string>;
         favoritePlayerIds: Set<string>;
         keeperPlayerIds: Set<string>;
+        rankingsLastModified?: string;
       };
       dispatch: Dispatch;
     }
@@ -101,7 +106,11 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
       newState = { ...state, filter: action.payload };
       break;
     case 'set-rankings':
-      newState = { ...state, rankings: action.payload };
+      newState = {
+        ...state,
+        rankings: action.payload.players,
+        rankingsLastModified: action.payload.lastModified,
+      };
       break;
     case 'draft':
       newState = {
@@ -182,6 +191,7 @@ const draftReducer: Reducer<State, Action> = (state, action) => {
   // we don't want to save certain properties to local storage so make a copy and clear them out
   const stateCopy: Partial<State> = { ...newState };
   delete stateCopy.rankings;
+  delete stateCopy.rankingsLastModified;
   delete stateCopy.isHydrated;
 
   setStorageItem('DRAFT', stateCopy);
@@ -282,7 +292,13 @@ const DraftProvider = (props: { children: ReactNode }) => {
   });
 
   useEffect(() => {
-    dispatch({ type: 'set-rankings', payload: rankingsData ?? [] });
+    dispatch({
+      type: 'set-rankings',
+      payload: {
+        players: rankingsData?.players ?? [],
+        lastModified: rankingsData?.lastModified,
+      },
+    });
   }, [rankingsData]);
 
   useEffect(() => {
@@ -304,6 +320,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
           teamPlayerIds,
           favoritePlayerIds,
           keeperPlayerIds,
+          rankingsLastModified: state.rankingsLastModified,
         },
       }}
     >

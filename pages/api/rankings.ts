@@ -106,11 +106,15 @@ export default async function handler(
   const dataSource = validateDataSource(req.query);
   const players: Player[] = [];
 
+  let borisLastModified: string | undefined;
+
   try {
     const [borisData, projections] = await Promise.all([
       dataSource === 'boris'
         ? fetchBorisData(format)
-        : Promise.resolve<ScrapedRanking[]>([]),
+        : Promise.resolve<{ rankings: ScrapedRanking[]; lastModified?: string }>(
+            { rankings: [] }
+          ),
       // projections are an enhancement — rankings must still work without them
       fetchProjections().catch((error): ProjectedPlayer[] => {
         console.error('Failed to fetch projections:', error);
@@ -118,12 +122,14 @@ export default async function handler(
       }),
     ]);
 
+    borisLastModified = borisData.lastModified;
+
     // the adp rankings (derived from sleeper projections) double as the "fp"
     // data source and as the source of team/rookie info when using boris data
     const adpRankings = buildAdpRankings(projections, format);
 
     const rankingsToUse: ScrapedRanking[] =
-      dataSource === 'boris' ? borisData : adpRankings;
+      dataSource === 'boris' ? borisData.rankings : adpRankings;
 
     // Keyed by normalized name only (no position), which is a deliberate
     // tradeoff: name-only keys can collide across positions (last write
@@ -216,5 +222,10 @@ export default async function handler(
   }
 
   calculatePositionalRankings(players);
+
+  if (dataSource === 'boris' && borisLastModified) {
+    res.setHeader('x-rankings-last-modified', borisLastModified);
+  }
+
   res.status(200).json(players);
 }
