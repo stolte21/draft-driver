@@ -2,6 +2,7 @@ import {
   Box,
   Flex,
   Text,
+  Tooltip,
   IconButton,
   Menu,
   MenuButton,
@@ -13,6 +14,7 @@ import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
+import { getRankingsName } from 'utils';
 import { Player, Position } from 'types';
 import { MouseEventHandler } from 'react';
 
@@ -67,7 +69,7 @@ const DraftBoardRankingRow = (
 ) => {
   const { getters, dispatch } = useDraft();
   const {
-    state: { numTeams, rosterSize, useScarcityAdjustment },
+    state: { numTeams, rosterSize, useScarcityAdjustment, dataSource },
   } = useSettings();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
@@ -161,14 +163,22 @@ const DraftBoardRankingRow = (
               )}
             </Text>
             {useScarcityAdjustment && (
-              <Text
-                display={['none', 'none', 'block']}
-                marginRight={2}
-                color="whiteAlpha.500"
-                fontSize="sm"
+              <Tooltip
+                label={`${getRankingsName(
+                  dataSource
+                )} rank before the scarcity adjustment`}
+                placement="top"
+                openDelay={300}
               >
-                #{player.rank}
-              </Text>
+                <Text
+                  display={['none', 'none', 'none', 'block']}
+                  marginRight={2}
+                  color="whiteAlpha.500"
+                  fontSize="sm"
+                >
+                  #{player.rank}
+                </Text>
+              </Tooltip>
             )}
             {player.adp > 0 && (
               <Text
