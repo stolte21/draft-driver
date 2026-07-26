@@ -17,7 +17,7 @@ const borisWeeklyTiers: Record<Format, string> = {
 
 export const fetchBorisData = async (
   format: Format
-): Promise<ScrapedRanking[]> => {
+): Promise<{ rankings: ScrapedRanking[]; lastModified?: string }> => {
   const url = BORIS_BASE_URL + borisWeeklyTiers[format];
 
   const response = await fetch(url);
@@ -27,10 +27,14 @@ export const fetchBorisData = async (
     skip_empty_lines: true,
   }) as BorisPlayer[];
 
-  return records.map((record) => ({
+  const lastModified = response.headers.get('last-modified') ?? undefined;
+
+  const rankings = records.map((record) => ({
     rank: Number(record.Rank),
     name: record['Player.Name'],
     pos: record.Position,
     tier: Number(record.Tier),
   }));
+
+  return { rankings, lastModified };
 };

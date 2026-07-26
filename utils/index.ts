@@ -23,6 +23,25 @@ export const positionsForFantasyList: Position[] = [
 export const flexPositionsList: Position[] = ['WR', 'RB', 'TE'];
 export const dataSourcesList: DataSource[] = ['fp', 'boris'];
 
+export const STALE_RANKINGS_DAYS = 45;
+
+/**
+ * Rankings are considered stale when their last-modified date is more than
+ * STALE_RANKINGS_DAYS before `now`. Unknown dates are not considered stale.
+ */
+export function areRankingsStale(
+  lastModified: string | undefined,
+  now: Date
+): boolean {
+  if (!lastModified) return false;
+
+  const parsed = new Date(lastModified);
+  if (Number.isNaN(parsed.getTime())) return false;
+
+  const staleThresholdMs = STALE_RANKINGS_DAYS * 24 * 60 * 60 * 1000;
+  return now.getTime() - parsed.getTime() > staleThresholdMs;
+}
+
 /**
  * This prevents text from being selected after double clicking
  * but still allows the text to be click+drag highlighted.
@@ -47,7 +66,7 @@ export function getRankingsName(dataSource: DataSource) {
     case 'boris':
       return 'Boris Chen';
     case 'fp':
-      return 'Fantasy Pros';
+      return 'ADP';
   }
 }
 

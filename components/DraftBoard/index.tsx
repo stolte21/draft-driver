@@ -4,6 +4,7 @@ import DraftBoardList from 'components/DraftBoard/DraftBoardList';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
 import useElementHeight from 'hooks/useElementHeight';
+import { applyScarcityAdjustment } from 'utils/vorp';
 
 const DraftBoard = () => {
   const { state: draft, getters } = useDraft();
@@ -13,18 +14,33 @@ const DraftBoard = () => {
   const isXS = bp === 'base';
   const hasKeepers = draft.keepers.length > 0;
 
+  const baseRankings = useMemo(() => {
+    if (!settings.useScarcityAdjustment) return draft.rankings;
+
+    return applyScarcityAdjustment(
+      draft.rankings,
+      settings.rosterSize,
+      settings.numTeams
+    );
+  }, [
+    draft.rankings,
+    settings.useScarcityAdjustment,
+    settings.rosterSize,
+    settings.numTeams,
+  ]);
+
   const filteredPlayers = useMemo(() => {
     const players = settings.hidePlayerAfterDrafting
-      ? draft.rankings.filter(
+      ? baseRankings.filter(
           (player) => !getters.draftedPlayerIds.has(player.id)
         )
-      : draft.rankings;
+      : baseRankings;
 
     return players
       .filter((player) => !getters.keeperPlayerIds.has(player.id))
       .filter((player) => player.name.toLowerCase().includes(draft.filter));
   }, [
-    draft.rankings,
+    baseRankings,
     draft.filter,
     settings.hidePlayerAfterDrafting,
     getters.draftedPlayerIds,

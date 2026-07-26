@@ -17,13 +17,17 @@ This is a Next.js fantasy football draft tool that helps users draft players by 
 
 1. **Data Sources**: Rankings are fetched from two sources:
    - Boris Chen's tiers/rankings (`utils/boris.ts`)
-   - FantasyPros ADP data (`utils/scrape.ts`)
+   - Sleeper API season projections (`utils/projections.ts`) — provides
+     `projectedPoints`, ADP per format, teams, and rookie flags; cached
+     in-memory for 24h (`utils/cache.ts`). The "ADP" data source (`fp`) is
+     built from Sleeper ADP. (FantasyPros scraping was removed in 2026 —
+     the site login-gates its data.)
 
 2. **API Layer**: `/api/rankings.ts` serves player data by:
    - Validating format (standard/ppr/half-ppr) and data source
    - Fetching rankings from selected source
-   - Merging team data and rookie status from FantasyPros
-   - Adding missing kickers/defenses from FantasyPros when using Boris data
+   - Merging team data, ADP, and rookie status from Sleeper projections
+   - Adding missing kickers/defenses from Sleeper projections when using Boris data
 
 3. **State Management**: Uses React Context with useReducer pattern:
    - `DraftProvider` manages draft state (drafted players, roster, favorites, keepers)
@@ -41,6 +45,9 @@ This is a Next.js fantasy football draft tool that helps users draft players by 
 - Standard positions: QB, RB, WR, TE, K, DST
 - Special positions: FLX (flex), BN (bench)
 - Roster construction automatically moves excess players to flex/bench based on configured roster sizes
+- When the "Scarcity-Adjusted Rankings" setting is on, the draft board re-orders
+  players client-side by value over replacement (`utils/vorp.ts`) using the roster
+  configuration and league size, and recomputes tiers from value gaps
 
 ### Data Types
 

@@ -1,12 +1,7 @@
 import { Select, FormControl, FormLabel } from '@chakra-ui/react';
 import { useSettings } from 'providers/SettingsProvider';
-import { dataSourcesList } from 'utils';
+import { dataSourcesList, getRankingsName } from 'utils';
 import { DataSource } from 'types';
-
-const DataSourceMap: Record<DataSource, string> = {
-  boris: 'Boris Chen',
-  fp: 'Fantasy Pros',
-};
 
 const SettingsDataSource = () => {
   const { state, dispatch } = useSettings();
@@ -27,7 +22,7 @@ const SettingsDataSource = () => {
       >
         {dataSourcesList.map((dataSource) => (
           <option key={dataSource} value={dataSource}>
-            {DataSourceMap[dataSource]}
+            {getRankingsName(dataSource)}
           </option>
         ))}
       </Select>
