@@ -296,14 +296,74 @@ describe('applyScarcityAdjustment', () => {
 
   it('recomputes contiguous positional ranks in the new order', () => {
     const players = [
-      makePlayer('QB', 250, 1), // source rank says this QB is first...
-      makePlayer('QB', 300, 2), // ...but projections disagree
+      makePlayer('QB', 250, 1),
+      makePlayer('QB', 240, 2),
+      makePlayer('RB', 300, 3),
+      makePlayer('RB', 100, 4),
     ];
 
     const adjusted = applyScarcityAdjustment(players, roster, 1);
-    expect(adjusted[0].projectedPoints).toBe(300);
-    expect(adjusted[0].pRank).toBe(1);
-    expect(adjusted[1].pRank).toBe(2);
+
+    // RB1's huge value floats him above both QBs (cross-position movement
+    // still works); pRank stays contiguous per position in the new order.
+    expect(adjusted.map((p) => p.position)).toEqual(['RB', 'QB', 'QB', 'RB']);
+    expect(adjusted.map((p) => p.pRank)).toEqual([1, 1, 2, 2]);
+  });
+
+  it('never reorders players within a position relative to source rank', () => {
+    const players = [
+      makePlayer('RB', 180, 1), // source RB1, projections dislike him
+      makePlayer('RB', 260, 2), // source RB2, projections love him
+      makePlayer('RB', 200, 3),
+      makePlayer('RB', 100, 4),
+      ...position('WR', 6, 200, 10),
+      ...position('QB', 6, 300, 5),
+      ...position('TE', 6, 150, 8),
+    ];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 2);
+
+    const rbRanks = adjusted
+      .filter((p) => p.position === 'RB')
+      .map((p) => p.rank);
+    expect(rbRanks).toEqual([1, 2, 3, 4]);
+  });
+
+  it("keeps each player's own projectedPoints for display", () => {
+    const players = [makePlayer('QB', 250, 1), makePlayer('QB', 300, 2)];
+
+    const adjusted = applyScarcityAdjustment(players, roster, 1);
+
+    // Rank 1 is anchored to the better value (300) and sorts first, but
+    // still displays his own projection of 250.
+    expect(adjusted[0].rank).toBe(1);
+    expect(adjusted[0].projectedPoints).toBe(250);
+    expect(adjusted[1].projectedPoints).toBe(300);
+  });
+
+  it('permuting projections within a position does not change the board', () => {
+    const ranksAndTiers = (list: Player[]) =>
+      list.map((p) => ({ rank: p.rank, tier: p.tier }));
+
+    const base = [
+      makePlayer('RB', 300, 1),
+      makePlayer('RB', 200, 2),
+      makePlayer('RB', 100, 3),
+      makePlayer('WR', 250, 4),
+      makePlayer('WR', 150, 5),
+    ];
+    // Same ranks, same value pool — projections shuffled among the RBs
+    const shuffled = [
+      makePlayer('RB', 100, 1),
+      makePlayer('RB', 300, 2),
+      makePlayer('RB', 200, 3),
+      makePlayer('WR', 250, 4),
+      makePlayer('WR', 150, 5),
+    ];
+    // Ids/names diverging is fine — compare only rank and tier.
+    expect(ranksAndTiers(applyScarcityAdjustment(shuffled, roster, 1))).toEqual(
+      ranksAndTiers(applyScarcityAdjustment(base, roster, 1))
+    );
   });
 
   it('does not mutate the input players', () => {
