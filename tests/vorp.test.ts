@@ -338,6 +338,7 @@ describe('applyScarcityAdjustment', () => {
     // still displays his own projection of 250.
     expect(adjusted[0].rank).toBe(1);
     expect(adjusted[0].projectedPoints).toBe(250);
+    expect(adjusted[1].rank).toBe(2);
     expect(adjusted[1].projectedPoints).toBe(300);
   });
 

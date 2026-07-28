@@ -110,7 +110,6 @@ function anchorValuesToRankOrder(players: Player[]): Map<string, number> {
     const values = group.map((p) => p.projectedPoints!).sort((a, b) => b - a);
 
     group
-      .slice()
       .sort((a, b) => a.rank - b.rank)
       .forEach((p, i) => anchored.set(p.id, values[i]));
   });
