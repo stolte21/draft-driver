@@ -95,8 +95,33 @@ export function computeValueTiers(sortedValuesDesc: number[]): number[] {
 }
 
 /**
+ * Map of player id → anchored value. Within each position, the projection
+ * values of players that have one are sorted descending and reassigned in
+ * source-rank order, so the source ranking stays authoritative within a
+ * position while projections only define its scarcity curve.
+ */
+function anchorValuesToRankOrder(players: Player[]): Map<string, number> {
+  const anchored = new Map<string, number>();
+
+  positionsList.forEach((pos) => {
+    const group = players.filter(
+      (p) => p.position === pos && p.projectedPoints !== undefined
+    );
+    const values = group.map((p) => p.projectedPoints!).sort((a, b) => b - a);
+
+    group
+      .sort((a, b) => a.rank - b.rank)
+      .forEach((p, i) => anchored.set(p.id, values[i]));
+  });
+
+  return anchored;
+}
+
+/**
  * Returns a NEW array of player copies ordered by value over replacement,
- * with tier and pRank recomputed for the adjusted order. Players without
+ * where each position's projection values are reassigned in source-rank
+ * order so the source ranking is never reordered within a position. Tier
+ * and pRank are recomputed for the adjusted order. Players without
  * projections (or whose position has no replacement level) go to the
  * bottom in original-rank order with no tier.
  */
@@ -106,14 +131,16 @@ export function applyScarcityAdjustment(
   numTeams: number
 ): Player[] {
   const levels = computeReplacementLevels(players, rosterSize, numTeams);
+  const anchoredValues = anchorValuesToRankOrder(players);
 
   const valued: { player: Player; value: number }[] = [];
   const unvalued: Player[] = [];
 
   players.forEach((player) => {
     const level = levels[player.position];
-    if (player.projectedPoints !== undefined && level !== undefined) {
-      valued.push({ player, value: player.projectedPoints - level });
+    const anchored = anchoredValues.get(player.id);
+    if (anchored !== undefined && level !== undefined) {
+      valued.push({ player, value: anchored - level });
     } else {
       unvalued.push(player);
     }
