@@ -18,16 +18,15 @@ const HomeButton = () => {
   const isActive = router.pathname === '/';
 
   return (
-    <Link href="/" passHref>
-      <IconButton
-        aria-label="home"
-        variant="ghost"
-        icon={<HomeIcon />}
-        as="a"
-        _hover={{ bg: 'gray.700' }}
-        bg={isActive ? 'gray.700' : 'transparent'}
-      />
-    </Link>
+    <IconButton
+      as={Link}
+      href="/"
+      aria-label="home"
+      variant="ghost"
+      icon={<HomeIcon />}
+      _hover={{ bg: 'gray.700' }}
+      bg={isActive ? 'gray.700' : 'transparent'}
+    />
   );
 };
 
