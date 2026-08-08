@@ -43,7 +43,7 @@ const AppBar = () => {
             <Heading as="h2" size="xs" fontWeight="light" whiteSpace="nowrap">
               Rankings:&nbsp;
               <Text as="span" fontWeight="medium">
-                Boris Chen {getFormatName(state.format)}
+                FantasyPros {getFormatName(state.format)}
               </Text>
             </Heading>
           </Skeleton>
