@@ -249,7 +249,7 @@ const DraftBoardRankingRow = (
           <MenuItem
             onClick={() => dispatch({ type: 'add-keeper', payload: player })}
           >
-            Add Keeper
+            Add as Keeper
           </MenuItem>
         </MenuList>
       </Menu>
