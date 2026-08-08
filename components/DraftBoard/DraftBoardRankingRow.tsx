@@ -80,7 +80,9 @@ const DraftBoardRankingRow = (
 
   const handleDraftPlayer: MouseEventHandler = (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(player.name);
+    // the copy is a convenience — drafting must not fail when clipboard
+    // permission is denied (automation, non-focused documents)
+    navigator.clipboard.writeText(player.name).catch(() => {});
     dispatch({ type: 'draft', payload: player });
   };
 
