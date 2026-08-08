@@ -11,6 +11,7 @@ export type State = {
   roster: RosteredPlayer[];
   favorites: Player['id'][];
   avoided: Player['id'][];
+  notes: Record<Player['id'], string>;
   keepers: Player[];
 };
 
@@ -34,6 +35,7 @@ export type Action =
   | { type: 'remove-roster'; payload: string }
   | { type: 'toggle-favorite'; payload: Player['id'] }
   | { type: 'toggle-avoid'; payload: Player['id'] }
+  | { type: 'set-note'; payload: { id: Player['id']; note: string } }
   | { type: 'add-keeper'; payload: Player }
   | { type: 'remove-keeper'; payload: Player['id'] };
 
@@ -52,6 +54,12 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         newState.avoided = Array.isArray(newState.avoided)
           ? newState.avoided
           : [];
+        newState.notes =
+          newState.notes &&
+          typeof newState.notes === 'object' &&
+          !Array.isArray(newState.notes)
+            ? newState.notes
+            : {};
         newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
           ? newState.draftedPlayers
           : [];
@@ -153,6 +161,19 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         avoided: newAvoided,
         favorites: state.favorites.filter((id) => id !== action.payload),
       };
+      break;
+    }
+    case 'set-note': {
+      const newNotes = { ...state.notes };
+      const trimmedNote = action.payload.note.trim();
+
+      if (trimmedNote === '') {
+        delete newNotes[action.payload.id];
+      } else {
+        newNotes[action.payload.id] = trimmedNote;
+      }
+
+      newState = { ...state, notes: newNotes };
       break;
     }
     case 'add-keeper':

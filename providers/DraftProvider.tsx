@@ -48,6 +48,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
     roster: [],
     favorites: [],
     avoided: [],
+    notes: {},
     keepers: [],
   });
 
