@@ -175,7 +175,10 @@ const DraftBoardRankingRow = (
               )}
               {playerNote && (
                 <Tooltip label={playerNote}>
+                  {/* MenuButton wraps children in a pointer-events:none span,
+                      so the icon must opt back in for hover to reach it */}
                   <NoteIcon
+                    pointerEvents="auto"
                     verticalAlign="super"
                     color="yellow.200"
                     marginLeft={2}
