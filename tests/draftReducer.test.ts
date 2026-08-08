@@ -148,4 +148,18 @@ describe('hydrate notes', () => {
 
     expect(result.notes).toEqual({});
   });
+
+  it('drops non-string note values on hydrate', () => {
+    const blob = {
+      ...baseState,
+      notes: { p1: 123, p2: 'valid note' },
+    };
+
+    const result = draftReducer(baseState, {
+      type: 'hydrate',
+      payload: blob as unknown as State,
+    });
+
+    expect(result.notes).toEqual({ p2: 'valid note' });
+  });
 });

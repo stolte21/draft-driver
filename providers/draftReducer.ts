@@ -60,6 +60,11 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
           !Array.isArray(newState.notes)
             ? newState.notes
             : {};
+        newState.notes = Object.fromEntries(
+          Object.entries(newState.notes).filter(
+            ([, value]) => typeof value === 'string'
+          )
+        );
         newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
           ? newState.draftedPlayers
           : [];
