@@ -21,14 +21,29 @@ const borisWeeklyTiers: Record<Format, string> = {
   'half-ppr': 'weekly-ALL-HALF-PPR.csv',
 };
 
+// The sync script records when the CSVs were generated; file mtimes are
+// unreliable once deployed (Vercel normalizes them in function bundles).
+const readSyncedAt = async (): Promise<string | undefined> => {
+  try {
+    const raw = await fs.readFile(
+      path.join(LOCAL_TIERS_DIR, 'metadata.json'),
+      'utf-8'
+    );
+    return JSON.parse(raw).syncedAt;
+  } catch {
+    return undefined;
+  }
+};
+
 const readLocalTiers = async (format: Format): Promise<RawTiers> => {
   const filePath = path.join(LOCAL_TIERS_DIR, borisWeeklyTiers[format]);
-  const [text, stat] = await Promise.all([
+  const [text, syncedAt, stat] = await Promise.all([
     fs.readFile(filePath, 'utf-8'),
+    readSyncedAt(),
     fs.stat(filePath),
   ]);
 
-  return { text, lastModified: stat.mtime.toUTCString() };
+  return { text, lastModified: syncedAt ?? stat.mtime.toUTCString() };
 };
 
 const fetchS3Tiers = async (format: Format): Promise<RawTiers> => {

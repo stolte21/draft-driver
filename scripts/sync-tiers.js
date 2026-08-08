@@ -30,6 +30,16 @@ for (const file of files) {
   }
 }
 
+if (!failed) {
+  // Vercel normalizes file mtimes inside function bundles, so record the
+  // sync time explicitly for the API's last-modified reporting.
+  fs.writeFileSync(
+    path.join(destDir, 'metadata.json'),
+    JSON.stringify({ syncedAt: new Date().toUTCString() }, null, 2) + '\n'
+  );
+  console.log('wrote metadata.json');
+}
+
 if (failed) {
   console.error(
     '\nRun the fftiers pipeline first (cd ~/projects/fftiers && Rscript src/main.R t),' +
