@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { Flex, Text, keyframes } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import { Position } from 'types';
 
 type PositionCircleProps = {
