@@ -114,6 +114,15 @@ describe('set-note', () => {
     expect(result.notes).toEqual({ p1: 'keep me' });
     expect(result.avoided).toEqual(['p2']);
   });
+
+  it('stores the trimmed note', () => {
+    const result = draftReducer(baseState, {
+      type: 'set-note',
+      payload: { id: 'p1', note: '  hi  ' },
+    });
+
+    expect(result.notes).toEqual({ p1: 'hi' });
+  });
 });
 
 describe('hydrate notes', () => {

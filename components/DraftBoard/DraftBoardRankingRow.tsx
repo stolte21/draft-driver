@@ -7,10 +7,12 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Tooltip,
 } from '@chakra-ui/react';
 import { AddIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
+import NoteIcon from 'components/Icons/NoteIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
 import { Player, Position } from 'types';
@@ -18,6 +20,7 @@ import { MouseEventHandler } from 'react';
 
 type DraftBoardRankingRowProps = {
   players: Player[];
+  onEditNote: (player: Player) => void;
 };
 
 const getExpectedRound = (
@@ -65,7 +68,7 @@ const getRoundSuffix = (round: number): string => {
 const DraftBoardRankingRow = (
   props: ListChildComponentProps<DraftBoardRankingRowProps>,
 ) => {
-  const { getters, dispatch } = useDraft();
+  const { state, getters, dispatch } = useDraft();
   const {
     state: { numTeams, rosterSize, useScarcityAdjustment },
   } = useSettings();
@@ -73,6 +76,7 @@ const DraftBoardRankingRow = (
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
   const isPlayerAvoided = getters.avoidedPlayerIds.has(player.id);
+  const playerNote = state.notes[player.id];
 
   const handleDraftPlayer: MouseEventHandler = (e) => {
     e.stopPropagation();
@@ -169,6 +173,16 @@ const DraftBoardRankingRow = (
                   fontSize="xs"
                 />
               )}
+              {playerNote && (
+                <Tooltip label={playerNote}>
+                  <NoteIcon
+                    verticalAlign="super"
+                    color="yellow.200"
+                    marginLeft={2}
+                    fontSize="xs"
+                  />
+                </Tooltip>
+              )}
             </Text>
             {useScarcityAdjustment && (
               <Text
@@ -225,6 +239,9 @@ const DraftBoardRankingRow = (
             }
           >
             {isPlayerAvoided ? 'Unavoid' : 'Avoid'}
+          </MenuItem>
+          <MenuItem onClick={() => props.data.onEditNote(player)}>
+            {playerNote ? 'Edit Note' : 'Add Note'}
           </MenuItem>
           <MenuItem
             onClick={() => dispatch({ type: 'add-keeper', payload: player })}
