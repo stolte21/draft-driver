@@ -9,20 +9,20 @@ Correct how the app credits its data sources, refresh stale settings copy,
 and add an About modal that explains the tool and credits Boris Chen.
 
 Background: Boris Chen's tiers are built from FantasyPros expert consensus
-rankings (ECR). The UI currently labels the rankings "Boris Chen PPR",
-which misattributes the underlying rankings. Per user decision, in-app
-labels reference FantasyPros; Boris Chen is credited in the About modal.
+rankings (ECR). Per user decision (revised 2026-08-08 after seeing the
+first implementation), in-app labels keep citing "Boris Chen" directly —
+the About modal is where the Boris Chen/FantasyPros relationship is
+explained.
 
 ## Changes
 
 ### 1. Data source labels
 
-- `components/AppBar/index.tsx`: subtitle changes from
-  `Rankings: Boris Chen {format}` to `Rankings: FantasyPros {format}`.
-  Format name remains driven by `getFormatName(state.format)`.
-- `components/StaleRankingsBanner.tsx`: "Boris Chen rankings were last
-  updated {date}…" becomes source-neutral: "Rankings were last updated
-  {date} and may be from a previous season."
+- `components/AppBar/index.tsx`: subtitle stays
+  `Rankings: Boris Chen {format}` (an initial FantasyPros relabel was
+  reverted). Format name remains driven by `getFormatName(state.format)`.
+- `components/StaleRankingsBanner.tsx`: keeps "Boris Chen rankings were
+  last updated {date} and may be from a previous season."
 
 ### 2. Settings copy
 

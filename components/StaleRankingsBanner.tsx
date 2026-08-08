@@ -18,8 +18,8 @@ const StaleRankingsBanner = () => {
     <Alert status="warning" rounded="md" marginBottom={2} paddingY={1}>
       <AlertIcon />
       <AlertDescription fontSize="sm">
-        Rankings were last updated {formatted} and may be from a previous
-        season.
+        Boris Chen rankings were last updated {formatted} and may be from a
+        previous season.
       </AlertDescription>
     </Alert>
   );
