@@ -114,7 +114,7 @@ const DraftBoardRankingRow = (
             width="100%"
             display="flex"
             textAlign="left"
-            opacity={isPlayerAvoided ? 0.45 : 1}
+            opacity={isPlayerAvoided && !isPlayerDrafted ? 0.45 : 1}
             sx={{
               '& > span': {
                 height: '100%',
