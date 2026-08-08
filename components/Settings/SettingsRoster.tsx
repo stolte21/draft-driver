@@ -35,7 +35,8 @@ const SettingsRoster = () => {
     <FormControl>
       <FormLabel as="span">Roster Size</FormLabel>
       <FormHelperText mb={3}>
-        Number of players per position. Used to track your roster composition.
+        Number of players per position. Used to track your roster composition
+        and to compute scarcity-adjusted rankings.
       </FormHelperText>
       <SimpleGrid columns={{ base: 1, sm: 2 }} gap={3}>
         {positionsForFantasyList.map((position, i) => {

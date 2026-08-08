@@ -27,8 +27,8 @@ const SettingsTeams = () => {
       <div>
         <FormLabel>Teams</FormLabel>
         <FormHelperText>
-          Number of teams in the draft. For now, just used to display the
-          correct pick number.
+          Number of teams in the draft. Used to show pick numbers and to
+          compute scarcity-adjusted rankings.
         </FormHelperText>
       </div>
       <NumberInput
