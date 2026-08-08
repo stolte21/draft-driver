@@ -1,10 +1,4 @@
-import {
-  DataSource,
-  Format,
-  Position,
-  SpecialFilter,
-  ScrapedRanking,
-} from 'types';
+import { Format, Position, SpecialFilter, ScrapedRanking } from 'types';
 export * from 'utils/storage';
 
 export const formatsList: Format[] = ['standard', 'half-ppr', 'ppr'];
@@ -21,7 +15,6 @@ export const positionsForFantasyList: Position[] = [
 ];
 // TODO: have this configurable via settings
 export const flexPositionsList: Position[] = ['WR', 'RB', 'TE'];
-export const dataSourcesList: DataSource[] = ['fp', 'boris'];
 
 export const STALE_RANKINGS_DAYS = 45;
 
@@ -58,15 +51,6 @@ export function getFormatName(format: Format) {
       return 'Half PPR';
     case 'ppr':
       return 'PPR';
-  }
-}
-
-export function getRankingsName(dataSource: DataSource) {
-  switch (dataSource) {
-    case 'boris':
-      return 'Boris Chen';
-    case 'fp':
-      return 'ADP';
   }
 }
 

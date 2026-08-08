@@ -11,7 +11,7 @@ import HomeButton from 'components/HomeButton';
 import ChartsButton from 'components/ChartsButton';
 import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
-import { getFormatName, getRankingsName } from 'utils';
+import { getFormatName } from 'utils';
 
 const AppBar = () => {
   const { state } = useSettings();
@@ -43,8 +43,7 @@ const AppBar = () => {
             <Heading as="h2" size="xs" fontWeight="light" whiteSpace="nowrap">
               Rankings:&nbsp;
               <Text as="span" fontWeight="medium">
-                {getRankingsName(state.dataSource)}{' '}
-                {getFormatName(state.format)}
+                Boris Chen {getFormatName(state.format)}
               </Text>
             </Heading>
           </Skeleton>

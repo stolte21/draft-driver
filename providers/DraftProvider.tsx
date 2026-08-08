@@ -288,7 +288,6 @@ const DraftProvider = (props: { children: ReactNode }) => {
   const { data: rankingsData, isPending } = useRankings({
     isEnabled: state.isHydrated,
     format: settings.format,
-    dataSource: settings.dataSource,
   });
 
   useEffect(() => {

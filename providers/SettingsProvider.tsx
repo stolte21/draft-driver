@@ -9,16 +9,14 @@ import {
 import {
   getStorageItem,
   setStorageItem,
-  dataSourcesList,
   formatsList,
   positionsForFantasyList,
 } from 'utils';
-import { DataSource, Position, Format } from 'types';
+import { Position, Format } from 'types';
 
 type State = {
   isHydrated: boolean;
   format: Format;
-  dataSource: DataSource;
   hidePlayerAfterDrafting: boolean;
   useScarcityAdjustment: boolean;
   rosterSize: Record<Position, number>;
@@ -35,7 +33,6 @@ type Action =
   | { type: 'increment-num-teams' }
   | { type: 'decrement-num-teams' }
   | { type: 'set-num-teams'; payload: number }
-  | { type: 'change-data-source'; payload: DataSource }
   | { type: 'hydrate'; payload: State };
 
 type Dispatch = (action: Action) => void;
@@ -71,11 +68,8 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
           }
         });
 
-        action.payload.dataSource = dataSourcesList.includes(
-          action.payload.dataSource
-        )
-          ? action.payload.dataSource
-          : 'boris';
+        // legacy blobs may still carry a dataSource key — drop it
+        delete (action.payload as { dataSource?: unknown }).dataSource;
 
         action.payload.format = formatsList.includes(action.payload.format)
           ? action.payload.format
@@ -156,12 +150,6 @@ const settingsReducer: Reducer<State, Action> = (state, action) => {
         numTeams: action.payload,
       };
       break;
-    case 'change-data-source':
-      newState = {
-        ...state,
-        dataSource: action.payload,
-      };
-      break;
     default: {
       //@ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -180,7 +168,6 @@ const SettingsProvider = (props: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(settingsReducer, {
     isHydrated: false,
     format: 'standard',
-    dataSource: 'boris',
     hidePlayerAfterDrafting: true,
     useScarcityAdjustment: false,
     rosterSize: RosterSizes,

@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { DataSource, Format, Player } from 'types';
+import { Format, Player } from 'types';
 
 type UseRankingsOptions = {
   isEnabled: boolean;
   format: Format;
-  dataSource: DataSource;
 };
 
 type RankingsResult = {
@@ -14,11 +13,9 @@ type RankingsResult = {
 
 function useRankings(options: UseRankingsOptions) {
   return useQuery<RankingsResult>({
-    queryKey: ['rankings', options.format, options.dataSource],
+    queryKey: ['rankings', options.format],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/rankings?format=${options.format}&src=${options.dataSource}`
-      );
+      const response = await fetch(`/api/rankings?format=${options.format}`);
 
       if (!response.ok) {
         throw new Error('There was an error fetching fantasy rankings');
