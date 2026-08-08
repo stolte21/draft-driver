@@ -21,6 +21,7 @@ const SettingsModal = (props: SettingsModalProps) => {
       isOpen={props.isOpen}
       onClose={props.onClose}
       size={['xs', 'sm', 'lg']}
+      scrollBehavior="inside"
     >
       <ModalOverlay />
       <ModalContent>
