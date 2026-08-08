@@ -29,6 +29,7 @@ const DraftContext = createContext<
         draftedPlayerIds: Set<string>;
         teamPlayerIds: Set<string>;
         favoritePlayerIds: Set<string>;
+        avoidedPlayerIds: Set<string>;
         keeperPlayerIds: Set<string>;
         rankingsLastModified?: string;
       };
@@ -46,6 +47,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
     draftedPlayers: [],
     roster: [],
     favorites: [],
+    avoided: [],
     keepers: [],
   });
 
@@ -118,6 +120,10 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return new Set(state.favorites);
   }, [state.favorites]);
 
+  const avoidedPlayerIds = useMemo(() => {
+    return new Set(state.avoided);
+  }, [state.avoided]);
+
   const keeperPlayerIds = useMemo(() => {
     return new Set(state.keepers.map((player) => player.id));
   }, [state.keepers]);
@@ -157,6 +163,7 @@ const DraftProvider = (props: { children: ReactNode }) => {
           draftedPlayerIds,
           teamPlayerIds,
           favoritePlayerIds,
+          avoidedPlayerIds,
           keeperPlayerIds,
           rankingsLastModified: state.rankingsLastModified,
         },

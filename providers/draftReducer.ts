@@ -10,6 +10,7 @@ export type State = {
   draftedPlayers: Player[];
   roster: RosteredPlayer[];
   favorites: Player['id'][];
+  avoided: Player['id'][];
   keepers: Player[];
 };
 
@@ -32,6 +33,7 @@ export type Action =
     }
   | { type: 'remove-roster'; payload: string }
   | { type: 'toggle-favorite'; payload: Player['id'] }
+  | { type: 'toggle-avoid'; payload: Player['id'] }
   | { type: 'add-keeper'; payload: Player }
   | { type: 'remove-keeper'; payload: Player['id'] };
 
@@ -46,6 +48,9 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         newState = action.payload;
         newState.favorites = Array.isArray(newState.favorites)
           ? newState.favorites
+          : [];
+        newState.avoided = Array.isArray(newState.avoided)
+          ? newState.avoided
           : [];
         newState.draftedPlayers = Array.isArray(newState.draftedPlayers)
           ? newState.draftedPlayers
@@ -116,7 +121,7 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         roster: state.roster.filter((player) => player.id !== action.payload),
       };
       break;
-    case 'toggle-favorite':
+    case 'toggle-favorite': {
       const newFavorites = [...state.favorites];
       const playerIndex = newFavorites.indexOf(action.payload);
 
@@ -129,8 +134,27 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
       newState = {
         ...state,
         favorites: newFavorites,
+        avoided: state.avoided.filter((id) => id !== action.payload),
       };
       break;
+    }
+    case 'toggle-avoid': {
+      const newAvoided = [...state.avoided];
+      const playerIndex = newAvoided.indexOf(action.payload);
+
+      if (playerIndex === -1) {
+        newAvoided.push(action.payload);
+      } else {
+        newAvoided.splice(playerIndex, 1);
+      }
+
+      newState = {
+        ...state,
+        avoided: newAvoided,
+        favorites: state.favorites.filter((id) => id !== action.payload),
+      };
+      break;
+    }
     case 'add-keeper':
       newState = {
         ...state,
