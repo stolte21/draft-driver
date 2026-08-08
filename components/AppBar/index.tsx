@@ -44,7 +44,7 @@ const AppBar = () => {
             <Heading as="h2" size="xs" fontWeight="light" whiteSpace="nowrap">
               Rankings:&nbsp;
               <Text as="span" fontWeight="medium">
-                FantasyPros {getFormatName(state.format)}
+                Boris Chen {getFormatName(state.format)}
               </Text>
             </Heading>
           </Skeleton>
@@ -53,8 +53,8 @@ const AppBar = () => {
         <Flex gap={2}>
           <HomeButton />
           <ChartsButton />
-          <AboutButton />
           <SettingsButton />
+          <AboutButton />
         </Flex>
       </Container>
     </Flex>
