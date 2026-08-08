@@ -181,7 +181,8 @@ export function attachProjections(
 }
 
 /**
- * Build an ADP-ordered ranking list (the "fp" data source) from projections.
+ * Build an ADP-ordered ranking list from projections (used to merge
+ * team/ADP/rookie info into Boris rankings).
  * Players without an ADP for the format are excluded (undrafted).
  */
 export function buildAdpRankings(
