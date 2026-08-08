@@ -21,10 +21,14 @@ type PlayerNoteModalProps = {
 const PlayerNoteModal = (props: PlayerNoteModalProps) => {
   const { state, dispatch } = useDraft();
   const [note, setNote] = useState('');
+  const [displayPlayer, setDisplayPlayer] = useState<Player | null>(null);
 
-  // re-seed the textarea whenever the modal opens for a player
+  // re-seed the textarea whenever the modal opens for a player, and keep
+  // the last player around so the header/textarea don't blank out while
+  // Chakra plays the close animation after `player` goes back to null.
   useEffect(() => {
     if (props.player) {
+      setDisplayPlayer(props.player);
       setNote(state.notes[props.player.id] ?? '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,7 +52,7 @@ const PlayerNoteModal = (props: PlayerNoteModalProps) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Note: {props.player?.name}</ModalHeader>
+        <ModalHeader>Note: {displayPlayer?.name}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Textarea
