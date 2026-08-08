@@ -8,7 +8,7 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
 import { useDraft } from 'providers/DraftProvider';
@@ -72,6 +72,7 @@ const DraftBoardRankingRow = (
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
+  const isPlayerAvoided = getters.avoidedPlayerIds.has(player.id);
 
   const handleDraftPlayer: MouseEventHandler = (e) => {
     e.stopPropagation();
@@ -113,6 +114,7 @@ const DraftBoardRankingRow = (
             width="100%"
             display="flex"
             textAlign="left"
+            opacity={isPlayerAvoided ? 0.45 : 1}
             sx={{
               '& > span': {
                 height: '100%',
@@ -157,6 +159,14 @@ const DraftBoardRankingRow = (
                   marginLeft={2}
                   fontSize="xs"
                   filled
+                />
+              )}
+              {isPlayerAvoided && (
+                <NotAllowedIcon
+                  verticalAlign="super"
+                  color="red.300"
+                  marginLeft={2}
+                  fontSize="xs"
                 />
               )}
             </Text>
@@ -207,7 +217,14 @@ const DraftBoardRankingRow = (
               dispatch({ type: 'toggle-favorite', payload: player.id })
             }
           >
-            Toggle Favorite
+            {isPlayerFavorite ? 'Unfavorite' : 'Favorite'}
+          </MenuItem>
+          <MenuItem
+            onClick={() =>
+              dispatch({ type: 'toggle-avoid', payload: player.id })
+            }
+          >
+            {isPlayerAvoided ? 'Unavoid' : 'Avoid'}
           </MenuItem>
           <MenuItem
             onClick={() => dispatch({ type: 'add-keeper', payload: player })}
