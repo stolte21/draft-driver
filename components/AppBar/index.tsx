@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import HomeButton from 'components/HomeButton';
 import ChartsButton from 'components/ChartsButton';
+import AboutButton from 'components/About';
 import SettingsButton from 'components/Settings';
 import { useSettings } from 'providers/SettingsProvider';
 import { getFormatName } from 'utils';
@@ -52,6 +53,7 @@ const AppBar = () => {
         <Flex gap={2}>
           <HomeButton />
           <ChartsButton />
+          <AboutButton />
           <SettingsButton />
         </Flex>
       </Container>
