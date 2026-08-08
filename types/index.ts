@@ -22,8 +22,6 @@ export type RosteredPlayer = Player & {
   pick: number;
 };
 
-export type DataSource = 'boris' | 'fp';
-
 export type ScrapedRanking = {
   rank: number;
   name: string;

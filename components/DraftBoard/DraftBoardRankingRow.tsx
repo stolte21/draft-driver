@@ -7,10 +7,12 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Tooltip,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import { ListChildComponentProps } from 'react-window';
 import HeartIcon from 'components/Icons/HeartIcon';
+import NoteIcon from 'components/Icons/NoteIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
 import { Player, Position } from 'types';
@@ -18,6 +20,7 @@ import { MouseEventHandler } from 'react';
 
 type DraftBoardRankingRowProps = {
   players: Player[];
+  onEditNote: (player: Player) => void;
 };
 
 const getExpectedRound = (
@@ -65,17 +68,21 @@ const getRoundSuffix = (round: number): string => {
 const DraftBoardRankingRow = (
   props: ListChildComponentProps<DraftBoardRankingRowProps>,
 ) => {
-  const { getters, dispatch } = useDraft();
+  const { state, getters, dispatch } = useDraft();
   const {
     state: { numTeams, rosterSize, useScarcityAdjustment },
   } = useSettings();
   const player = props.data.players[props.index];
   const isPlayerDrafted = getters.draftedPlayerIds.has(player.id);
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
+  const isPlayerAvoided = getters.avoidedPlayerIds.has(player.id);
+  const playerNote = state.notes[player.id];
 
   const handleDraftPlayer: MouseEventHandler = (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(player.name);
+    // the copy is a convenience — drafting must not fail when clipboard
+    // permission is denied (automation, non-focused documents)
+    navigator.clipboard.writeText(player.name).catch(() => {});
     dispatch({ type: 'draft', payload: player });
   };
 
@@ -113,6 +120,7 @@ const DraftBoardRankingRow = (
             width="100%"
             display="flex"
             textAlign="left"
+            opacity={isPlayerAvoided && !isPlayerDrafted ? 0.45 : 1}
             sx={{
               '& > span': {
                 height: '100%',
@@ -158,6 +166,27 @@ const DraftBoardRankingRow = (
                   fontSize="xs"
                   filled
                 />
+              )}
+              {isPlayerAvoided && (
+                <NotAllowedIcon
+                  verticalAlign="super"
+                  color="red.300"
+                  marginLeft={2}
+                  fontSize="xs"
+                />
+              )}
+              {playerNote && (
+                <Tooltip label={playerNote}>
+                  {/* MenuButton wraps children in a pointer-events:none span,
+                      so the icon must opt back in for hover to reach it */}
+                  <NoteIcon
+                    pointerEvents="auto"
+                    verticalAlign="super"
+                    color="yellow.200"
+                    marginLeft={2}
+                    fontSize="xs"
+                  />
+                </Tooltip>
               )}
             </Text>
             {useScarcityAdjustment && (
@@ -207,12 +236,22 @@ const DraftBoardRankingRow = (
               dispatch({ type: 'toggle-favorite', payload: player.id })
             }
           >
-            Toggle Favorite
+            {isPlayerFavorite ? 'Unfavorite' : 'Favorite'}
+          </MenuItem>
+          <MenuItem
+            onClick={() =>
+              dispatch({ type: 'toggle-avoid', payload: player.id })
+            }
+          >
+            {isPlayerAvoided ? 'Unavoid' : 'Avoid'}
+          </MenuItem>
+          <MenuItem onClick={() => props.data.onEditNote(player)}>
+            {playerNote ? 'Edit Note' : 'Add Note'}
           </MenuItem>
           <MenuItem
             onClick={() => dispatch({ type: 'add-keeper', payload: player })}
           >
-            Add Keeper
+            Add as Keeper
           </MenuItem>
         </MenuList>
       </Menu>

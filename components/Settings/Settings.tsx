@@ -3,11 +3,9 @@ import {
   Flex,
   createIcon,
   useDisclosure,
-  Box,
 } from '@chakra-ui/react';
 import SettingsModal from './SettingsModal';
 import SettingsFormat from './SettingsFormat';
-import SettingsDataSource from './SettingsDataSource';
 import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
 import SettingsScarcitySwitch from './SettingsScarcitySwitch';
 import SettingsTeams from './SettingsTeams';
@@ -37,15 +35,7 @@ const Settings = () => {
       />
       <SettingsModal isOpen={isOpen} onClose={onClose}>
         <Flex direction="column" gap={4}>
-          <Box
-            display="flex"
-            alignItems="flex-end"
-            flexDirection={{ base: 'column', lg: 'row' }}
-            gap={2}
-          >
-            <SettingsFormat />
-            <SettingsDataSource />
-          </Box>
+          <SettingsFormat />
           <SettingsHidePlayersSwitch />
           <SettingsScarcitySwitch />
           <SettingsTeams />

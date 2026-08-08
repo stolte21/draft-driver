@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { formatsList, dataSourcesList, parseId } from 'utils';
+import { formatsList, parseId } from 'utils';
 import { fetchBorisData } from 'utils/boris';
 import {
   fetchProjections,
@@ -10,7 +10,6 @@ import {
 import { TEAM_TO_ABRV_MAP } from 'utils/scrape';
 import {
   Format,
-  DataSource,
   Player,
   Position,
   ScrapedRanking,
@@ -32,21 +31,6 @@ function validateFormat(query: NextApiRequest['query']): Format {
   }
 }
 
-function validateDataSource(query: NextApiRequest['query']): DataSource {
-  const { src } = query;
-
-  if (!src) return 'boris';
-
-  const parsedDataSource = src.toString();
-
-  //@ts-ignore
-  if (dataSourcesList.includes(parsedDataSource)) {
-    return parsedDataSource as DataSource;
-  } else {
-    return 'fp';
-  }
-}
-
 function parseTeam(
   ranking: ScrapedRanking,
   playerMap: Map<string, ScrapedRanking>
@@ -58,14 +42,10 @@ function parseTeam(
 }
 
 function parseVsAdp(
-  dataSource: DataSource,
   ranking: ScrapedRanking,
   playerMap: Map<string, ScrapedRanking>
 ) {
-  if (dataSource === 'fp') return;
-
-  // when using boris data, we can calculate the vsAdp by comparing the rank to the adp rank
-  // since the adp data we have is based on ADP
+  // vsAdp compares the boris rank to the sleeper-derived adp rank
   const player = playerMap.get(normalizePlayerName(ranking.name));
   if (player) {
     return player.rank - ranking.rank;
@@ -103,18 +83,13 @@ export default async function handler(
   res: NextApiResponse<Player[]>
 ) {
   const format = validateFormat(req.query);
-  const dataSource = validateDataSource(req.query);
   const players: Player[] = [];
 
   let borisLastModified: string | undefined;
 
   try {
     const [borisData, projections] = await Promise.all([
-      dataSource === 'boris'
-        ? fetchBorisData(format)
-        : Promise.resolve<{ rankings: ScrapedRanking[]; lastModified?: string }>(
-            { rankings: [] }
-          ),
+      fetchBorisData(format),
       // projections are an enhancement — rankings must still work without them
       fetchProjections().catch((error): ProjectedPlayer[] => {
         console.error('Failed to fetch projections:', error);
@@ -124,12 +99,11 @@ export default async function handler(
 
     borisLastModified = borisData.lastModified;
 
-    // the adp rankings (derived from sleeper projections) double as the "fp"
-    // data source and as the source of team/rookie info when using boris data
+    // the adp rankings (derived from sleeper projections) provide team/adp/
+    // rookie info that gets merged into the boris rankings
     const adpRankings = buildAdpRankings(projections, format);
 
-    const rankingsToUse: ScrapedRanking[] =
-      dataSource === 'boris' ? borisData.rankings : adpRankings;
+    const rankingsToUse: ScrapedRanking[] = borisData.rankings;
 
     // Keyed by normalized name only (no position), which is a deliberate
     // tradeoff: name-only keys can collide across positions (last write
@@ -152,36 +126,34 @@ export default async function handler(
 
     // the boris data doesn't include all the defenses and kickers, so we should add the rest
     // from the projections data
-    if (dataSource === 'boris') {
-      const nextHighestTier = rankingsToUse.reduce((acc, curr) => {
-        if (curr.tier === undefined) return acc;
-        if (curr.tier > acc) return curr.tier;
-        return acc;
-      }, 1);
+    const nextHighestTier = rankingsToUse.reduce((acc, curr) => {
+      if (curr.tier === undefined) return acc;
+      if (curr.tier > acc) return curr.tier;
+      return acc;
+    }, 1);
 
-      const defensesAndKickers = new Set(
-        rankingsToUse
-          .filter((ranking) => {
-            return ranking.pos === 'DST' || ranking.pos === 'K';
-          })
-          .map((ranking) => ranking.name)
-      );
+    const defensesAndKickers = new Set(
+      rankingsToUse
+        .filter((ranking) => {
+          return ranking.pos === 'DST' || ranking.pos === 'K';
+        })
+        .map((ranking) => ranking.name)
+    );
 
-      const dstAndKProjections = projections
-        .filter((proj) => proj.pos === 'DST' || proj.pos === 'K')
-        .sort((a, b) => b.points[format] - a.points[format]);
+    const dstAndKProjections = projections
+      .filter((proj) => proj.pos === 'DST' || proj.pos === 'K')
+      .sort((a, b) => b.points[format] - a.points[format]);
 
-      dstAndKProjections.forEach((proj) => {
-        if (!defensesAndKickers.has(proj.name)) {
-          rankingsToUse.push({
-            name: proj.name,
-            pos: proj.pos,
-            tier: nextHighestTier,
-            rank: rankingsToUse.length + 1,
-          });
-        }
-      });
-    }
+    dstAndKProjections.forEach((proj) => {
+      if (!defensesAndKickers.has(proj.name)) {
+        rankingsToUse.push({
+          name: proj.name,
+          pos: proj.pos,
+          tier: nextHighestTier,
+          rank: rankingsToUse.length + 1,
+        });
+      }
+    });
 
     rankingsToUse.forEach((ranking) => {
       let team = parseTeam(ranking, playerMap);
@@ -211,7 +183,7 @@ export default async function handler(
         adp: playerMap.get(normalizePlayerName(ranking.name))?.rank ?? 0,
         tier: ranking.tier,
         isRookie,
-        vsAdp: parseVsAdp(dataSource, ranking, playerMap),
+        vsAdp: parseVsAdp(ranking, playerMap),
       });
     });
 
@@ -223,7 +195,7 @@ export default async function handler(
 
   calculatePositionalRankings(players);
 
-  if (dataSource === 'boris' && borisLastModified) {
+  if (borisLastModified) {
     res.setHeader('x-rankings-last-modified', borisLastModified);
   }
 
