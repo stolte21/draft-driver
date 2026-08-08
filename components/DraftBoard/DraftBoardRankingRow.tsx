@@ -190,34 +190,45 @@ const DraftBoardRankingRow = (
               )}
             </Text>
             {useScarcityAdjustment && (
-              <Text
-                display={['none', 'none', 'none', 'block']}
-                marginRight={2}
-                color="whiteAlpha.500"
-                fontSize="sm"
-              >
-                #{player.rank}
-              </Text>
+              <Tooltip label="Original rank before scarcity adjustment">
+                <Text
+                  pointerEvents="auto"
+                  display={['none', 'none', 'none', 'block']}
+                  marginRight={2}
+                  color="whiteAlpha.500"
+                  fontSize="sm"
+                >
+                  #{player.rank}
+                </Text>
+              </Tooltip>
             )}
             {player.adp > 0 && (
-              <Text
-                display={['none', 'none', 'block']}
-                marginRight={2}
-                color="whiteAlpha.500"
-                fontSize="sm"
-              >
-                {getExpectedRound(player.adp, numTeams, rosterSize)}
-              </Text>
+              <Tooltip label="Projected draft window based on ADP">
+                <Text
+                  pointerEvents="auto"
+                  display={['none', 'none', 'block']}
+                  marginRight={2}
+                  color="whiteAlpha.500"
+                  fontSize="sm"
+                >
+                  {getExpectedRound(player.adp, numTeams, rosterSize)}
+                </Text>
+              </Tooltip>
             )}
             {player.vsAdp !== undefined && player.vsAdp !== 0 && (
-              <Text
-                display={['none', 'none', 'block']}
-                marginRight={2}
-                color="whiteAlpha.500"
+              <Tooltip
+                label={`Ranked ${Math.abs(player.vsAdp)} spot${Math.abs(player.vsAdp) === 1 ? '' : 's'} ${player.vsAdp > 0 ? 'higher' : 'lower'} than ADP`}
               >
-                {player.vsAdp > 0 && '+'}
-                {player.vsAdp}
-              </Text>
+                <Text
+                  pointerEvents="auto"
+                  display={['none', 'none', 'block']}
+                  marginRight={2}
+                  color="whiteAlpha.500"
+                >
+                  {player.vsAdp > 0 && '+'}
+                  {player.vsAdp}
+                </Text>
+              </Tooltip>
             )}
             {Boolean(player.tier) && (
               <Text
