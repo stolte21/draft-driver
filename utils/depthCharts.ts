@@ -1,5 +1,8 @@
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import { DepthChart, DepthChartPlayer, Position } from 'types';
 import { parseId } from 'utils';
+import { cached } from 'utils/cache';
 
 export const NFL_TEAMS = [
   'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE',
@@ -60,4 +63,72 @@ export function buildDepthCharts(
         )
         .map(({ order: _order, ...player }) => player),
     }));
+}
+
+const SLEEPER_PLAYERS_URL = 'https://api.sleeper.app/v1/players/nfl';
+const DEPTH_CHARTS_TTL_MS = 24 * 60 * 60 * 1000;
+// larger timeout than projections — this payload is ~14MB
+const SLEEPER_TIMEOUT_MS = 30_000;
+const DISK_CACHE_PATH = join(process.cwd(), '.cache', 'sleeper-players.json');
+
+async function fetchSleeperPlayers(): Promise<
+  Record<string, SleeperPlayerRecord>
+> {
+  // AbortSignal.timeout is supported at runtime (Node 18+) but isn't in the
+  // DOM lib types bundled with this TS version.
+  const response = await fetch(SLEEPER_PLAYERS_URL, {
+    signal: (AbortSignal as any).timeout(SLEEPER_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Sleeper players request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+function readDiskCache(): Record<string, SleeperPlayerRecord> | null {
+  try {
+    const stats = statSync(DISK_CACHE_PATH);
+    if (Date.now() - stats.mtimeMs > DEPTH_CHARTS_TTL_MS) return null;
+    return JSON.parse(readFileSync(DISK_CACHE_PATH, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+function writeDiskCache(players: Record<string, SleeperPlayerRecord>) {
+  try {
+    mkdirSync(dirname(DISK_CACHE_PATH), { recursive: true });
+    writeFileSync(DISK_CACHE_PATH, JSON.stringify(players));
+  } catch {
+    // best-effort; the disk cache is a dev convenience only
+  }
+}
+
+/**
+ * Sleeper asks that the players endpoint be hit at most ~once/day. The
+ * in-memory cache handles that in production, but in dev it resets on
+ * every restart/recompile, so development also persists the payload to a
+ * gitignored disk cache reused while it's less than 24h old.
+ */
+async function loadSleeperPlayers(): Promise<
+  Record<string, SleeperPlayerRecord>
+> {
+  if (process.env.NODE_ENV === 'production') {
+    return fetchSleeperPlayers();
+  }
+
+  const fromDisk = readDiskCache();
+  if (fromDisk) return fromDisk;
+
+  const players = await fetchSleeperPlayers();
+  writeDiskCache(players);
+  return players;
+}
+
+export async function getDepthCharts(): Promise<DepthChart[]> {
+  return cached('depth-charts', DEPTH_CHARTS_TTL_MS, async () =>
+    buildDepthCharts(await loadSleeperPlayers())
+  );
 }
