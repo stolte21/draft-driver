@@ -50,3 +50,39 @@ export type ProjectedPlayer = {
   adp: Partial<Record<Format, number>>;
   isRookie: boolean;
 };
+
+export type PlayerNewsItem = {
+  title: string;
+  description: string | null;
+  analysis: string | null;
+  source: string;
+  url: string | null;
+  published: number; // epoch ms
+};
+
+export type PlayerDetails = {
+  playerId: string;
+  name: string;
+  team: string | null;
+  position: string;
+  number: number | null;
+  age: number | null;
+  birthDate: string | null;
+  heightIn: number | null;
+  weightLb: number | null;
+  college: string | null;
+  yearsExp: number | null;
+  rookieYear: number | null; // year drafted, from metadata.rookie_year
+  status: string | null; // Active, Inactive, Injured Reserve, ...
+  depthChartPosition: string | null;
+  depthChartOrder: number | null;
+  injury: {
+    status: string;
+    bodyPart: string | null;
+    notes: string | null;
+    startDate: string | null;
+  } | null;
+  byeWeek: number | null;
+  photoUrl: string;
+  news: PlayerNewsItem[];
+};
