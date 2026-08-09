@@ -168,6 +168,39 @@ describe('parseProjection', () => {
     expect(parsed?.isRookie).toBe(true);
   });
 
+  it('carries injury status and body part onto the ProjectedPlayer', () => {
+    const parsed = parseProjection({
+      stats: record.stats,
+      player: {
+        ...record.player,
+        injury_status: 'Questionable',
+        injury_body_part: 'Back',
+      },
+      team: 'BUF',
+    });
+
+    expect(parsed?.injuryStatus).toBe('Questionable');
+    expect(parsed?.injuryBodyPart).toBe('Back');
+  });
+
+  it('omits injury fields when they are null or missing', () => {
+    const nullInjury = parseProjection({
+      stats: record.stats,
+      player: { ...record.player, injury_status: null, injury_body_part: null },
+      team: 'BUF',
+    });
+    const missingInjury = parseProjection({
+      stats: record.stats,
+      player: record.player,
+      team: 'BUF',
+    });
+
+    expect(nullInjury?.injuryStatus).toBeUndefined();
+    expect(nullInjury?.injuryBodyPart).toBeUndefined();
+    expect(missingInjury?.injuryStatus).toBeUndefined();
+    expect(missingInjury?.injuryBodyPart).toBeUndefined();
+  });
+
   it('sets isRookie false when years_exp is a positive number or missing', () => {
     const veteran = parseProjection({
       stats: record.stats,
@@ -286,6 +319,52 @@ describe('attachProjections', () => {
     const players = [makePlayer({ name: 'Unknown Guy', position: 'RB' })];
     attachProjections(players, [], 'ppr');
     expect(players[0].projectedPoints).toBeUndefined();
+  });
+
+  it('sets injury status and body part on a matched player', () => {
+    const players = [makePlayer({ name: 'Jahmyr Gibbs', position: 'RB' })];
+    const projections = [
+      makeProjection({
+        name: 'Jahmyr Gibbs',
+        normalizedName: 'jahmyr gibbs',
+        pos: 'RB',
+        injuryStatus: 'Questionable',
+        injuryBodyPart: 'Back',
+      }),
+    ];
+
+    attachProjections(players, projections, 'ppr');
+    expect(players[0].injuryStatus).toBe('Questionable');
+    expect(players[0].injuryBodyPart).toBe('Back');
+  });
+
+  it('leaves injury fields undefined for a matched player without injury data', () => {
+    const players = [makePlayer({ name: 'Healthy Guy', position: 'RB' })];
+    const projections = [
+      makeProjection({ name: 'Healthy Guy', normalizedName: 'healthy guy', pos: 'RB' }),
+    ];
+
+    attachProjections(players, projections, 'ppr');
+    expect(players[0].injuryStatus).toBeUndefined();
+    expect(players[0].injuryBodyPart).toBeUndefined();
+  });
+
+  it('sets injury status on matched DSTs via the team path', () => {
+    const players = [
+      makePlayer({ name: 'Baltimore Ravens', position: 'DST', team: 'BAL' }),
+    ];
+    const projections = [
+      makeProjection({
+        name: 'Baltimore',
+        normalizedName: 'baltimore',
+        pos: 'DST',
+        team: 'BAL',
+        injuryStatus: 'Out',
+      }),
+    ];
+
+    attachProjections(players, projections, 'standard');
+    expect(players[0].injuryStatus).toBe('Out');
   });
 
   it('sets projectedPoints to 0 for a matching player with zero projected points', () => {

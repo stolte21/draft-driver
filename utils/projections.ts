@@ -39,6 +39,8 @@ export type SleeperProjection = {
     last_name: string;
     position: string;
     years_exp?: number | null;
+    injury_status?: string | null;
+    injury_body_part?: string | null;
   } | null;
   team: string | null;
 };
@@ -102,6 +104,8 @@ export function parseProjection(
     },
     adp,
     isRookie: record.player.years_exp === 0,
+    injuryStatus: record.player.injury_status ?? undefined,
+    injuryBodyPart: record.player.injury_body_part ?? undefined,
   };
 }
 
@@ -169,6 +173,8 @@ export function attachProjections(
 
     if (proj) {
       player.projectedPoints = proj.points[format];
+      player.injuryStatus = proj.injuryStatus;
+      player.injuryBodyPart = proj.injuryBodyPart;
     }
   });
 }

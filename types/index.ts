@@ -15,6 +15,8 @@ export type Player = {
   tier?: number;
   vsAdp?: number;
   projectedPoints?: number;
+  injuryStatus?: string;
+  injuryBodyPart?: string;
 };
 
 export type RosteredPlayer = Player & {
@@ -49,6 +51,8 @@ export type ProjectedPlayer = {
   points: Record<Format, number>;
   adp: Partial<Record<Format, number>>;
   isRookie: boolean;
+  injuryStatus?: string;
+  injuryBodyPart?: string;
 };
 
 // PlayerNewsItem/PlayerDetails model the /api/player-details JSON response:
