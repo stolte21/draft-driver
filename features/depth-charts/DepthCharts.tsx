@@ -85,9 +85,14 @@ export function DepthCharts() {
 
     updateActiveTeam();
     // the page scrolls in an inner Box; scroll events don't bubble but are
-    // observable on window in the capture phase
+    // observable on window in the capture phase. Resize changes layout
+    // without firing scroll, so it also triggers a recompute.
     window.addEventListener('scroll', updateActiveTeam, true);
-    return () => window.removeEventListener('scroll', updateActiveTeam, true);
+    window.addEventListener('resize', updateActiveTeam);
+    return () => {
+      window.removeEventListener('scroll', updateActiveTeam, true);
+      window.removeEventListener('resize', updateActiveTeam);
+    };
   }, [filteredDepthCharts]);
 
   const scrollToTeam = (team: string) => {
