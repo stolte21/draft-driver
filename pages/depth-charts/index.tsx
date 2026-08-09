@@ -29,7 +29,7 @@ export const ChartsPage: NextPage = () => {
         }
       `}</style>
       <AppBar />
-      <Box height="calc(100vh - 64px)" overflowY="auto" padding={6}>
+      <Box height="calc(100vh - 64px)" overflowY="auto" paddingX={6} paddingBottom={6}>
         <Container maxW="container.xl">
           <DepthCharts />
         </Container>

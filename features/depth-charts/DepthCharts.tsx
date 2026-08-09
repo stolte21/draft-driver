@@ -113,6 +113,7 @@ export function DepthCharts() {
         top={0}
         zIndex={20}
         height={TOOLBAR_HEIGHT}
+        mb={2}
         bg={toolbarBg}
         spacing={4}
         justifyContent="space-between"
