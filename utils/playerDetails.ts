@@ -1,4 +1,5 @@
 import { PlayerDetails, PlayerNewsItem } from 'types';
+import { cached } from 'utils/cache';
 import { normalizePlayerName } from 'utils/projections';
 import { SleeperPlayerRecord } from 'utils/sleeperPlayers';
 
@@ -189,4 +190,59 @@ export function parseNewsItems(raw: unknown): PlayerNewsItem[] {
     })
     .filter((item): item is PlayerNewsItem => item !== null)
     .sort((a, b) => b.published - a.published);
+}
+
+const SCHEDULE_URL_BASE = 'https://api.sleeper.app/schedule/nfl/regular';
+const GRAPHQL_URL = 'https://sleeper.com/graphql';
+const SCHEDULE_TTL_MS = 24 * 60 * 60 * 1000;
+const NEWS_TTL_MS = 60 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 10_000;
+
+export async function getByeWeeks(
+  season: number
+): Promise<Record<string, number>> {
+  return cached(`bye-weeks-${season}`, SCHEDULE_TTL_MS, async () => {
+    // AbortSignal.timeout is supported at runtime (Node 18+) but isn't in
+    // the DOM lib types bundled with this TS version.
+    const response = await fetch(`${SCHEDULE_URL_BASE}/${season}`, {
+      signal: (AbortSignal as any).timeout(FETCH_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Sleeper schedule request failed: ${response.status}`);
+    }
+
+    return deriveByeWeeks(await response.json());
+  });
+}
+
+/**
+ * Sleeper's GraphQL endpoint is undocumented — any failure (endpoint
+ * change, timeout, unexpected shape) degrades to an empty news list
+ * rather than failing the player-details request.
+ */
+export async function fetchPlayerNews(
+  playerId: string
+): Promise<PlayerNewsItem[]> {
+  if (!/^[A-Za-z0-9]+$/.test(playerId)) return [];
+
+  try {
+    return await cached(`player-news-${playerId}`, NEWS_TTL_MS, async () => {
+      const query = `query get_player_news { get_player_news(sport: "nfl", player_id: "${playerId}", limit: 5) { metadata source published } }`;
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+        signal: (AbortSignal as any).timeout(FETCH_TIMEOUT_MS),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sleeper news request failed: ${response.status}`);
+      }
+
+      return parseNewsItems(await response.json());
+    });
+  } catch {
+    return [];
+  }
 }

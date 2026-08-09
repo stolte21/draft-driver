@@ -313,6 +313,12 @@ describe('buildPlayerDetails', () => {
     expect(details.heightIn).toBe(72);
   });
 
+  it('parses two-digit feet-inches heights', () => {
+    const record = player({ height: `5'11"` });
+
+    expect(buildPlayerDetails(record, null, []).heightIn).toBe(71);
+  });
+
   it('rejects a height of "0"', () => {
     const record = player({ height: '0' });
 
