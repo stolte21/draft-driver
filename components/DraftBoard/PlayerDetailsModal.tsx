@@ -11,7 +11,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   SimpleGrid,
   Skeleton,
@@ -39,6 +38,25 @@ function formatYearsPro(yearsExp: number | null): string | null {
   return `${yearsExp} ${yearsExp === 1 ? 'year' : 'years'}`;
 }
 
+// Sleeper's news feed keys sources by machine name. Only these three appear
+// in practice today (sampled across the top ~60 players); anything new falls
+// back to a title-cased version of the key.
+const NEWS_SOURCE_LABELS: Record<string, string> = {
+  rotoballer: 'RotoBaller',
+  rotowire: 'RotoWire',
+  fantasy_pros: 'FantasyPros',
+};
+
+function formatNewsSource(source: string): string {
+  return (
+    NEWS_SOURCE_LABELS[source] ??
+    source
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  );
+}
+
 const StatItem = (props: { label: string; value: string | null }) => {
   if (!props.value) return null;
   return (
@@ -56,7 +74,9 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
 
   return (
     <>
-      <Flex gap={4} alignItems="center">
+      {/* paddingRight keeps long names clear of the absolutely-positioned
+          close button now that the modal has no header */}
+      <Flex gap={4} alignItems="center" paddingRight={8}>
         <Avatar
           size="xl"
           name={details.name}
@@ -75,7 +95,8 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
               .join(' · ')}
           </Text>
           {details.injury && (
-            <Badge colorScheme="red" marginTop={1}>
+            // badges default to nowrap; long body parts must wrap on mobile
+            <Badge colorScheme="red" marginTop={1} whiteSpace="normal">
               {details.injury.status}
               {details.injury.bodyPart && ` — ${details.injury.bodyPart}`}
             </Badge>
@@ -139,14 +160,16 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
                         isExternal
                         rel="noopener noreferrer"
                       >
-                        {item.title} <ExternalLinkIcon marginX={1} />
+                        {/* the &nbsp; glues the icon to the last word so it
+                            can't wrap onto a line of its own */}
+                        {item.title}&nbsp;<ExternalLinkIcon marginBottom={1} />
                       </Link>
                     ) : (
                       item.title
                     )}
                   </Text>
                   <Text fontSize="xs" color="whiteAlpha.700">
-                    {item.source}
+                    {formatNewsSource(item.source)}
                     {item.published > 0 &&
                       ` · ${new Date(item.published).toLocaleDateString()}`}
                   </Text>
@@ -220,14 +243,15 @@ const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
-        {/* reserve space for the absolutely-positioned close button so
-            long player names don't run underneath it on small screens */}
-        <ModalHeader paddingRight={12} noOfLines={1}>
-          Player Details{activePlayer ? `: ${activePlayer.name}` : ''}
-        </ModalHeader>
+      {/* no ModalHeader — the body's player card is the title, so the modal
+          is labeled for assistive tech via aria-label instead */}
+      <ModalContent
+        aria-label={
+          activePlayer ? `Player details: ${activePlayer.name}` : 'Player details'
+        }
+      >
         <ModalCloseButton />
-        <ModalBody paddingBottom={6}>
+        <ModalBody paddingY={6}>
           {query.isLoading && <LoadingBody />}
           {query.data ? (
             <DetailsBody details={query.data} />
@@ -235,7 +259,7 @@ const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
             query.error &&
             activePlayer && (
               <>
-                <Heading size="md" marginBottom={2}>
+                <Heading size="md" marginBottom={2} paddingRight={8}>
                   {activePlayer.name}
                 </Heading>
                 {isNotFound ? (
