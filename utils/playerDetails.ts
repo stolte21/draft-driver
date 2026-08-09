@@ -197,6 +197,8 @@ const GRAPHQL_URL = 'https://sleeper.com/graphql';
 const SCHEDULE_TTL_MS = 24 * 60 * 60 * 1000;
 const NEWS_TTL_MS = 60 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 10_000;
+// news is a nice-to-have; fail fast rather than block the details response
+const NEWS_TIMEOUT_MS = 4_000;
 
 export async function getByeWeeks(
   season: number
@@ -212,7 +214,12 @@ export async function getByeWeeks(
       throw new Error(`Sleeper schedule request failed: ${response.status}`);
     }
 
-    return deriveByeWeeks(await response.json());
+    const payload = await response.json();
+    if (!Array.isArray(payload) || payload.length === 0) {
+      throw new Error('Unexpected Sleeper schedule payload');
+    }
+
+    return deriveByeWeeks(payload);
   });
 }
 
@@ -224,7 +231,7 @@ export async function getByeWeeks(
 export async function fetchPlayerNews(
   playerId: string
 ): Promise<PlayerNewsItem[]> {
-  if (!/^[A-Za-z0-9]+$/.test(playerId)) return [];
+  if (!/^[A-Za-z0-9]{1,16}$/.test(playerId)) return [];
 
   try {
     return await cached(`player-news-${playerId}`, NEWS_TTL_MS, async () => {
@@ -233,7 +240,7 @@ export async function fetchPlayerNews(
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
-        signal: (AbortSignal as any).timeout(FETCH_TIMEOUT_MS),
+        signal: (AbortSignal as any).timeout(NEWS_TIMEOUT_MS),
       });
 
       if (!response.ok) {

@@ -1,11 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildPlayerDetails,
   deriveByeWeeks,
+  fetchPlayerNews,
   findSleeperPlayer,
+  getByeWeeks,
   parseNewsItems,
   ScheduleGame,
 } from '../utils/playerDetails';
+import { clearCache } from '../utils/cache';
 import { SleeperPlayerRecord } from '../utils/sleeperPlayers';
 
 function game(week: number, home: string, away: string): ScheduleGame {
@@ -415,5 +418,67 @@ describe('parseNewsItems', () => {
       'Middle',
       'Older',
     ]);
+  });
+});
+
+describe('fetchPlayerNews', () => {
+  beforeEach(() => {
+    clearCache();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns [] without calling fetch for an invalid player id', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(await fetchPlayerNews('CIN team!')).toEqual([]);
+    expect(await fetchPlayerNews('')).toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('returns [] when the request responds non-ok', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => ({}),
+      })
+    );
+
+    expect(await fetchPlayerNews('7564')).toEqual([]);
+  });
+
+  it('returns [] when the request rejects', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
+
+    expect(await fetchPlayerNews('7564')).toEqual([]);
+  });
+});
+
+describe('getByeWeeks', () => {
+  beforeEach(() => {
+    clearCache();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('rejects on an empty schedule payload without caching the failure', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => [] })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [{ week: 1, home: 'CIN', away: 'PIT' }],
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(getByeWeeks(2026)).rejects.toThrow();
+    await expect(getByeWeeks(2026)).resolves.toEqual({});
   });
 });
