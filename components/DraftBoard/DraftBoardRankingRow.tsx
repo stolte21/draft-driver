@@ -21,6 +21,7 @@ import { MouseEventHandler } from 'react';
 type DraftBoardRankingRowProps = {
   players: Player[];
   onEditNote: (player: Player) => void;
+  onViewDetails: (player: Player) => void;
 };
 
 const getExpectedRound = (
@@ -263,6 +264,9 @@ const DraftBoardRankingRow = (
             onClick={() => dispatch({ type: 'add-keeper', payload: player })}
           >
             Add as Keeper
+          </MenuItem>
+          <MenuItem onClick={() => props.data.onViewDetails(player)}>
+            View Player Details
           </MenuItem>
         </MenuList>
       </Menu>
