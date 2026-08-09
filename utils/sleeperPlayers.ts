@@ -35,7 +35,7 @@ const SLEEPER_PLAYERS_TTL_MS = 24 * 60 * 60 * 1000;
 const SLEEPER_TIMEOUT_MS = 30_000;
 const DISK_CACHE_PATH = join(process.cwd(), '.cache', 'sleeper-players.json');
 
-async function fetchSleeperPlayers(): Promise<Record<string, any>> {
+async function fetchSleeperPlayers(): Promise<Record<string, SleeperPlayerRecord>> {
   // AbortSignal.timeout is supported at runtime (Node 18+) but isn't in the
   // DOM lib types bundled with this TS version.
   const response = await fetch(SLEEPER_PLAYERS_URL, {
@@ -46,10 +46,19 @@ async function fetchSleeperPlayers(): Promise<Record<string, any>> {
     throw new Error(`Sleeper players request failed: ${response.status}`);
   }
 
-  return response.json();
+  const payload = await response.json();
+  if (
+    payload === null ||
+    typeof payload !== 'object' ||
+    Array.isArray(payload)
+  ) {
+    throw new Error('Unexpected Sleeper players payload');
+  }
+
+  return payload;
 }
 
-function readDiskCache(): Record<string, any> | null {
+function readDiskCache(): Record<string, SleeperPlayerRecord> | null {
   try {
     const stats = statSync(DISK_CACHE_PATH);
     if (Date.now() - stats.mtimeMs > SLEEPER_PLAYERS_TTL_MS) return null;
@@ -59,7 +68,7 @@ function readDiskCache(): Record<string, any> | null {
   }
 }
 
-function writeDiskCache(players: Record<string, any>) {
+function writeDiskCache(players: Record<string, SleeperPlayerRecord>) {
   try {
     mkdirSync(dirname(DISK_CACHE_PATH), { recursive: true });
     writeFileSync(DISK_CACHE_PATH, JSON.stringify(players));
@@ -74,8 +83,8 @@ function writeDiskCache(players: Record<string, any>) {
  * every restart/recompile, so development also persists the payload to a
  * gitignored disk cache reused while it's less than 24h old.
  */
-async function loadSleeperPlayers(): Promise<Record<string, any>> {
-  if (process.env.NODE_ENV === 'production') {
+async function loadSleeperPlayers(): Promise<Record<string, SleeperPlayerRecord>> {
+  if (process.env.NODE_ENV !== 'development') {
     return fetchSleeperPlayers();
   }
 
@@ -87,7 +96,10 @@ async function loadSleeperPlayers(): Promise<Record<string, any>> {
   return players;
 }
 
-function narrowRecord(raw: any): SleeperPlayerRecord {
+// Explicit object literal is intentional: a dynamic key-loop produces
+// dictionary-mode objects that retain ~3x the memory, so the enumeration
+// ensures compact memory for the 24h cache.
+function narrowRecord(raw: SleeperPlayerRecord): SleeperPlayerRecord {
   return {
     player_id: raw.player_id ?? null,
     active: raw.active ?? null,
@@ -120,6 +132,8 @@ function narrowRecord(raw: any): SleeperPlayerRecord {
 /**
  * The Sleeper players blob, narrowed to the fields this app reads and
  * cached in-memory for 24h. Shared by depth charts and player details.
+ * The returned map is shared by all callers via the cache — treat records
+ * as immutable, never mutate them.
  */
 export async function getSleeperPlayers(): Promise<
   Record<string, SleeperPlayerRecord>
