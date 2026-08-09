@@ -51,6 +51,9 @@ export type ProjectedPlayer = {
   isRookie: boolean;
 };
 
+// PlayerNewsItem/PlayerDetails model the /api/player-details JSON response:
+// fields are always present and explicitly null when unknown (unlike the
+// optional `?` style used for client-side types above).
 export type PlayerNewsItem = {
   title: string;
   description: string | null;
