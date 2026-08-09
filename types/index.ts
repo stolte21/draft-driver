@@ -33,7 +33,7 @@ export type ScrapedRanking = {
 export type DepthChartPlayer = {
   id: string;
   name: string;
-  ecr: number;
+  ecr?: number;
   pos: Position;
 };
 
