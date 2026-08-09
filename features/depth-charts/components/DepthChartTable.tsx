@@ -27,12 +27,13 @@ function playerIsValue(player: Player) {
 
 export function DepthChartTable(props: DepthChartTableProps) {
   const valueBg = useColorModeValue('blue.100', 'blue.900');
+  const borderColor = useColorModeValue('gray.300', 'gray.600');
 
   return (
     <TableContainer
       height="100%"
       border="1px"
-      borderColor="gray.600"
+      borderColor={borderColor}
       borderRadius="md"
       padding={2}
     >

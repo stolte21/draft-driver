@@ -98,8 +98,10 @@ tables scroll by. Lower z-index than the toolbar.
   vertically in compact type.
 - Clicking an abbreviation smooth-scrolls to that team's section (each team
   `Box` gets `id={team}`; scroll via `scrollIntoView`).
-- An `IntersectionObserver` scroll-spy highlights the abbreviation of the
-  team currently in view, so the rail doubles as a position indicator.
+- A scroll-spy (capture-phase window scroll + resize listener, since the
+  inner scroll container's events don't bubble) highlights the abbreviation
+  of the team currently in view, so the rail doubles as a position
+  indicator.
 - 32 rows need roughly 580px of height, so the rail renders at the `md`
   breakpoint and up; on mobile it is hidden and search covers the
   find-a-team case.
