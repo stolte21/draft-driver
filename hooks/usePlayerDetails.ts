@@ -36,6 +36,9 @@ function usePlayerDetails(player: Player | null) {
     staleTime: 60 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
     retry: false,
+    // avoid refetching stale player details on window focus while the
+    // modal is closed (or backgrounded) — nothing is watching the result
+    refetchOnWindowFocus: false,
   });
 }
 

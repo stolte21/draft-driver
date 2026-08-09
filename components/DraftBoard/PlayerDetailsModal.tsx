@@ -40,10 +40,10 @@ function formatYearsPro(yearsExp: number | null): string | null {
 }
 
 const StatItem = (props: { label: string; value: string | null }) => {
-  if (props.value == null) return null;
+  if (!props.value) return null;
   return (
     <Box>
-      <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+      <Text fontSize="xs" color="whiteAlpha.700" textTransform="uppercase">
         {props.label}
       </Text>
       <Text>{props.value}</Text>
@@ -65,7 +65,7 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
         />
         <Box>
           <Heading size="md">{details.name}</Heading>
-          <Text color="gray.500">
+          <Text color="whiteAlpha.700">
             {[
               details.team,
               details.position,
@@ -84,7 +84,7 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
       </Flex>
 
       {details.injury?.notes && (
-        <Text fontSize="sm" color="gray.500" marginTop={2}>
+        <Text fontSize="sm" color="whiteAlpha.700" marginTop={2}>
           {details.injury.notes}
         </Text>
       )}
@@ -124,33 +124,40 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
       {details.news.length > 0 && (
         <>
           <Divider marginY={6} />
-          <Heading size="sm" marginBottom={4}>
+          <Heading as="h3" size="sm" marginBottom={4}>
             Recent News
           </Heading>
           <Flex flexDirection="column" gap={5}>
-            {details.news.map((item, index) => (
-              <Box key={index}>
-                <Text fontWeight="bold">
-                  {item.url?.startsWith('https://') ? (
-                    <Link href={item.url} isExternal>
-                      {item.title} <ExternalLinkIcon marginX={1} />
-                    </Link>
-                  ) : (
-                    item.title
-                  )}
-                </Text>
-                <Text fontSize="xs" color="gray.500">
-                  {item.source}
-                  {item.published > 0 &&
-                    ` · ${new Date(item.published).toLocaleDateString()}`}
-                </Text>
-                {(item.description || item.analysis) && (
-                  <Text fontSize="sm" marginTop={1} noOfLines={4}>
-                    {item.description ?? item.analysis}
+            {details.news.map((item, index) => {
+              const body = item.description || item.analysis;
+              return (
+                <Box key={index}>
+                  <Text fontWeight="bold">
+                    {item.url?.startsWith('https://') ? (
+                      <Link
+                        href={item.url}
+                        isExternal
+                        rel="noopener noreferrer"
+                      >
+                        {item.title} <ExternalLinkIcon marginX={1} />
+                      </Link>
+                    ) : (
+                      item.title
+                    )}
                   </Text>
-                )}
-              </Box>
-            ))}
+                  <Text fontSize="xs" color="whiteAlpha.700">
+                    {item.source}
+                    {item.published > 0 &&
+                      ` · ${new Date(item.published).toLocaleDateString()}`}
+                  </Text>
+                  {body && (
+                    <Text fontSize="sm" marginTop={1} noOfLines={4}>
+                      {body}
+                    </Text>
+                  )}
+                </Box>
+              );
+            })}
           </Flex>
         </>
       )}
@@ -178,7 +185,7 @@ const FallbackBody = (props: { player: Player }) => (
         .filter(Boolean)
         .join(' · ')}
     </Text>
-    <Text color="gray.500" marginTop={2}>
+    <Text color="whiteAlpha.700" marginTop={2}>
       No additional details found for this player.
     </Text>
   </>
@@ -187,16 +194,21 @@ const FallbackBody = (props: { player: Player }) => (
 const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
   const [displayPlayer, setDisplayPlayer] = useState<Player | null>(null);
 
-  // keep the last player around so the modal doesn't blank out while
-  // Chakra plays the close animation after `player` goes back to null —
-  // the query hook also keys off displayPlayer for the same reason
+  // keep the last player around solely so the body persists through
+  // Chakra's close animation after `player` goes back to null — the
+  // query hook itself keys off `activePlayer` (below), not this directly
   useEffect(() => {
     if (props.player) {
       setDisplayPlayer(props.player);
     }
   }, [props.player]);
 
-  const query = usePlayerDetails(displayPlayer);
+  // props.player is the source of truth while the modal is open; once it
+  // goes back to null (close animation), fall back to the last known
+  // player so the body doesn't flash blank/stale mid-transition.
+  const activePlayer = props.player ?? displayPlayer;
+
+  const query = usePlayerDetails(activePlayer);
   const isNotFound =
     query.error instanceof Error && query.error.message === NOT_FOUND_ERROR;
 
@@ -209,24 +221,30 @@ const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Player Details</ModalHeader>
+        <ModalHeader>
+          Player Details{activePlayer ? `: ${activePlayer.name}` : ''}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody paddingBottom={6}>
           {query.isLoading && <LoadingBody />}
-          {query.data && <DetailsBody details={query.data} />}
-          {query.error && displayPlayer && (
-            <>
-              <Heading size="md" marginBottom={2}>
-                {displayPlayer.name}
-              </Heading>
-              {isNotFound ? (
-                <FallbackBody player={displayPlayer} />
-              ) : (
-                <Text color="gray.500">
-                  There was an error fetching player details.
-                </Text>
-              )}
-            </>
+          {query.data ? (
+            <DetailsBody details={query.data} />
+          ) : (
+            query.error &&
+            activePlayer && (
+              <>
+                <Heading size="md" marginBottom={2}>
+                  {activePlayer.name}
+                </Heading>
+                {isNotFound ? (
+                  <FallbackBody player={activePlayer} />
+                ) : (
+                  <Text color="whiteAlpha.700">
+                    There was an error fetching player details.
+                  </Text>
+                )}
+              </>
+            )
           )}
         </ModalBody>
       </ModalContent>
