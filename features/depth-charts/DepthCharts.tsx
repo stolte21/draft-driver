@@ -98,9 +98,12 @@ export function DepthCharts() {
   }, [filteredDepthCharts]);
 
   const scrollToTeam = (team: string) => {
+    // 'auto' resolves to an instant jump (no CSS scroll-behavior is set);
+    // native smooth scrolling scales duration with distance and feels
+    // sluggish across 32 teams
     document
       .getElementById(`team-${team}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      ?.scrollIntoView({ behavior: 'auto', block: 'start' });
   };
 
   const getPlayersByPosition = (
