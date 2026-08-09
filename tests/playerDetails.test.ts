@@ -1,0 +1,296 @@
+import { describe, expect, it } from 'vitest';
+import {
+  buildPlayerDetails,
+  deriveByeWeeks,
+  findSleeperPlayer,
+  parseNewsItems,
+  ScheduleGame,
+} from '../utils/playerDetails';
+import { SleeperPlayerRecord } from '../utils/sleeperPlayers';
+
+function game(week: number, home: string, away: string): ScheduleGame {
+  return { week, home, away };
+}
+
+describe('deriveByeWeeks', () => {
+  it('reports the single missing week per team', () => {
+    // 3-week season: CIN misses week 2, PIT misses week 3, BAL/CLE play all 3
+    const schedule = [
+      game(1, 'CIN', 'PIT'),
+      game(1, 'BAL', 'CLE'),
+      game(2, 'BAL', 'PIT'),
+      game(2, 'CLE', 'BAL'),
+      game(3, 'CIN', 'BAL'),
+      game(3, 'CLE', 'CIN'),
+    ];
+    const byes = deriveByeWeeks(schedule);
+
+    expect(byes.CIN).toBe(2);
+    expect(byes.PIT).toBe(3);
+    expect(byes.BAL).toBeUndefined();
+    expect(byes.CLE).toBeUndefined();
+  });
+
+  it('omits teams missing more than one week rather than guessing', () => {
+    const schedule = [game(1, 'CIN', 'PIT'), game(4, 'CIN', 'PIT')];
+    const byes = deriveByeWeeks(schedule);
+
+    expect(byes.CIN).toBeUndefined();
+    expect(byes.PIT).toBeUndefined();
+  });
+
+  it('returns an empty object for an empty schedule', () => {
+    expect(deriveByeWeeks([])).toEqual({});
+  });
+});
+
+function player(overrides: Partial<SleeperPlayerRecord>): SleeperPlayerRecord {
+  return {
+    player_id: '1',
+    active: true,
+    position: 'WR',
+    full_name: 'Test Player',
+    team: 'CIN',
+    search_rank: 100,
+    ...overrides,
+  };
+}
+
+describe('findSleeperPlayer', () => {
+  it('matches skill players by normalized name and position', () => {
+    const records = {
+      '7564': player({
+        player_id: '7564',
+        full_name: "Ja'Marr Chase",
+        position: 'WR',
+      }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'JaMarr Chase',
+      position: 'WR',
+    });
+
+    expect(found?.player_id).toBe('7564');
+  });
+
+  it('ignores name suffixes like III', () => {
+    const records = {
+      '1': player({ player_id: '1', full_name: 'Kenneth Walker III' }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'Kenneth Walker',
+      position: 'WR',
+    });
+
+    expect(found?.player_id).toBe('1');
+  });
+
+  it('requires the position to match', () => {
+    const records = {
+      '1': player({ player_id: '1', full_name: 'Josh Allen', position: 'QB' }),
+    };
+
+    expect(
+      findSleeperPlayer(records, { name: 'Josh Allen', position: 'WR' })
+    ).toBeNull();
+  });
+
+  it('prefers the lower search_rank on duplicate names', () => {
+    const records = {
+      '1': player({ player_id: '1', full_name: 'Mike Williams', search_rank: 5000 }),
+      '2': player({ player_id: '2', full_name: 'Mike Williams', search_rank: 120 }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'Mike Williams',
+      position: 'WR',
+    });
+
+    expect(found?.player_id).toBe('2');
+  });
+
+  it('matches DSTs by team key', () => {
+    const records = {
+      CIN: player({
+        player_id: 'CIN',
+        position: 'DEF',
+        full_name: null,
+        first_name: 'Cincinnati',
+        last_name: 'Bengals',
+      }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'Cincinnati Bengals',
+      position: 'DST',
+      team: 'CIN',
+    });
+
+    expect(found?.player_id).toBe('CIN');
+  });
+
+  it('returns null for a DST query without a team', () => {
+    expect(findSleeperPlayer({}, { name: 'Bengals', position: 'DST' })).toBeNull();
+  });
+});
+
+describe('buildPlayerDetails', () => {
+  it('assembles details from a skill-player record', () => {
+    const record = player({
+      player_id: '7564',
+      full_name: "Ja'Marr Chase",
+      position: 'WR',
+      team: 'CIN',
+      number: 1,
+      age: 26,
+      birth_date: '2000-03-01',
+      height: '72',
+      weight: '205',
+      college: 'LSU',
+      years_exp: 5,
+      status: 'Active',
+      depth_chart_position: 'LWR',
+      depth_chart_order: 1,
+      metadata: { rookie_year: '2021' },
+    });
+
+    const details = buildPlayerDetails(record, 6, []);
+
+    expect(details).toEqual({
+      playerId: '7564',
+      name: "Ja'Marr Chase",
+      team: 'CIN',
+      position: 'WR',
+      number: 1,
+      age: 26,
+      birthDate: '2000-03-01',
+      heightIn: 72,
+      weightLb: 205,
+      college: 'LSU',
+      yearsExp: 5,
+      rookieYear: 2021,
+      status: 'Active',
+      depthChartPosition: 'LWR',
+      depthChartOrder: 1,
+      injury: null,
+      byeWeek: 6,
+      photoUrl: 'https://sleepercdn.com/content/nfl/players/7564.jpg',
+      news: [],
+    });
+  });
+
+  it('maps injury fields when injury_status is set', () => {
+    const record = player({
+      injury_status: 'PUP',
+      injury_body_part: 'Knee - ACL',
+      injury_notes: 'Surgery',
+    });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.injury).toEqual({
+      status: 'PUP',
+      bodyPart: 'Knee - ACL',
+      notes: 'Surgery',
+      startDate: null,
+    });
+  });
+
+  it('builds DST details with a team-logo photo and DST position', () => {
+    const record = player({
+      player_id: 'CIN',
+      position: 'DEF',
+      full_name: null,
+      first_name: 'Cincinnati',
+      last_name: 'Bengals',
+      team: 'CIN',
+      height: null,
+      weight: null,
+    });
+
+    const details = buildPlayerDetails(record, 6, []);
+
+    expect(details.name).toBe('Cincinnati Bengals');
+    expect(details.position).toBe('DST');
+    expect(details.photoUrl).toBe(
+      'https://sleepercdn.com/images/team_logos/nfl/cin.png'
+    );
+    expect(details.heightIn).toBeNull();
+    expect(details.weightLb).toBeNull();
+  });
+
+  it('nulls out unparseable numeric strings', () => {
+    const record = player({ height: 'tall', metadata: { rookie_year: '' } });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.heightIn).toBeNull();
+    expect(details.rookieYear).toBeNull();
+  });
+});
+
+describe('parseNewsItems', () => {
+  it('parses a GraphQL news payload', () => {
+    const payload = {
+      data: {
+        get_player_news: [
+          {
+            metadata: {
+              title: 'Chase Sets the Market',
+              description: 'A description.',
+              analysis: 'Some analysis.',
+              url: 'https://example.com/story',
+            },
+            source: 'rotoballer',
+            published: 1784906886000,
+          },
+        ],
+      },
+    };
+
+    expect(parseNewsItems(payload)).toEqual([
+      {
+        title: 'Chase Sets the Market',
+        description: 'A description.',
+        analysis: 'Some analysis.',
+        source: 'rotoballer',
+        url: 'https://example.com/story',
+        published: 1784906886000,
+      },
+    ]);
+  });
+
+  it('tolerates missing optional fields', () => {
+    const payload = {
+      data: {
+        get_player_news: [
+          { metadata: { title: 'Bare item' }, source: 'nfl', published: 123 },
+        ],
+      },
+    };
+
+    expect(parseNewsItems(payload)).toEqual([
+      {
+        title: 'Bare item',
+        description: null,
+        analysis: null,
+        source: 'nfl',
+        url: null,
+        published: 123,
+      },
+    ]);
+  });
+
+  it('drops malformed items and returns [] for garbage payloads', () => {
+    expect(parseNewsItems(null)).toEqual([]);
+    expect(parseNewsItems({})).toEqual([]);
+    expect(parseNewsItems({ data: { get_player_news: 'nope' } })).toEqual([]);
+    expect(
+      parseNewsItems({
+        data: { get_player_news: [{ source: 'x', published: 1 }] },
+      })
+    ).toEqual([]);
+  });
+});
