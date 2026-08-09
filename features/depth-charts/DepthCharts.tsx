@@ -16,7 +16,7 @@ import { useDraft } from 'providers/DraftProvider';
 import { normalizePlayerName } from 'utils/projections';
 import { DepthChartTable } from './components/DepthChartTable';
 import { TeamIndexRail } from './components/TeamIndexRail';
-import { DepthChart, DepthChartPlayer, Position } from 'types';
+import { DepthChart, DepthChartPlayer, Player, Position } from 'types';
 
 const POSITION_ORDER: Position[] = ['QB', 'RB', 'WR', 'TE'];
 export const TOOLBAR_HEIGHT = '56px';
@@ -108,8 +108,25 @@ export function DepthCharts() {
     return players.filter((player) => player.pos === position);
   };
 
+  // Sleeper and Boris Chen spell some names differently ("Marvin Harrison"
+  // vs "Marvin Harrison Jr."), so exact-id lookups miss; this fallback map
+  // keys rankings by normalized name + position instead.
+  const playersByNormalizedName = useMemo(() => {
+    const map: Record<string, Player> = {};
+    Object.values(playersMap).forEach((rankedPlayer) => {
+      map[`${normalizePlayerName(rankedPlayer.name)}|${rankedPlayer.position}`] =
+        rankedPlayer;
+    });
+    return map;
+  }, [playersMap]);
+
   const getPlayerWithAdp = (player: DepthChartPlayer) => {
-    const rankedPlayer = playersMap[player.id] ?? {};
+    const rankedPlayer =
+      playersMap[player.id] ??
+      playersByNormalizedName[
+        `${normalizePlayerName(player.name)}|${player.pos}`
+      ] ??
+      {};
 
     return {
       ...player,
