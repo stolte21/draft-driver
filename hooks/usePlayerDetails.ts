@@ -31,7 +31,10 @@ function usePlayerDetails(player: Player | null) {
       return response.json();
     },
     enabled: player !== null,
+    // gcTime must outlive modal closes or the 1h staleTime never pays off:
+    // the default 5min gc would evict the entry once the modal unmounts
     staleTime: 60 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
     retry: false,
   });
 }
