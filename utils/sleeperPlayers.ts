@@ -35,7 +35,9 @@ const SLEEPER_PLAYERS_TTL_MS = 24 * 60 * 60 * 1000;
 const SLEEPER_TIMEOUT_MS = 30_000;
 const DISK_CACHE_PATH = join(process.cwd(), '.cache', 'sleeper-players.json');
 
-async function fetchSleeperPlayers(): Promise<Record<string, SleeperPlayerRecord>> {
+async function fetchSleeperPlayers(): Promise<
+  Record<string, SleeperPlayerRecord>
+> {
   // AbortSignal.timeout is supported at runtime (Node 18+) but isn't in the
   // DOM lib types bundled with this TS version.
   const response = await fetch(SLEEPER_PLAYERS_URL, {
@@ -83,7 +85,9 @@ function writeDiskCache(players: Record<string, SleeperPlayerRecord>) {
  * every restart/recompile, so development also persists the payload to a
  * gitignored disk cache reused while it's less than 24h old.
  */
-async function loadSleeperPlayers(): Promise<Record<string, SleeperPlayerRecord>> {
+async function loadSleeperPlayers(): Promise<
+  Record<string, SleeperPlayerRecord>
+> {
   if (process.env.NODE_ENV !== 'development') {
     return fetchSleeperPlayers();
   }
