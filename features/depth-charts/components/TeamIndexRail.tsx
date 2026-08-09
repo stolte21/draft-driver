@@ -15,8 +15,10 @@ export function TeamIndexRail(props: TeamIndexRailProps) {
       as="nav"
       aria-label="Jump to team"
       position="fixed"
-      right={1}
-      top="50%"
+      right={4}
+      // center within the content area below the 64px AppBar, clear of the
+      // scroll container's scrollbar
+      top="calc(50% + 32px)"
       transform="translateY(-50%)"
       spacing={0}
       zIndex={30}
