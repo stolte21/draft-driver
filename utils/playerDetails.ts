@@ -196,7 +196,7 @@ const SCHEDULE_URL_BASE = 'https://api.sleeper.app/schedule/nfl/regular';
 const GRAPHQL_URL = 'https://sleeper.com/graphql';
 const SCHEDULE_TTL_MS = 24 * 60 * 60 * 1000;
 const NEWS_TTL_MS = 60 * 60 * 1000;
-const FETCH_TIMEOUT_MS = 10_000;
+const SCHEDULE_TIMEOUT_MS = 10_000;
 // news is a nice-to-have; fail fast rather than block the details response
 const NEWS_TIMEOUT_MS = 4_000;
 
@@ -207,7 +207,7 @@ export async function getByeWeeks(
     // AbortSignal.timeout is supported at runtime (Node 18+) but isn't in
     // the DOM lib types bundled with this TS version.
     const response = await fetch(`${SCHEDULE_URL_BASE}/${season}`, {
-      signal: (AbortSignal as any).timeout(FETCH_TIMEOUT_MS),
+      signal: (AbortSignal as any).timeout(SCHEDULE_TIMEOUT_MS),
     });
 
     if (!response.ok) {

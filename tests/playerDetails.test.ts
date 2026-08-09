@@ -436,6 +436,7 @@ describe('fetchPlayerNews', () => {
 
     expect(await fetchPlayerNews('CIN team!')).toEqual([]);
     expect(await fetchPlayerNews('')).toEqual([]);
+    expect(await fetchPlayerNews('A'.repeat(17))).toEqual([]);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -468,17 +469,24 @@ describe('getByeWeeks', () => {
     vi.unstubAllGlobals();
   });
 
-  it('rejects on an empty schedule payload without caching the failure', async () => {
+  it('rejects on an empty schedule payload without caching the failure, then retries', async () => {
+    // Second call's schedule: CIN plays only week 1 (real bye at week 2);
+    // BAL plays only week 2 (missing week 1, which is deliberately NOT a
+    // bye) — distinguishes a real resolved value from an empty `{}`.
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => [] })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => [{ week: 1, home: 'CIN', away: 'PIT' }],
+        json: async () => [
+          { week: 1, home: 'CIN', away: 'PIT' },
+          { week: 2, home: 'BAL', away: 'PIT' },
+        ],
       });
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(getByeWeeks(2026)).rejects.toThrow();
-    await expect(getByeWeeks(2026)).resolves.toEqual({});
+    await expect(getByeWeeks(2026)).resolves.toEqual({ CIN: 2 });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
