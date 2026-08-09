@@ -50,7 +50,7 @@ const SettingsReset = () => {
                 Cancel
               </Button>
               <Button colorScheme="red" onClick={handleReset} ml={3}>
-                Reset
+                Delete
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
