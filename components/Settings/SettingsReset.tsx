@@ -27,7 +27,7 @@ const SettingsReset = () => {
   return (
     <>
       <Button colorScheme="red" variant="outline" width="100%" onClick={onOpen}>
-        Reset all data
+        Delete Browser Data
       </Button>
       <AlertDialog
         isOpen={isOpen}
@@ -37,12 +37,12 @@ const SettingsReset = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Reset all data
+              Delete Browser Data
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              This will clear your drafted players, roster, favorites, notes,
-              keepers, and settings. This can&apos;t be undone.
+              This resets the app to a brand new slate. Your drafted players,
+              roster, favorites, notes, keepers, and settings will be cleared.
             </AlertDialogBody>
 
             <AlertDialogFooter>
