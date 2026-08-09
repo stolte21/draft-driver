@@ -25,11 +25,6 @@ const VALID_SLEEPER_POSITIONS = new Set([
   'DEF',
 ]);
 
-// sleeper team abbreviations that differ from the ones this app uses
-const SLEEPER_TEAM_ALIASES: Record<string, string> = {
-  WAS: 'WSH',
-};
-
 export type SleeperProjection = {
   stats: {
     pts_std?: number | null;
@@ -85,9 +80,7 @@ export function parseProjection(
     record.player.position === 'DEF'
       ? 'DST'
       : (record.player.position as Position);
-  const team = record.team
-    ? SLEEPER_TEAM_ALIASES[record.team] ?? record.team
-    : undefined;
+  const team = record.team ?? undefined;
 
   const adp: Partial<Record<Format, number>> = {};
   const standardAdp = parseAdp(adp_std);

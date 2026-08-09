@@ -30,5 +30,5 @@ export const TEAM_TO_ABRV_MAP = {
   'Los Angeles Rams': 'LAR',
   'Tampa Bay Buccaneers': 'TB',
   'Tennessee Titans': 'TEN',
-  'Washington Commanders': 'WSH',
+  'Washington Commanders': 'WAS',
 };
