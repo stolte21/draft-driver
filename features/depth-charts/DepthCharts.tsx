@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Center,
@@ -15,10 +15,15 @@ import { useDepthCharts } from 'providers/DepthChartsProvider';
 import { useDraft } from 'providers/DraftProvider';
 import { normalizePlayerName } from 'utils/projections';
 import { DepthChartTable } from './components/DepthChartTable';
+import { TeamIndexRail } from './components/TeamIndexRail';
 import { DepthChart, DepthChartPlayer, Position } from 'types';
 
 const POSITION_ORDER: Position[] = ['QB', 'RB', 'WR', 'TE'];
 export const TOOLBAR_HEIGHT = '56px';
+
+// AppBar (64px) + sticky toolbar (56px) + margin: a section whose top is
+// above this line is the one the user is currently reading
+const ACTIVE_TEAM_THRESHOLD_PX = 140;
 
 // lowercase, strip punctuation/suffixes, then drop spaces and hyphens so
 // e.g. "amonra" matches "Amon-Ra St. Brown"
@@ -56,6 +61,41 @@ export function DepthCharts() {
       .filter((team) => team.players.length > 0);
   }, [depthCharts, searchText]);
 
+  const [activeTeam, setActiveTeam] = useState<string | null>(null);
+
+  useEffect(() => {
+    const updateActiveTeam = () => {
+      let current: string | null = null;
+
+      for (const chart of filteredDepthCharts) {
+        const section = document.getElementById(`team-${chart.team}`);
+        if (!section) continue;
+
+        if (
+          section.getBoundingClientRect().top <= ACTIVE_TEAM_THRESHOLD_PX
+        ) {
+          current = chart.team;
+        } else {
+          break;
+        }
+      }
+
+      setActiveTeam(current ?? filteredDepthCharts[0]?.team ?? null);
+    };
+
+    updateActiveTeam();
+    // the page scrolls in an inner Box; scroll events don't bubble but are
+    // observable on window in the capture phase
+    window.addEventListener('scroll', updateActiveTeam, true);
+    return () => window.removeEventListener('scroll', updateActiveTeam, true);
+  }, [filteredDepthCharts]);
+
+  const scrollToTeam = (team: string) => {
+    document
+      .getElementById(`team-${team}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const getPlayersByPosition = (
     players: DepthChartPlayer[],
     position: Position
@@ -73,7 +113,12 @@ export function DepthCharts() {
   };
 
   const renderTeamDepthChart = (team: DepthChart) => (
-    <Box key={team.team} mb={4}>
+    <Box
+      key={team.team}
+      id={`team-${team.team}`}
+      mb={4}
+      sx={{ scrollMarginTop: TOOLBAR_HEIGHT }}
+    >
       <Heading
         size="md"
         mb={4}
@@ -145,6 +190,12 @@ export function DepthCharts() {
       ) : (
         filteredDepthCharts.map(renderTeamDepthChart)
       )}
+
+      <TeamIndexRail
+        teams={filteredDepthCharts.map((chart) => chart.team)}
+        activeTeam={activeTeam}
+        onSelect={scrollToTeam}
+      />
     </Box>
   );
 }
