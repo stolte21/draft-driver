@@ -8,6 +8,7 @@ import DraftBoardPickRow from 'components/DraftBoard/DraftBoardPickRow';
 import DraftBoardKeeperRow from 'components/DraftBoard/DraftBoardKeeperRow';
 import DraftBoardPositionFilter from 'components/DraftBoard/DraftBoardPositionFilter';
 import PlayerNoteModal from 'components/DraftBoard/PlayerNoteModal';
+import PlayerDetailsModal from 'components/DraftBoard/PlayerDetailsModal';
 import { hasOnlySpecialFilters } from 'utils';
 import { Player, Position, SpecialFilter } from 'types';
 
@@ -36,6 +37,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
     Set<Position | SpecialFilter>
   >(new Set());
   const [notePlayer, setNotePlayer] = useState<Player | null>(null);
+  const [detailsPlayer, setDetailsPlayer] = useState<Player | null>(null);
 
   let filteredPlayers = props.players;
 
@@ -118,6 +120,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
                 itemData={{
                   players: filteredPlayers,
                   onEditNote: setNotePlayer,
+                  onViewDetails: setDetailsPlayer,
                 }}
               >
                 {renderRow()}
@@ -128,10 +131,16 @@ const DraftBoardList = (props: DraftBoardListProps) => {
       </Box>
 
       {props.variant === 'rankings' && (
-        <PlayerNoteModal
-          player={notePlayer}
-          onClose={() => setNotePlayer(null)}
-        />
+        <>
+          <PlayerNoteModal
+            player={notePlayer}
+            onClose={() => setNotePlayer(null)}
+          />
+          <PlayerDetailsModal
+            player={detailsPlayer}
+            onClose={() => setDetailsPlayer(null)}
+          />
+        </>
       )}
     </Flex>
   );
