@@ -1,6 +1,7 @@
 import {
   IconButton,
   Flex,
+  Divider,
   createIcon,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -10,6 +11,7 @@ import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
 import SettingsScarcitySwitch from './SettingsScarcitySwitch';
 import SettingsTeams from './SettingsTeams';
 import SettingsRoster from './SettingsRoster';
+import SettingsReset from './SettingsReset';
 
 const SettingsIcon = createIcon({
   displayName: 'SettingsIcon',
@@ -40,6 +42,8 @@ const Settings = () => {
           <SettingsScarcitySwitch />
           <SettingsTeams />
           <SettingsRoster />
+          <Divider />
+          <SettingsReset />
         </Flex>
       </SettingsModal>
     </>

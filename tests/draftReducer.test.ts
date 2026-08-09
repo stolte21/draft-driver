@@ -125,6 +125,41 @@ describe('set-note', () => {
   });
 });
 
+describe('reset-all', () => {
+  const dirtyState: State = {
+    ...baseState,
+    filter: 'mahomes',
+    rankings: [{ id: 'p1' } as State['rankings'][number]],
+    rankingsLastModified: '2026-08-01',
+    draftedPlayers: [{ id: 'p2' } as State['draftedPlayers'][number]],
+    roster: [{ id: 'p3' } as State['roster'][number]],
+    favorites: ['p4'],
+    avoided: ['p5'],
+    notes: { p6: 'sleeper pick' },
+    keepers: [{ id: 'p7' } as State['keepers'][number]],
+  };
+
+  it('clears all user state', () => {
+    const result = draftReducer(dirtyState, { type: 'reset-all' });
+
+    expect(result.draftedPlayers).toEqual([]);
+    expect(result.roster).toEqual([]);
+    expect(result.favorites).toEqual([]);
+    expect(result.avoided).toEqual([]);
+    expect(result.notes).toEqual({});
+    expect(result.keepers).toEqual([]);
+    expect(result.filter).toBe('');
+  });
+
+  it('keeps fetched rankings and hydration status', () => {
+    const result = draftReducer(dirtyState, { type: 'reset-all' });
+
+    expect(result.rankings).toEqual(dirtyState.rankings);
+    expect(result.rankingsLastModified).toBe('2026-08-01');
+    expect(result.isHydrated).toBe(true);
+  });
+});
+
 describe('hydrate notes', () => {
   it('falls back to an empty notes object on legacy blobs', () => {
     const legacyBlob = { ...baseState } as Partial<State>;

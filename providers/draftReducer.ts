@@ -28,6 +28,7 @@ export type Action =
     }
   | { type: 'undo' }
   | { type: 'reset' }
+  | { type: 'reset-all' }
   | {
       type: 'add-roster';
       payload: { player: Player; round: number; pick: number };
@@ -113,6 +114,19 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         ...state,
         draftedPlayers: [],
         roster: [],
+      };
+      break;
+    case 'reset-all':
+      // full reset: clear all user state but keep fetched rankings
+      newState = {
+        ...state,
+        filter: '',
+        draftedPlayers: [],
+        roster: [],
+        favorites: [],
+        avoided: [],
+        notes: {},
+        keepers: [],
       };
       break;
     case 'add-roster':
