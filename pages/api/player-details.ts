@@ -26,7 +26,7 @@ export default async function handler(
   const { name, position, team } = req.query;
 
   if (typeof name !== 'string' || name.length === 0 || name.length > 100) {
-    res.status(400).json({ error: 'name is required' });
+    res.status(400).json({ error: 'name is required (max 100 characters)' });
     return;
   }
   if (typeof position !== 'string' || !VALID_POSITIONS.has(position)) {
