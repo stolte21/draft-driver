@@ -42,6 +42,15 @@ describe('deriveByeWeeks', () => {
   it('returns an empty object for an empty schedule', () => {
     expect(deriveByeWeeks([])).toEqual({});
   });
+
+  it('never reports week 1 as a bye (byes never fall in week 1)', () => {
+    // NYJ's only missing week is 1, but that signals partial/bad data,
+    // not an actual bye — real NFL byes start in week 2+.
+    const schedule = [game(2, 'NYJ', 'BUF'), game(3, 'NYJ', 'MIA')];
+    const byes = deriveByeWeeks(schedule);
+
+    expect(byes.NYJ).toBeUndefined();
+  });
 });
 
 function player(overrides: Partial<SleeperPlayerRecord>): SleeperPlayerRecord {
@@ -111,6 +120,50 @@ describe('findSleeperPlayer', () => {
     expect(found?.player_id).toBe('2');
   });
 
+  it('prefers a team match over a lower search_rank on duplicate names', () => {
+    // Real bug: "Frank Gore Jr." (RB, BUF) normalizes to the same key as
+    // retired "Frank Gore" — the retired player's much lower search_rank
+    // must not beat an explicit team match.
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Frank Gore',
+        position: 'RB',
+        team: 'MIA',
+        search_rank: 50,
+      }),
+      '2': player({
+        player_id: '2',
+        full_name: 'Frank Gore',
+        position: 'RB',
+        team: 'BUF',
+        search_rank: 9000,
+      }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'Frank Gore',
+      position: 'RB',
+      team: 'BUF',
+    });
+
+    expect(found?.player_id).toBe('2');
+  });
+
+  it('treats a null search_rank as worse than any numbered candidate', () => {
+    const records = {
+      '1': player({ player_id: '1', full_name: 'Bob Smith', search_rank: null }),
+      '2': player({ player_id: '2', full_name: 'Bob Smith', search_rank: 300 }),
+    };
+
+    const found = findSleeperPlayer(records, {
+      name: 'Bob Smith',
+      position: 'WR',
+    });
+
+    expect(found?.player_id).toBe('2');
+  });
+
   it('matches DSTs by team key', () => {
     const records = {
       CIN: player({
@@ -133,6 +186,20 @@ describe('findSleeperPlayer', () => {
 
   it('returns null for a DST query without a team', () => {
     expect(findSleeperPlayer({}, { name: 'Bengals', position: 'DST' })).toBeNull();
+  });
+
+  it('rejects a DST match when the team key resolves to a non-DEF record', () => {
+    const records = {
+      CIN: player({ player_id: '9999', position: 'WR', team: 'CIN' }),
+    };
+
+    expect(
+      findSleeperPlayer(records, {
+        name: 'Cincinnati Bengals',
+        position: 'DST',
+        team: 'CIN',
+      })
+    ).toBeNull();
   });
 });
 
@@ -229,6 +296,38 @@ describe('buildPlayerDetails', () => {
     expect(details.heightIn).toBeNull();
     expect(details.rookieYear).toBeNull();
   });
+
+  it('parses feet-inches height strings', () => {
+    const record = player({ height: `6'2"` });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.heightIn).toBe(74);
+  });
+
+  it('parses pure-inch height strings', () => {
+    const record = player({ height: '72' });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.heightIn).toBe(72);
+  });
+
+  it('rejects a height of "0"', () => {
+    const record = player({ height: '0' });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.heightIn).toBeNull();
+  });
+
+  it('rejects a non-numeric rookie year', () => {
+    const record = player({ metadata: { rookie_year: '2021abc' } });
+
+    const details = buildPlayerDetails(record, null, []);
+
+    expect(details.rookieYear).toBeNull();
+  });
 });
 
 describe('parseNewsItems', () => {
@@ -292,5 +391,23 @@ describe('parseNewsItems', () => {
         data: { get_player_news: [{ source: 'x', published: 1 }] },
       })
     ).toEqual([]);
+  });
+
+  it('sorts items by published descending, ignoring response order', () => {
+    const payload = {
+      data: {
+        get_player_news: [
+          { metadata: { title: 'Older' }, source: 'nfl', published: 100 },
+          { metadata: { title: 'Newest' }, source: 'nfl', published: 300 },
+          { metadata: { title: 'Middle' }, source: 'nfl', published: 200 },
+        ],
+      },
+    };
+
+    expect(parseNewsItems(payload).map((item) => item.title)).toEqual([
+      'Newest',
+      'Middle',
+      'Older',
+    ]);
   });
 });

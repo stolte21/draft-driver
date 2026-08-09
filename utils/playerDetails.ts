@@ -31,7 +31,9 @@ export function deriveByeWeeks(games: ScheduleGame[]): Record<string, number> {
     for (let week = 1; week <= lastWeek; week++) {
       if (!weeks.has(week)) missing.push(week);
     }
-    if (missing.length === 1) byes[team] = missing[0];
+    // Real NFL byes never fall in week 1, so a lone missing week 1 signals
+    // bad/partial data rather than an actual bye — omit it.
+    if (missing.length === 1 && missing[0] !== 1) byes[team] = missing[0];
   });
 
   return byes;
@@ -40,38 +42,81 @@ export function deriveByeWeeks(games: ScheduleGame[]): Record<string, number> {
 /**
  * Skill players match by normalized name + position (Player.id is
  * name-derived, so name+position is the join key — same normalization as
- * the projections merge). DST records are keyed by team abbreviation.
- * Duplicate names are disambiguated by Sleeper's search_rank (lower is
- * more relevant; retired/practice-squad players rank far higher).
+ * the projections merge). DST records are keyed by team abbreviation and
+ * must actually be a DEF record (guards against a team key that happens to
+ * collide with a numeric player id).
+ *
+ * Duplicate names are disambiguated by a (teamMatches, search_rank) tuple,
+ * compared lexicographically: a candidate whose team matches query.team
+ * always wins first, regardless of search_rank — e.g. active "Frank Gore
+ * Jr." (BUF) must beat retired "Frank Gore", even though the retired
+ * player's search_rank is numerically lower. Only once team match is tied
+ * does the lower search_rank (more relevant; retired/practice-squad
+ * players rank far higher, and a missing search_rank ranks worst of all)
+ * break the tie. When query.team is undefined, every candidate's team
+ * score is equal, so behavior falls back to search_rank-only ranking.
  */
 export function findSleeperPlayer(
   records: Record<string, SleeperPlayerRecord>,
   query: { name: string; position: string; team?: string }
 ): SleeperPlayerRecord | null {
   if (query.position === 'DST') {
-    return (query.team && records[query.team]) || null;
+    if (!query.team) return null;
+    const record = records[query.team];
+    return record && record.position === 'DEF' ? record : null;
   }
 
   const target = normalizePlayerName(query.name);
   let best: SleeperPlayerRecord | null = null;
+  let bestScore: [number, number] | null = null;
 
   for (const record of Object.values(records)) {
     if (record.position !== query.position) continue;
     if (!record.full_name) continue;
     if (normalizePlayerName(record.full_name) !== target) continue;
 
-    const bestRank = best?.search_rank ?? Number.MAX_SAFE_INTEGER;
+    const teamMatches = query.team !== undefined && record.team === query.team;
     const rank = record.search_rank ?? Number.MAX_SAFE_INTEGER;
-    if (!best || rank < bestRank) best = record;
+    const score: [number, number] = [teamMatches ? 0 : 1, rank];
+
+    if (
+      !bestScore ||
+      score[0] < bestScore[0] ||
+      (score[0] === bestScore[0] && score[1] < bestScore[1])
+    ) {
+      best = record;
+      bestScore = score;
+    }
   }
 
   return best;
 }
 
 function parseIntOrNull(value: string | null | undefined): number | null {
-  if (value == null || value === '') return null;
-  const parsed = parseInt(value, 10);
-  return Number.isFinite(parsed) ? parsed : null;
+  if (value == null || !/^\d+$/.test(value)) return null;
+  return parseInt(value, 10);
+}
+
+// Sleeper's blob is inconsistent: most heights are pure inches ("72"), but
+// a large minority (1,791 records as of writing) use feet-inches
+// ("6'2\""). parseIntOrNull would silently misread the latter as just the
+// feet digit, so height gets its own parser. A parsed height of 0 (or any
+// other non-positive result) is treated as missing rather than a real bug.
+function parseHeightIn(value: string | null | undefined): number | null {
+  if (value == null) return null;
+
+  if (/^\d+$/.test(value)) {
+    const inches = parseInt(value, 10);
+    return inches > 0 ? inches : null;
+  }
+
+  const feetInches = value.match(/^(\d)'(\d{1,2})"?$/);
+  if (feetInches) {
+    const total = parseInt(feetInches[1], 10) * 12 + parseInt(feetInches[2], 10);
+    return total > 0 ? total : null;
+  }
+
+  return null;
 }
 
 export function buildPlayerDetails(
@@ -93,7 +138,7 @@ export function buildPlayerDetails(
     number: record.number ?? null,
     age: record.age ?? null,
     birthDate: record.birth_date ?? null,
-    heightIn: parseIntOrNull(record.height),
+    heightIn: parseHeightIn(record.height),
     weightLb: parseIntOrNull(record.weight),
     college: record.college ?? null,
     yearsExp: record.years_exp ?? null,
@@ -142,5 +187,6 @@ export function parseNewsItems(raw: unknown): PlayerNewsItem[] {
         published: typeof item.published === 'number' ? item.published : 0,
       };
     })
-    .filter((item): item is PlayerNewsItem => item !== null);
+    .filter((item): item is PlayerNewsItem => item !== null)
+    .sort((a, b) => b.published - a.published);
 }
