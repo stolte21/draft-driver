@@ -7,7 +7,7 @@ import {
   buildAdpRankings,
   normalizePlayerName,
 } from 'utils/projections';
-import { TEAM_TO_ABRV_MAP } from 'utils/scrape';
+import { TEAM_TO_ABRV_MAP } from 'utils/teams';
 import {
   Format,
   Player,
@@ -80,7 +80,7 @@ function calculatePositionalRankings(players: Player[]) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Player[]>
+  res: NextApiResponse<Player[] | { error: string }>
 ) {
   const format = validateFormat(req.query);
   const players: Player[] = [];
@@ -189,8 +189,9 @@ export default async function handler(
 
     attachProjections(players, projections, format);
   } catch (error) {
-    //@ts-ignore
-    throw new Error(error);
+    console.error('Failed to load rankings', error);
+    res.status(502).json({ error: 'Failed to load rankings' });
+    return;
   }
 
   calculatePositionalRankings(players);

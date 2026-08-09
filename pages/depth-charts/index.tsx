@@ -29,7 +29,15 @@ export const ChartsPage: NextPage = () => {
         }
       `}</style>
       <AppBar />
-      <Box height="calc(100vh - 64px)" overflowY="auto" padding={6}>
+      <Box
+        height="calc(100vh - 64px)"
+        overflowY="auto"
+        paddingLeft={6}
+        // extra right padding at md+ reserves the gutter the team index
+        // rail floats in, so content never slides underneath it
+        paddingRight={{ base: 6, md: 12 }}
+        paddingBottom={6}
+      >
         <Container maxW="container.xl">
           <DepthCharts />
         </Container>

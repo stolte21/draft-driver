@@ -6,6 +6,7 @@ import {
   Th,
   Td,
   TableContainer,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { Player } from 'types';
 
@@ -25,11 +26,14 @@ function playerIsValue(player: Player) {
 }
 
 export function DepthChartTable(props: DepthChartTableProps) {
+  const valueBg = useColorModeValue('blue.100', 'blue.900');
+  const borderColor = useColorModeValue('gray.300', 'gray.600');
+
   return (
     <TableContainer
       height="100%"
       border="1px"
-      borderColor="gray.600"
+      borderColor={borderColor}
       borderRadius="md"
       padding={2}
     >
@@ -45,7 +49,7 @@ export function DepthChartTable(props: DepthChartTableProps) {
           {props.players.map((player) => (
             <Tr
               key={player.id}
-              bg={playerIsValue(player) ? 'blue.900' : undefined}
+              bg={playerIsValue(player) ? valueBg : undefined}
             >
               <Td>{player.name}</Td>
               <Td isNumeric>{player.rank ?? '—'}</Td>

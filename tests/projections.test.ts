@@ -74,7 +74,7 @@ describe('parseProjection', () => {
     };
     const parsed = parseProjection(def);
     expect(parsed?.pos).toBe('DST');
-    expect(parsed?.team).toBe('WSH');
+    expect(parsed?.team).toBe('WAS');
   });
 
   it('returns null for records without stats or player', () => {
