@@ -26,10 +26,24 @@ export const TOOLBAR_HEIGHT = '56px';
 // above this line is the one the user is currently reading
 const ACTIVE_TEAM_THRESHOLD_PX = 140;
 
+// how long a rail-click jump takes; native smooth scrolling scales its
+// duration with distance and feels sluggish across 32 teams
+const SCROLL_ANIMATION_MS = 350;
+
 // lowercase, strip punctuation/suffixes, then drop spaces and hyphens so
 // e.g. "amonra" matches "Amon-Ra St. Brown"
 function toSearchKey(value: string) {
   return normalizePlayerName(value).replace(/[-\s]/g, '');
+}
+
+function getScrollParent(el: HTMLElement): HTMLElement | null {
+  let parent = el.parentElement;
+  while (parent) {
+    const { overflowY } = getComputedStyle(parent);
+    if (overflowY === 'auto' || overflowY === 'scroll') return parent;
+    parent = parent.parentElement;
+  }
+  return null;
 }
 
 export function DepthCharts() {
@@ -98,9 +112,37 @@ export function DepthCharts() {
   }, [filteredDepthCharts]);
 
   const scrollToTeam = (team: string) => {
-    document
-      .getElementById(`team-${team}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const section = document.getElementById(`team-${team}`);
+    if (!section) return;
+
+    const scroller = getScrollParent(section);
+    if (!scroller) return;
+
+    const targetTop =
+      scroller.scrollTop +
+      section.getBoundingClientRect().top -
+      scroller.getBoundingClientRect().top -
+      parseInt(TOOLBAR_HEIGHT, 10);
+
+    if (
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      document.visibilityState === 'hidden'
+    ) {
+      scroller.scrollTop = targetTop;
+      return;
+    }
+
+    const startTop = scroller.scrollTop;
+    const distance = targetTop - startTop;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / SCROLL_ANIMATION_MS, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      scroller.scrollTop = startTop + distance * eased;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   const getPlayersByPosition = (
