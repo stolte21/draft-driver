@@ -160,9 +160,14 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
                         isExternal
                         rel="noopener noreferrer"
                       >
-                        {/* the &nbsp; glues the icon to the last word so it
-                            can't wrap onto a line of its own */}
-                        {item.title}&nbsp;<ExternalLinkIcon marginBottom={1} />
+                        {item.title}
+                        {/* a nowrap span is required to keep the icon on the
+                            same line: browsers allow a break before an inline
+                            svg even after a no-break space */}
+                        <Box as="span" whiteSpace="nowrap">
+                          &nbsp;
+                          <ExternalLinkIcon marginBottom={1} />
+                        </Box>
                       </Link>
                     ) : (
                       item.title

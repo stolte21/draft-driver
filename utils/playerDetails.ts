@@ -167,22 +167,25 @@ export function parseNewsItems(raw: unknown): PlayerNewsItem[] {
   const items = (raw as any)?.data?.get_player_news;
   if (!Array.isArray(items)) return [];
 
+  // Sleeper's feed carries stray whitespace (e.g. titles with trailing
+  // spaces, which break the icon-glue layout in the modal) — trim every
+  // text field at this boundary and drop entries left without a title.
+  const cleaned = (value: unknown): string | null => {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
   return items
     .map((item: any): PlayerNewsItem | null => {
-      const title = item?.metadata?.title;
-      if (typeof title !== 'string' || typeof item?.source !== 'string') {
+      const title = cleaned(item?.metadata?.title);
+      if (title === null || typeof item?.source !== 'string') {
         return null;
       }
       return {
         title,
-        description:
-          typeof item.metadata.description === 'string'
-            ? item.metadata.description
-            : null,
-        analysis:
-          typeof item.metadata.analysis === 'string'
-            ? item.metadata.analysis
-            : null,
+        description: cleaned(item.metadata.description),
+        analysis: cleaned(item.metadata.analysis),
         source: item.source,
         url: typeof item.metadata.url === 'string' ? item.metadata.url : null,
         published: typeof item.published === 'number' ? item.published : 0,

@@ -370,6 +370,40 @@ describe('parseNewsItems', () => {
     ]);
   });
 
+  it('trims whitespace-padded fields and drops blank titles', () => {
+    const payload = {
+      data: {
+        get_player_news: [
+          {
+            metadata: {
+              title: 'Burden leaves practice with trainer Saturday ',
+              description: '  Padded description. ',
+              analysis: '   ',
+            },
+            source: 'fantasy_pros',
+            published: 123,
+          },
+          {
+            metadata: { title: '   ' },
+            source: 'rotowire',
+            published: 456,
+          },
+        ],
+      },
+    };
+
+    expect(parseNewsItems(payload)).toEqual([
+      {
+        title: 'Burden leaves practice with trainer Saturday',
+        description: 'Padded description.',
+        analysis: null,
+        source: 'fantasy_pros',
+        url: null,
+        published: 123,
+      },
+    ]);
+  });
+
   it('tolerates missing optional fields', () => {
     const payload = {
       data: {
