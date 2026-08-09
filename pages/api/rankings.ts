@@ -7,7 +7,7 @@ import {
   buildAdpRankings,
   normalizePlayerName,
 } from 'utils/projections';
-import { TEAM_TO_ABRV_MAP } from 'utils/scrape';
+import { TEAM_TO_ABRV_MAP } from 'utils/teams';
 import {
   Format,
   Player,
