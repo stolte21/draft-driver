@@ -153,7 +153,9 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
               const body = item.description || item.analysis;
               return (
                 <Box key={index}>
-                  <Text fontWeight="bold">
+                  {/* h4: sits under the "Recent News" h3 and lets screen
+                      readers jump between articles by heading */}
+                  <Heading as="h4" size="sm" marginBottom={2}>
                     {item.url?.startsWith('https://') ? (
                       <Link
                         href={item.url}
@@ -172,7 +174,7 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
                     ) : (
                       item.title
                     )}
-                  </Text>
+                  </Heading>
                   <Text fontSize="xs" color="whiteAlpha.700">
                     {formatNewsSource(item.source)}
                     {item.published > 0 &&
