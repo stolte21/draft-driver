@@ -221,7 +221,9 @@ const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
+        {/* reserve space for the absolutely-positioned close button so
+            long player names don't run underneath it on small screens */}
+        <ModalHeader paddingRight={12} noOfLines={1}>
           Player Details{activePlayer ? `: ${activePlayer.name}` : ''}
         </ModalHeader>
         <ModalCloseButton />
