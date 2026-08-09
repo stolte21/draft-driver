@@ -82,6 +82,9 @@ export function DepthCharts() {
         bg={panelBg}
         border="1px"
         borderColor={panelBorder}
+        position="sticky"
+        top={TOOLBAR_HEIGHT}
+        zIndex={10}
       >
         {team.team}
       </Heading>
