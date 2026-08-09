@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import {
   Box,
+  Center,
   Heading,
   HStack,
   Input,
   SimpleGrid,
+  Spinner,
   Text,
   useColorModeValue,
   VStack,
@@ -27,6 +29,7 @@ function toSearchKey(value: string) {
 export function DepthCharts() {
   const {
     state: { depthCharts },
+    getters: { isLoading },
   } = useDepthCharts();
   const {
     getters: { playersMap },
@@ -127,7 +130,11 @@ export function DepthCharts() {
         </HStack>
       </HStack>
 
-      {filteredDepthCharts.length === 0 ? (
+      {isLoading ? (
+        <Center mt={12}>
+          <Spinner />
+        </Center>
+      ) : filteredDepthCharts.length === 0 && searchText ? (
         <Text mt={8} textAlign="center" color="gray.500">
           No players match &quot;{searchText}&quot;
         </Text>
