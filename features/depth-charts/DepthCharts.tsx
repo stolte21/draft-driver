@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Box,
+  Button,
   Center,
   Heading,
   HStack,
@@ -34,7 +35,8 @@ function toSearchKey(value: string) {
 export function DepthCharts() {
   const {
     state: { depthCharts },
-    getters: { isLoading },
+    getters: { isLoading, isError },
+    refetch,
   } = useDepthCharts();
   const {
     getters: { playersMap },
@@ -205,6 +207,15 @@ export function DepthCharts() {
         <Center mt={12}>
           <Spinner />
         </Center>
+      ) : isError && depthCharts.length === 0 ? (
+        <VStack mt={12} spacing={4}>
+          <Text color="gray.500">
+            Failed to load depth charts. Please try again.
+          </Text>
+          <Button size="sm" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </VStack>
       ) : filteredDepthCharts.length === 0 && searchText ? (
         <Text mt={8} textAlign="center" color="gray.500">
           No players match &quot;{searchText}&quot;

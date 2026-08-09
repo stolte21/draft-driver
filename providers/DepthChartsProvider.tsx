@@ -22,8 +22,10 @@ const DepthChartsContext = createContext<
       state: State;
       getters: {
         isLoading: boolean;
+        isError: boolean;
       };
       dispatch: Dispatch;
+      refetch: () => void;
     }
   | undefined
 >(undefined);
@@ -48,7 +50,12 @@ const DepthChartsProvider = (props: { children: ReactNode }) => {
     depthCharts: [],
   });
 
-  const { data: depthChartsData, isPending } = useDepthChartsQuery();
+  const {
+    data: depthChartsData,
+    isPending,
+    isError,
+    refetch,
+  } = useDepthChartsQuery();
 
   useEffect(() => {
     dispatch({ type: 'set-depth-charts', payload: depthChartsData ?? [] });
@@ -61,7 +68,9 @@ const DepthChartsProvider = (props: { children: ReactNode }) => {
         dispatch,
         getters: {
           isLoading: isPending,
+          isError,
         },
+        refetch,
       }}
     >
       {props.children}
