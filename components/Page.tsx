@@ -2,6 +2,13 @@ import { ReactNode } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Box, BoxProps } from '@chakra-ui/react';
+import {
+  SITE_NAME,
+  DEFAULT_TITLE,
+  DEFAULT_DESCRIPTION,
+  OG_IMAGE_URL,
+  canonicalUrl,
+} from 'utils/site';
 
 type Meta = {
   title: string;
@@ -17,14 +24,15 @@ type PageProps = {
 const Page = (props: PageProps) => {
   const router = useRouter();
 
-  const {
-    boxProps = {},
-    meta = {
-      title: 'Draft Driver | Fantasy Football Draft Tool',
-      description: 'Drafting tool for fantasy football players.',
-    },
-    children,
-  } = props;
+  const { boxProps = {}, meta: metaProp = {}, children } = props;
+
+  const meta: Meta = {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    ...metaProp,
+  };
+
+  const canonical = canonicalUrl(router.pathname);
 
   const homePageProps = {
     display: 'grid',
@@ -58,8 +66,19 @@ const Page = (props: PageProps) => {
         <meta content={meta.description} name="description" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
+          content="width=device-width, initial-scale=1"
         />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={SITE_NAME} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:image" content={OG_IMAGE_URL} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={meta.title} />
+        <meta name="twitter:description" content={meta.description} />
+        <meta name="twitter:image" content={OG_IMAGE_URL} />
       </Head>
       {children}
     </Box>
