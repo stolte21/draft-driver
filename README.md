@@ -1,27 +1,39 @@
 # Draft Driver
 
+**Live app: [draft-driver.vercel.app](https://draft-driver.vercel.app)**
+
+A free fantasy football draft tool built around a tier-based draft board.
+Track your draft in real time: mark players as drafted, favorite or avoid
+them, keep per-player notes, and watch your roster fill up by position.
+
 ![draft-driver](https://user-images.githubusercontent.com/3914543/185001004-0ec2dee4-6482-425b-adf9-a8bdcbca0ac8.png)
 
-A fantasy football tool that helps you draft your players.
+## Data sources
 
-## Fantasy Data
-
-The app works by scraping the listed Average Draft Positions listed on [Fantasy Pros](https://www.fantasypros.com/nfl/adp).
-
-## Controls
-
-Choose your scoring system and adjust team/roster sizes as necessary from the settings menu. Click on a player to draft him. Once a player is drafted, you can select them again from the "picks" list to add them to your roster.
+- **Rankings & tiers** — [Boris Chen](https://www.borischen.co)'s tiers,
+  generated from FantasyPros expert consensus rankings
+- **Projections, ADP, teams, rookie & injury status** — the
+  [Sleeper](https://sleeper.com) API, cached in-memory for 24 hours
 
 ## Features
 
-- Automatically saves your settings and progress so don't worry about accidentally refreshing
-- Light and Dark modes available
-- Player search and filtering by position
-- Works great on mobile
+- Tier-based draft board for **standard, PPR, and half-PPR** scoring
+- Player search and position filtering
+- Favorites, avoid list, per-player notes, and keeper support
+- Roster tracking by position with automatic flex/bench handling
+- **Scarcity-adjusted rankings** — optionally re-order the board by value
+  over replacement (VORP) computed from your league and roster settings
+- Injury status indicators and player news
+- NFL team depth charts
+- Light and dark modes; works great on mobile
+- Progress saved automatically to your browser — no account needed
 
-## Potential Improvements
+## Development
 
-- Use more data sources
-- Have team/roster sizes affect player rankings
-- Make it easier to view the players on your roster
-- Add "hide after drafting" option to completely remove a player from the rankings table after drafting
+```bash
+npm install
+npm run dev    # start the dev server
+npm test       # run unit tests (vitest)
+npm run lint   # eslint
+npm run build  # production build
+```

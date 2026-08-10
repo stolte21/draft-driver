@@ -6,10 +6,13 @@ import Roster from 'components/Roster';
 import Toolbar from 'components/Toolbar';
 import DraftBoard from 'components/DraftBoard';
 import StaleRankingsBanner from 'components/StaleRankingsBanner';
+import JsonLd from 'components/JsonLd';
+import { webApplicationSchema } from 'utils/structuredData';
 
 const Index: NextPage = () => {
   return (
     <Page>
+      <JsonLd schema={webApplicationSchema()} />
       <AppBar />
       <Grid
         paddingY={2}

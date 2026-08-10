@@ -19,7 +19,14 @@ import { DepthCharts } from 'features/depth-charts/DepthCharts';
 
 export const ChartsPage: NextPage = () => {
   return (
-    <Page>
+    <Page
+      meta={{
+        title: 'NFL Depth Charts | Draft Driver',
+        description:
+          'Browse NFL team depth charts by position to spot sleepers and ' +
+          'value picks for your fantasy football draft.',
+      }}
+    >
       <style jsx global>{`
         html,
         body,

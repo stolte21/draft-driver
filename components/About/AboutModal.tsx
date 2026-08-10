@@ -12,6 +12,7 @@ import {
   Link,
   Text,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { useDraft } from 'providers/DraftProvider';
 
 type AboutModalProps = {
@@ -79,7 +80,16 @@ const AboutModal = (props: AboutModalProps) => {
           </Flex>
         </ModalBody>
 
-        <ModalFooter>
+        <ModalFooter gap={3}>
+          <Link
+            as={NextLink}
+            href="/about"
+            fontSize="sm"
+            textDecoration="underline"
+            onClick={props.onClose}
+          >
+            Learn more
+          </Link>
           <Button onClick={props.onClose}>Close</Button>
         </ModalFooter>
       </ModalContent>
