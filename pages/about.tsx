@@ -37,7 +37,7 @@ const AboutPage: NextPage = () => {
             Draft Driver is a free fantasy football draft tool built around a
             tier-based draft board. During your draft, mark players as they
             come off the board, favorite the ones you&apos;re targeting, avoid
-            the ones you aren&apos;t, and jot per-player notes — while the
+            the ones you aren&apos;t, and jot per-player notes while the
             roster panel tracks your team by position in real time.
           </Text>
           <Text marginBottom={4}>
@@ -52,7 +52,7 @@ const AboutPage: NextPage = () => {
             , whose tiers are generated from FantasyPros expert consensus
             rankings. Draft Driver enriches them with season projections,
             average draft position (ADP), team info, and rookie and injury
-            status from the Sleeper API — so you can see at a glance when a
+            status from the Sleeper API, so you can see at a glance when a
             player is falling past their ADP or sitting alone at the top of a
             tier.
           </Text>
@@ -92,8 +92,8 @@ const AboutPage: NextPage = () => {
             <ListItem>NFL team depth charts</ListItem>
             <ListItem>Light and dark mode; works great on mobile</ListItem>
             <ListItem>
-              Progress saved automatically in your browser — refresh without
-              fear
+              Progress saved automatically in your browser, so you can refresh
+              without fear
             </ListItem>
           </UnorderedList>
 
