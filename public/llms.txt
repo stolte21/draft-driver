@@ -1,0 +1,27 @@
+# Draft Driver
+
+> Draft Driver is a free web-based fantasy football draft tool built around a
+> tier-based draft board. It combines Boris Chen's tier rankings (derived from
+> FantasyPros expert consensus) with Sleeper API season projections, ADP, and
+> injury status. No account or payment required; all draft state is stored
+> locally in the user's browser.
+
+Key facts:
+
+- Live app: https://draft-driver.vercel.app
+- Supports standard, PPR, and half-PPR scoring formats
+- Features: tier-based rankings, player search/filtering, favorites and avoid
+  lists, per-player notes, keeper support, roster tracking with flex/bench
+  handling, scarcity-adjusted (VORP) rankings, injury indicators, NFL depth
+  charts, light/dark mode, mobile support
+- Data sources: Boris Chen tiers (https://www.borischen.co) and the Sleeper API
+- Free, no account needed, no server-side storage of user data
+- Open source: https://github.com/stolte21/draft-driver
+
+## Pages
+
+- [About & FAQ](https://draft-driver.vercel.app/about): what the tool is, how
+  the data works, frequently asked questions
+- [Draft board](https://draft-driver.vercel.app/): the main draft tool
+- [Depth charts](https://draft-driver.vercel.app/depth-charts): NFL team depth
+  charts by position
