@@ -1,7 +1,8 @@
 /**
  * Copies the weekly-ALL tier CSVs from the local fftiers pipeline output
- * into data/tiers/, where the rankings API prefers them over Boris Chen's
- * S3 bucket. Override the source directory with FFTIERS_CSV_DIR.
+ * into public/tiers/, where the rankings API prefers them over Boris Chen's
+ * S3 bucket and they are served directly at /tiers/*.csv. Override the
+ * source directory with FFTIERS_CSV_DIR.
  *
  * Usage: npm run sync-tiers
  */
@@ -12,7 +13,7 @@ const os = require('os');
 const srcDir =
   process.env.FFTIERS_CSV_DIR ||
   path.join(os.homedir(), 'dev', 'fftiers', 'out', 'current', 'csv');
-const destDir = path.join(__dirname, '..', 'data', 'tiers');
+const destDir = path.join(__dirname, '..', 'public', 'tiers');
 
 const files = ['weekly-ALL.csv', 'weekly-ALL-PPR.csv', 'weekly-ALL-HALF-PPR.csv'];
 
@@ -32,10 +33,26 @@ for (const file of files) {
 
 if (!failed) {
   // Vercel normalizes file mtimes inside function bundles, so record the
-  // sync time explicitly for the API's last-modified reporting.
+  // sync time explicitly for the API's last-modified reporting. The file is
+  // served publicly at /tiers/metadata.json, so it also carries attribution
+  // for consumers of the CSVs.
   fs.writeFileSync(
     path.join(destDir, 'metadata.json'),
-    JSON.stringify({ syncedAt: new Date().toUTCString() }, null, 2) + '\n'
+    JSON.stringify(
+      {
+        syncedAt: new Date().toUTCString(),
+        attribution: {
+          methodology:
+            "Tiers generated using Boris Chen's open source fftiers project",
+          methodologySource: 'https://github.com/borisachen/fftiers',
+          methodologyWebsite: 'https://www.borischen.co',
+          dataSource:
+            'Underlying rankings data from FantasyPros expert consensus (https://www.fantasypros.com)',
+        },
+      },
+      null,
+      2
+    ) + '\n'
   );
   console.log('wrote metadata.json');
 }

@@ -13,7 +13,7 @@ type BorisPlayer = {
 type RawTiers = { text: string; lastModified?: string };
 
 const BORIS_BASE_URL = 'https://s3-us-west-1.amazonaws.com/fftiers/out/';
-const LOCAL_TIERS_DIR = path.join(process.cwd(), 'data', 'tiers');
+const LOCAL_TIERS_DIR = path.join(process.cwd(), 'public', 'tiers');
 
 const borisWeeklyTiers: Record<Format, string> = {
   standard: 'weekly-ALL.csv',
@@ -27,7 +27,7 @@ const readSyncedAt = async (): Promise<string | undefined> => {
   try {
     const raw = await fs.readFile(
       path.join(LOCAL_TIERS_DIR, 'metadata.json'),
-      'utf-8'
+      'utf-8',
     );
     return JSON.parse(raw).syncedAt;
   } catch {
