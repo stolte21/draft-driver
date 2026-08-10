@@ -68,17 +68,29 @@ const Page = (props: PageProps) => {
           name="viewport"
           content="width=device-width, initial-scale=1"
         />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:image" content={OG_IMAGE_URL} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={meta.title} />
-        <meta name="twitter:description" content={meta.description} />
-        <meta name="twitter:image" content={OG_IMAGE_URL} />
+        <link rel="canonical" href={canonical} key="canonical" />
+        <meta property="og:type" content="website" key="og:type" />
+        <meta property="og:site_name" content={SITE_NAME} key="og:site_name" />
+        <meta property="og:title" content={meta.title} key="og:title" />
+        <meta
+          property="og:description"
+          content={meta.description}
+          key="og:description"
+        />
+        <meta property="og:url" content={canonical} key="og:url" />
+        <meta property="og:image" content={OG_IMAGE_URL} key="og:image" />
+        <meta
+          name="twitter:card"
+          content="summary_large_image"
+          key="twitter:card"
+        />
+        <meta name="twitter:title" content={meta.title} key="twitter:title" />
+        <meta
+          name="twitter:description"
+          content={meta.description}
+          key="twitter:description"
+        />
+        <meta name="twitter:image" content={OG_IMAGE_URL} key="twitter:image" />
       </Head>
       {children}
     </Box>
