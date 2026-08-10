@@ -93,7 +93,7 @@ const DraftBoardList = (props: DraftBoardListProps) => {
         backgroundColor="blackAlpha.300"
       >
         <Box>
-          <Heading as="h3" size="sm" textTransform="uppercase">
+          <Heading as="h2" size="sm" textTransform="uppercase">
             {props.variant}
           </Heading>
         </Box>

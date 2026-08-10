@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { Grid, Box } from '@chakra-ui/react';
+import { Grid, Box, VisuallyHidden } from '@chakra-ui/react';
 import Page from 'components/Page';
 import AppBar from 'components/AppBar';
 import Roster from 'components/Roster';
@@ -13,6 +13,9 @@ const Index: NextPage = () => {
   return (
     <Page>
       <JsonLd schema={webApplicationSchema()} />
+      <VisuallyHidden as="h1">
+        Draft Driver fantasy football draft board
+      </VisuallyHidden>
       <AppBar />
       <Grid
         paddingY={2}

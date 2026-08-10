@@ -36,12 +36,12 @@ const AppBar = () => {
         paddingX={0}
       >
         <Box flexGrow={1}>
-          <Heading fontSize="2xl" marginBottom={0.5} whiteSpace="nowrap">
+          <Heading as="p" fontSize="2xl" marginBottom={0.5} whiteSpace="nowrap">
             <Link href="/">Draft Driver</Link>
           </Heading>
 
           <Skeleton isLoaded={state.isHydrated} maxWidth="200px" height={4}>
-            <Heading as="h2" size="xs" fontWeight="light" whiteSpace="nowrap">
+            <Heading as="p" size="xs" fontWeight="light" whiteSpace="nowrap">
               Rankings:&nbsp;
               <Text as="span" fontWeight="medium">
                 Boris Chen {getFormatName(state.format)}
