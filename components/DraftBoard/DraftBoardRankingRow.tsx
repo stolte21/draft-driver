@@ -15,6 +15,7 @@ import HeartIcon from 'components/Icons/HeartIcon';
 import NoteIcon from 'components/Icons/NoteIcon';
 import { useDraft } from 'providers/DraftProvider';
 import { useSettings } from 'providers/SettingsProvider';
+import { getInjuryIndicator, formatInjuryDetail } from 'utils/injury';
 import { Player, Position } from 'types';
 import { MouseEventHandler } from 'react';
 
@@ -78,6 +79,7 @@ const DraftBoardRankingRow = (
   const isPlayerFavorite = getters.favoritePlayerIds.has(player.id);
   const isPlayerAvoided = getters.avoidedPlayerIds.has(player.id);
   const playerNote = state.notes[player.id];
+  const injuryIndicator = getInjuryIndicator(player.injuryStatus);
 
   const handleDraftPlayer: MouseEventHandler = (e) => {
     e.stopPropagation();
@@ -157,6 +159,29 @@ const DraftBoardRankingRow = (
                 >
                   R
                 </Text>
+              )}
+              {injuryIndicator && player.injuryStatus && (
+                <Tooltip
+                  label={formatInjuryDetail(
+                    player.injuryStatus,
+                    player.injuryBodyPart,
+                  )}
+                >
+                  {/* MenuButton wraps children in a pointer-events:none span,
+                      so the marker must opt back in for hover to reach it */}
+                  <Text
+                    as="span"
+                    pointerEvents="auto"
+                    verticalAlign="super"
+                    marginLeft={2}
+                    color={injuryIndicator.severe ? 'red.300' : 'yellow.300'}
+                    fontWeight="bold"
+                    fontSize="xs"
+                    lineHeight={0}
+                  >
+                    {injuryIndicator.label}
+                  </Text>
+                </Tooltip>
               )}
               {isPlayerFavorite && (
                 <HeartIcon
