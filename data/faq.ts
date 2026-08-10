@@ -7,12 +7,12 @@ export const faqs: Faq[] = [
   {
     question: 'Is Draft Driver free?',
     answer:
-      'Yes. Draft Driver is completely free — no account, sign-up, or payment required.',
+      'Yes. Draft Driver is completely free. No account, sign-up, or payment is required.',
   },
   {
     question: 'Which scoring formats are supported?',
     answer:
-      'Standard, PPR (point per reception), and half-PPR. Rankings, tiers, and ADP all adjust to the format you pick in settings.',
+      'Standard, PPR, and half-PPR. Rankings, tiers, and ADP all adjust to the format you pick in settings.',
   },
   {
     question: 'Where do the rankings come from?',
@@ -32,7 +32,7 @@ export const faqs: Faq[] = [
   {
     question: 'Where is my draft data stored?',
     answer:
-      'Everything — drafted players, your roster, favorites, notes, keepers, and settings — is saved in your browser via localStorage. Nothing is sent to a server, and refreshing the page keeps your progress.',
+      'Everything you do, including drafted players, your roster, favorites, notes, keepers, and settings, is saved in your browser via localStorage. Nothing is sent to a server, and refreshing the page keeps your progress.',
   },
   {
     question: 'What are scarcity-adjusted rankings?',
