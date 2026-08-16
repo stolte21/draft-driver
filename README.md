@@ -37,3 +37,20 @@ npm test       # run unit tests (vitest)
 npm run lint   # eslint
 npm run build  # production build
 ```
+
+## Updating rankings
+
+Tier data in `public/tiers/` comes from a local checkout of the
+[fftiers](https://github.com/borisachen/fftiers) project. To refresh it:
+
+```bash
+Rscript ~/projects/fftiers/src/main.R t   # regenerate tiers from FantasyPros
+npm run sync-tiers                        # copy CSVs into public/tiers/
+```
+
+Then commit and push the `public/tiers/` changes to deploy. The full runbook
+(validation, commit rules, per-season maintenance) lives in
+[.claude/skills/sync-tiers/SKILL.md](.claude/skills/sync-tiers/SKILL.md), which
+Claude Code runs as the `/sync-tiers` skill on a daily schedule.
+`FFTIERS_CSV_DIR` overrides the source directory; `TIERS_SOURCE=s3` makes the
+app read from the public S3 mirror instead of local files.
