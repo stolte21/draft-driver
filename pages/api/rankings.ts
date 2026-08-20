@@ -7,6 +7,11 @@ import {
   buildAdpRankings,
   normalizePlayerName,
 } from 'utils/projections';
+import { attachInjuryStatuses } from 'utils/playerDetails';
+import {
+  getSleeperPlayers,
+  SleeperPlayerRecord,
+} from 'utils/sleeperPlayers';
 import { TEAM_TO_ABRV_MAP } from 'utils/teams';
 import {
   Format,
@@ -88,13 +93,21 @@ export default async function handler(
   let borisLastModified: string | undefined;
 
   try {
-    const [borisData, projections] = await Promise.all([
+    const [borisData, projections, sleeperPlayers] = await Promise.all([
       fetchBorisData(format),
       // projections are an enhancement — rankings must still work without them
       fetchProjections().catch((error): ProjectedPlayer[] => {
         console.error('Failed to fetch projections:', error);
         return [];
       }),
+      // injury statuses come from the players blob (the same source the
+      // details modal reads); degrade to the projections-embedded statuses
+      getSleeperPlayers().catch(
+        (error): Record<string, SleeperPlayerRecord> | null => {
+          console.error('Failed to fetch Sleeper players:', error);
+          return null;
+        }
+      ),
     ]);
 
     borisLastModified = borisData.lastModified;
@@ -188,6 +201,7 @@ export default async function handler(
     });
 
     attachProjections(players, projections, format);
+    if (sleeperPlayers) attachInjuryStatuses(players, sleeperPlayers);
   } catch (error) {
     console.error('Failed to load rankings', error);
     res.status(502).json({ error: 'Failed to load rankings' });

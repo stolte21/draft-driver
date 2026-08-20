@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  attachInjuryStatuses,
   buildPlayerDetails,
   deriveByeWeeks,
   fetchPlayerNews,
@@ -10,6 +11,7 @@ import {
 } from '../utils/playerDetails';
 import { clearCache } from '../utils/cache';
 import { SleeperPlayerRecord } from '../utils/sleeperPlayers';
+import { Player } from '../types';
 
 function game(week: number, home: string, away: string): ScheduleGame {
   return { week, home, away };
@@ -203,6 +205,182 @@ describe('findSleeperPlayer', () => {
         team: 'CIN',
       })
     ).toBeNull();
+  });
+});
+
+function rankedPlayer(overrides: Partial<Player>): Player {
+  return {
+    id: 'test-player-WR',
+    rank: 1,
+    pRank: 0,
+    adp: 0,
+    name: 'Test Player',
+    position: 'WR',
+    isRookie: false,
+    team: 'CIN',
+    ...overrides,
+  };
+}
+
+describe('attachInjuryStatuses', () => {
+  it('attaches injury status and body part from a matching record', () => {
+    // Real bug: Jayden Higgins (IR) has no Sleeper projection points, so the
+    // projections merge never set his injuryStatus — the players blob must.
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Jayden Higgins',
+        position: 'WR',
+        team: 'HOU',
+        injury_status: 'IR',
+        injury_body_part: 'Knee - ACL',
+      }),
+    };
+    const players = [
+      rankedPlayer({ name: 'Jayden Higgins', position: 'WR', team: 'HOU' }),
+    ];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBe('IR');
+    expect(players[0].injuryBodyPart).toBe('Knee - ACL');
+  });
+
+  it('matches on normalized names (suffixes, punctuation)', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Kenneth Walker III',
+        position: 'RB',
+        team: 'SEA',
+        injury_status: 'Questionable',
+      }),
+    };
+    const players = [
+      rankedPlayer({ name: 'Kenneth Walker', position: 'RB', team: 'SEA' }),
+    ];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBe('Questionable');
+  });
+
+  it('is authoritative on match: clears a stale status when the record has none', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Test Player',
+        position: 'WR',
+        team: 'CIN',
+        injury_status: null,
+        injury_body_part: null,
+      }),
+    };
+    const players = [rankedPlayer({ injuryStatus: 'Q', injuryBodyPart: 'Hamstring' })];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBeUndefined();
+    expect(players[0].injuryBodyPart).toBeUndefined();
+  });
+
+  it('leaves a player untouched when no record matches', () => {
+    const players = [rankedPlayer({ injuryStatus: 'O' })];
+
+    attachInjuryStatuses(players, {});
+
+    expect(players[0].injuryStatus).toBe('O');
+  });
+
+  it('requires the position to match', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Josh Allen',
+        position: 'LB',
+        injury_status: 'Out',
+      }),
+    };
+    const players = [rankedPlayer({ name: 'Josh Allen', position: 'QB' })];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBeUndefined();
+  });
+
+  it('prefers a team match over a lower search_rank on duplicate names', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Frank Gore',
+        position: 'RB',
+        team: 'MIA',
+        search_rank: 50,
+        injury_status: null,
+      }),
+      '2': player({
+        player_id: '2',
+        full_name: 'Frank Gore',
+        position: 'RB',
+        team: 'BUF',
+        search_rank: 9000,
+        injury_status: 'PUP',
+      }),
+    };
+    const players = [
+      rankedPlayer({ name: 'Frank Gore', position: 'RB', team: 'BUF' }),
+    ];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBe('PUP');
+  });
+
+  it('falls back to the lower search_rank when no team is known', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Mike Williams',
+        position: 'WR',
+        team: 'LAC',
+        search_rank: 5000,
+        injury_status: 'Out',
+      }),
+      '2': player({
+        player_id: '2',
+        full_name: 'Mike Williams',
+        position: 'WR',
+        team: 'NYJ',
+        search_rank: 120,
+        injury_status: 'Questionable',
+      }),
+    };
+    const players = [
+      rankedPlayer({ name: 'Mike Williams', position: 'WR', team: undefined }),
+    ];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBe('Questionable');
+  });
+
+  it('skips DST players', () => {
+    const records = {
+      '1': player({
+        player_id: '1',
+        full_name: 'Cincinnati Bengals',
+        position: 'DST',
+        team: 'CIN',
+        injury_status: 'Out',
+      }),
+    };
+    const players = [
+      rankedPlayer({ name: 'Cincinnati Bengals', position: 'DST', team: 'CIN' }),
+    ];
+
+    attachInjuryStatuses(players, records);
+
+    expect(players[0].injuryStatus).toBeUndefined();
   });
 });
 

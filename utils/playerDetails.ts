@@ -1,4 +1,4 @@
-import { PlayerDetails, PlayerNewsItem } from 'types';
+import { Player, PlayerDetails, PlayerNewsItem } from 'types';
 import { cached } from 'utils/cache';
 import { normalizePlayerName } from 'utils/projections';
 import { SleeperPlayerRecord } from 'utils/sleeperPlayers';
@@ -57,26 +57,15 @@ export function deriveByeWeeks(games: ScheduleGame[]): Record<string, number> {
  * break the tie. When query.team is undefined, every candidate's team
  * score is equal, so behavior falls back to search_rank-only ranking.
  */
-export function findSleeperPlayer(
-  records: Record<string, SleeperPlayerRecord>,
-  query: { name: string; position: string; team?: string }
+function pickBestSkillMatch(
+  candidates: SleeperPlayerRecord[],
+  team: string | undefined
 ): SleeperPlayerRecord | null {
-  if (query.position === 'DST') {
-    if (!query.team) return null;
-    const record = records[query.team];
-    return record && record.position === 'DEF' ? record : null;
-  }
-
-  const target = normalizePlayerName(query.name);
   let best: SleeperPlayerRecord | null = null;
   let bestScore: [number, number] | null = null;
 
-  for (const record of Object.values(records)) {
-    if (record.position !== query.position) continue;
-    if (!record.full_name) continue;
-    if (normalizePlayerName(record.full_name) !== target) continue;
-
-    const teamMatches = query.team !== undefined && record.team === query.team;
+  for (const record of candidates) {
+    const teamMatches = team !== undefined && record.team === team;
     const rank = record.search_rank ?? Number.MAX_SAFE_INTEGER;
     const score: [number, number] = [teamMatches ? 0 : 1, rank];
 
@@ -91,6 +80,74 @@ export function findSleeperPlayer(
   }
 
   return best;
+}
+
+export function findSleeperPlayer(
+  records: Record<string, SleeperPlayerRecord>,
+  query: { name: string; position: string; team?: string }
+): SleeperPlayerRecord | null {
+  if (query.position === 'DST') {
+    if (!query.team) return null;
+    const record = records[query.team];
+    return record && record.position === 'DEF' ? record : null;
+  }
+
+  const target = normalizePlayerName(query.name);
+  const candidates = Object.values(records).filter(
+    (record) =>
+      record.position === query.position &&
+      record.full_name &&
+      normalizePlayerName(record.full_name) === target
+  );
+
+  return pickBestSkillMatch(candidates, query.team);
+}
+
+/**
+ * Sets injuryStatus/injuryBodyPart on ranked players from the Sleeper
+ * players blob — the same source the player-details modal reads, so the
+ * board badge and the modal always agree. (The projections merge also
+ * carries injury fields, but drops players with no projected points —
+ * which is exactly the season-ending-IR case.) A matched record is
+ * authoritative: its injury fields replace whatever the projections merge
+ * attached, including clearing them; unmatched players keep the
+ * projections fallback. DSTs are skipped — team defenses carry no injury
+ * data, and their records are keyed differently.
+ *
+ * The blob is indexed by normalized name|position up front so each request
+ * costs O(records + players); name collisions use the same
+ * (team match, search_rank) disambiguation as findSleeperPlayer.
+ */
+export function attachInjuryStatuses(
+  players: Player[],
+  records: Record<string, SleeperPlayerRecord>
+) {
+  const byNameAndPos = new Map<string, SleeperPlayerRecord[]>();
+  for (const record of Object.values(records)) {
+    if (!record.full_name || !record.position) continue;
+    const key = `${normalizePlayerName(record.full_name)}|${record.position}`;
+    const list = byNameAndPos.get(key);
+    if (list) {
+      list.push(record);
+    } else {
+      byNameAndPos.set(key, [record]);
+    }
+  }
+
+  players.forEach((player) => {
+    if (player.position === 'DST') return;
+
+    const candidates = byNameAndPos.get(
+      `${normalizePlayerName(player.name)}|${player.position}`
+    );
+    if (!candidates) return;
+
+    const record = pickBestSkillMatch(candidates, player.team);
+    if (!record) return;
+
+    player.injuryStatus = record.injury_status ?? undefined;
+    player.injuryBodyPart = record.injury_body_part ?? undefined;
+  });
 }
 
 function parseIntOrNull(value: string | null | undefined): number | null {
