@@ -24,7 +24,10 @@ export type Action =
     }
   | {
       type: 'draft';
-      payload: Player;
+      payload: {
+        player: Player;
+        addToRoster?: { round: number; pick: number };
+      };
     }
   | { type: 'undo' }
   | { type: 'reset' }
@@ -94,12 +97,18 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
         rankingsLastModified: action.payload.lastModified,
       };
       break;
-    case 'draft':
+    case 'draft': {
+      const { player, addToRoster } = action.payload;
       newState = {
         ...state,
-        draftedPlayers: [action.payload, ...state.draftedPlayers],
+        draftedPlayers: [player, ...state.draftedPlayers],
+        // when it's the user's pick, roster the player in the same update
+        roster: addToRoster
+          ? [...state.roster, { ...player, ...addToRoster }]
+          : state.roster,
       };
       break;
+    }
     case 'undo':
       newState = {
         ...state,
