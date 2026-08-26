@@ -9,6 +9,7 @@ export type State = {
   useScarcityAdjustment: boolean;
   rosterSize: Record<Position, number>;
   numTeams: number;
+  draftPosition: number | null;
 };
 
 export type Action =
@@ -21,6 +22,7 @@ export type Action =
   | { type: 'increment-num-teams' }
   | { type: 'decrement-num-teams' }
   | { type: 'set-num-teams'; payload: number }
+  | { type: 'set-draft-position'; payload: number | null }
   | { type: 'reset' }
   | { type: 'hydrate'; payload: State };
 
@@ -44,6 +46,7 @@ export const defaultState: State = {
   useScarcityAdjustment: false,
   rosterSize: RosterSizes,
   numTeams: 10,
+  draftPosition: null,
 };
 
 export const settingsReducer: Reducer<State, Action> = (state, action) => {
@@ -77,6 +80,14 @@ export const settingsReducer: Reducer<State, Action> = (state, action) => {
           isNaN(action.payload.numTeams) || action.payload.numTeams < 4
             ? 10
             : action.payload.numTeams;
+
+        const rawDraftPosition = action.payload.draftPosition;
+        action.payload.draftPosition =
+          typeof rawDraftPosition === 'number' &&
+          Number.isInteger(rawDraftPosition) &&
+          rawDraftPosition >= 1
+            ? rawDraftPosition
+            : null;
 
         newState = action.payload;
         newState.isHydrated = true;
@@ -143,6 +154,9 @@ export const settingsReducer: Reducer<State, Action> = (state, action) => {
         ...state,
         numTeams: action.payload,
       };
+      break;
+    case 'set-draft-position':
+      newState = { ...state, draftPosition: action.payload };
       break;
     case 'reset':
       newState = { ...defaultState, isHydrated: true };
