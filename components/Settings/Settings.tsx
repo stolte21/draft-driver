@@ -10,6 +10,7 @@ import SettingsFormat from './SettingsFormat';
 import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
 import SettingsScarcitySwitch from './SettingsScarcitySwitch';
 import SettingsTeams from './SettingsTeams';
+import SettingsDraftPosition from './SettingsDraftPosition';
 import SettingsRoster from './SettingsRoster';
 import SettingsReset from './SettingsReset';
 
@@ -41,6 +42,7 @@ const Settings = () => {
           <SettingsHidePlayersSwitch />
           <SettingsScarcitySwitch />
           <SettingsTeams />
+          <SettingsDraftPosition />
           <SettingsRoster />
           <Divider />
           <SettingsReset />
