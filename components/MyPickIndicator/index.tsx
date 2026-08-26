@@ -1,10 +1,9 @@
-import { Box } from '@chakra-ui/react';
-import { keyframes } from '@emotion/react';
+import { Box, keyframes } from '@chakra-ui/react';
 import { useDraft } from 'providers/DraftProvider';
 
 const pulse = keyframes`
-  0%, 100% { box-shadow: inset 0 0 18px 4px var(--chakra-colors-blue-400); }
-  50% { box-shadow: inset 0 0 42px 10px var(--chakra-colors-blue-400); }
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 `;
 
 /**
@@ -23,7 +22,9 @@ const MyPickIndicator = () => {
       inset={0}
       zIndex="banner"
       pointerEvents="none"
+      boxShadow="inset 0 0 42px 10px var(--chakra-colors-blue-400)"
       animation={`${pulse} 1.6s ease-in-out infinite`}
+      sx={{ '@media (prefers-reduced-motion: reduce)': { animation: 'none' } }}
       aria-hidden
     />
   );
