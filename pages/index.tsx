@@ -3,6 +3,7 @@ import { Grid, Box, VisuallyHidden } from '@chakra-ui/react';
 import Page from 'components/Page';
 import AppBar from 'components/AppBar';
 import Roster from 'components/Roster';
+import MyPickIndicator from 'components/MyPickIndicator';
 import Toolbar from 'components/Toolbar';
 import DraftBoard from 'components/DraftBoard';
 import StaleRankingsBanner from 'components/StaleRankingsBanner';
@@ -37,6 +38,7 @@ const Index: NextPage = () => {
         </Box>
       </Grid>
       <Roster />
+      <MyPickIndicator />
     </Page>
   );
 };
