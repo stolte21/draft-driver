@@ -19,6 +19,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
+import PlayerDepthChart from 'components/DraftBoard/PlayerDepthChart';
 import usePlayerDetails, { NOT_FOUND_ERROR } from 'hooks/usePlayerDetails';
 import { Player, PlayerDetails } from 'types';
 
@@ -69,7 +70,7 @@ const StatItem = (props: { label: string; value: string | null }) => {
   );
 };
 
-const DetailsBody = (props: { details: PlayerDetails }) => {
+const DetailsBody = (props: { details: PlayerDetails; player: Player }) => {
   const { details } = props;
 
   return (
@@ -141,6 +142,11 @@ const DetailsBody = (props: { details: PlayerDetails }) => {
         />
         <StatItem label="Status" value={details.status} />
       </SimpleGrid>
+
+      <PlayerDepthChart
+        player={props.player}
+        team={details.team ?? props.player.team ?? null}
+      />
 
       {details.news.length > 0 && (
         <>
@@ -260,8 +266,8 @@ const PlayerDetailsModal = (props: PlayerDetailsModalProps) => {
         <ModalCloseButton />
         <ModalBody paddingY={6}>
           {query.isLoading && <LoadingBody />}
-          {query.data ? (
-            <DetailsBody details={query.data} />
+          {query.data && activePlayer ? (
+            <DetailsBody details={query.data} player={activePlayer} />
           ) : (
             query.error &&
             activePlayer && (

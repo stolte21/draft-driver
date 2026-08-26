@@ -86,7 +86,13 @@ const DraftBoardRankingRow = (
     // the copy is a convenience — drafting must not fail when clipboard
     // permission is denied (automation, non-focused documents)
     navigator.clipboard.writeText(player.name).catch(() => {});
-    dispatch({ type: 'draft', payload: player });
+    dispatch({
+      type: 'draft',
+      payload: {
+        player,
+        addToRoster: getters.isMyPick ? getters.nextPick : undefined,
+      },
+    });
   };
 
   return (

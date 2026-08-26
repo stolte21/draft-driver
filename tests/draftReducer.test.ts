@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { draftReducer, State } from '../providers/draftReducer';
+import { Player } from '../types';
 
 const baseState: State = {
   isHydrated: true,
@@ -11,6 +12,17 @@ const baseState: State = {
   avoided: [],
   notes: {},
   keepers: [],
+};
+
+const playerFixture: Player = {
+  id: 'justin_jefferson_WR',
+  rank: 1,
+  pRank: 1,
+  adp: 1,
+  name: 'Justin Jefferson',
+  position: 'WR',
+  isRookie: false,
+  team: 'MIN',
 };
 
 describe('toggle-avoid', () => {
@@ -157,6 +169,39 @@ describe('reset-all', () => {
     expect(result.rankings).toEqual(dirtyState.rankings);
     expect(result.rankingsLastModified).toBe('2026-08-01');
     expect(result.isHydrated).toBe(true);
+  });
+});
+
+describe('draft', () => {
+  it('adds the player to draftedPlayers only, by default', () => {
+    const result = draftReducer(baseState, {
+      type: 'draft',
+      payload: { player: playerFixture },
+    });
+
+    expect(result.draftedPlayers).toEqual([playerFixture]);
+    expect(result.roster).toEqual([]);
+  });
+
+  it('also adds to the roster when addToRoster is present', () => {
+    const result = draftReducer(baseState, {
+      type: 'draft',
+      payload: { player: playerFixture, addToRoster: { round: 2, pick: 8 } },
+    });
+
+    expect(result.draftedPlayers).toEqual([playerFixture]);
+    expect(result.roster).toEqual([{ ...playerFixture, round: 2, pick: 8 }]);
+  });
+
+  it('undo removes an auto-rostered pick from both lists', () => {
+    const drafted = draftReducer(baseState, {
+      type: 'draft',
+      payload: { player: playerFixture, addToRoster: { round: 1, pick: 3 } },
+    });
+    const result = draftReducer(drafted, { type: 'undo' });
+
+    expect(result.draftedPlayers).toEqual([]);
+    expect(result.roster).toEqual([]);
   });
 });
 
