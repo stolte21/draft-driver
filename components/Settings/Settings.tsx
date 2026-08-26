@@ -1,18 +1,5 @@
-import {
-  IconButton,
-  Flex,
-  Divider,
-  createIcon,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { IconButton, createIcon, useDisclosure } from '@chakra-ui/react';
 import SettingsModal from './SettingsModal';
-import SettingsFormat from './SettingsFormat';
-import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
-import SettingsScarcitySwitch from './SettingsScarcitySwitch';
-import SettingsTeams from './SettingsTeams';
-import SettingsDraftPosition from './SettingsDraftPosition';
-import SettingsRoster from './SettingsRoster';
-import SettingsReset from './SettingsReset';
 
 const SettingsIcon = createIcon({
   displayName: 'SettingsIcon',
@@ -36,18 +23,7 @@ const Settings = () => {
         icon={<SettingsIcon />}
         onClick={onOpen}
       />
-      <SettingsModal isOpen={isOpen} onClose={onClose}>
-        <Flex direction="column" gap={4}>
-          <SettingsFormat />
-          <SettingsHidePlayersSwitch />
-          <SettingsScarcitySwitch />
-          <SettingsTeams />
-          <SettingsDraftPosition />
-          <SettingsRoster />
-          <Divider />
-          <SettingsReset />
-        </Flex>
-      </SettingsModal>
+      <SettingsModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

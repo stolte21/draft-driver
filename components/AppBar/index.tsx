@@ -11,6 +11,7 @@ import HomeButton from 'components/HomeButton';
 import ChartsButton from 'components/ChartsButton';
 import AboutButton from 'components/About';
 import SettingsButton from 'components/Settings';
+import AppBarMenu from './AppBarMenu';
 import { useSettings } from 'providers/SettingsProvider';
 import { getFormatName } from 'utils';
 
@@ -21,6 +22,7 @@ const AppBar = () => {
     <Flex
       position="sticky"
       top={0}
+      zIndex="sticky"
       backdropFilter="blur(5px)"
       gridColumn="1 / -1"
       paddingY={2}
@@ -36,7 +38,12 @@ const AppBar = () => {
         paddingX={0}
       >
         <Box flexGrow={1}>
-          <Heading as="p" fontSize="2xl" marginBottom={0.5} whiteSpace="nowrap">
+          <Heading
+            as="p"
+            fontSize={{ base: 'lg', md: '2xl' }}
+            marginBottom={0.5}
+            whiteSpace="nowrap"
+          >
             <Link href="/">Draft Driver</Link>
           </Heading>
 
@@ -50,12 +57,16 @@ const AppBar = () => {
           </Skeleton>
         </Box>
 
-        <Flex gap={2}>
+        <Flex gap={2} display={{ base: 'none', md: 'flex' }}>
           <HomeButton />
           <ChartsButton />
           <SettingsButton />
           <AboutButton />
         </Flex>
+
+        <Box display={{ base: 'block', md: 'none' }}>
+          <AppBarMenu />
+        </Box>
       </Container>
     </Flex>
   );

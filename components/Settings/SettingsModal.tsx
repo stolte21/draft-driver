@@ -7,12 +7,20 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
+  Flex,
+  Divider,
 } from '@chakra-ui/react';
+import SettingsFormat from './SettingsFormat';
+import SettingsHidePlayersSwitch from './SettingsHidePlayersSwitch';
+import SettingsScarcitySwitch from './SettingsScarcitySwitch';
+import SettingsTeams from './SettingsTeams';
+import SettingsDraftPosition from './SettingsDraftPosition';
+import SettingsRoster from './SettingsRoster';
+import SettingsReset from './SettingsReset';
 
 type SettingsModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactElement;
 };
 
 const SettingsModal = (props: SettingsModalProps) => {
@@ -27,7 +35,18 @@ const SettingsModal = (props: SettingsModalProps) => {
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>{props.children}</ModalBody>
+        <ModalBody>
+          <Flex direction="column" gap={4}>
+            <SettingsFormat />
+            <SettingsHidePlayersSwitch />
+            <SettingsScarcitySwitch />
+            <SettingsTeams />
+            <SettingsDraftPosition />
+            <SettingsRoster />
+            <Divider />
+            <SettingsReset />
+          </Flex>
+        </ModalBody>
 
         <ModalFooter>
           <Button onClick={props.onClose}>Close</Button>
