@@ -15,6 +15,7 @@ import {
 } from 'utils';
 import { Player, RosteredPlayer, Position } from 'types';
 import { draftReducer, State, Dispatch } from './draftReducer';
+import { getPickInfo, isUsersPick } from 'utils/draftPosition';
 
 type PlayersMap = Record<string, Player>;
 
@@ -31,6 +32,8 @@ const DraftContext = createContext<
         favoritePlayerIds: Set<string>;
         avoidedPlayerIds: Set<string>;
         keeperPlayerIds: Set<string>;
+        isMyPick: boolean;
+        nextPick: { round: number; pick: number };
         rankingsLastModified?: string;
       };
       dispatch: Dispatch;
@@ -129,6 +132,25 @@ const DraftProvider = (props: { children: ReactNode }) => {
     return new Set(state.keepers.map((player) => player.id));
   }, [state.keepers]);
 
+  // the next overall pick is 1-based: picks made so far + 1. Keepers are
+  // not part of draftedPlayers, so they don't shift the count (matches
+  // DraftBoardPickRow's round/pick derivation).
+  const nextOverallPick = state.draftedPlayers.length + 1;
+
+  const nextPick = useMemo(() => {
+    const { round, pickInRound } = getPickInfo(
+      nextOverallPick,
+      settings.numTeams
+    );
+    return { round, pick: pickInRound };
+  }, [nextOverallPick, settings.numTeams]);
+
+  const isMyPick = useMemo(
+    () =>
+      isUsersPick(nextOverallPick, settings.numTeams, settings.draftPosition),
+    [nextOverallPick, settings.numTeams, settings.draftPosition]
+  );
+
   const isInitializing = state.rankings.length === 0;
 
   const { data: rankingsData, isPending } = useRankings({
@@ -166,6 +188,8 @@ const DraftProvider = (props: { children: ReactNode }) => {
           favoritePlayerIds,
           avoidedPlayerIds,
           keeperPlayerIds,
+          isMyPick,
+          nextPick,
           rankingsLastModified: state.rankingsLastModified,
         },
       }}
