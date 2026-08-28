@@ -1,201 +1,201 @@
 "Rank","Player.Name","Tier","Position","Best.Rank","Worst.Rank","Avg.Rank","Std.Dev"
-1,"Jahmyr Gibbs","1","RB",1,5,1.37,0.82
-2,"Ja'Marr Chase","1","WR",2,6,2.43,0.92
-3,"Bijan Robinson","1","RB",1,7,2.77,0.99
-4,"Puka Nacua","1","WR",2,9,4.28,1.46
-5,"Jaxon Smith-Njigba","1","WR",2,10,6.03,1.26
-6,"Amon-Ra St. Brown","2","WR",4,20,6.96,1.75
-7,"Jonathan Taylor","2","RB",2,20,7.05,3.42
-8,"James Cook III","2","RB",3,23,10.17,3.6
-9,"CeeDee Lamb","2","WR",7,19,10.24,2.85
-10,"Christian McCaffrey","2","RB",3,28,10.39,4.93
-11,"Justin Jefferson","2","WR",7,39,11.8,4.52
-12,"A.J. Brown","3","WR",9,35,14.91,5.94
-13,"Derrick Henry","3","RB",6,28,15.35,3.7
-14,"Nico Collins","3","WR",9,32,15.46,4.87
-15,"Drake London","3","WR",9,35,16.73,5.11
-16,"Saquon Barkley","3","RB",7,33,16.96,5.52
-17,"Brock Bowers","3","TE",15,67,17.38,6.2
-18,"George Pickens","3","WR",10,39,20.03,5.84
-19,"Chase Brown","4","RB",8,42,21.42,7.54
-20,"Kenneth Walker III","4","RB",12,57,23.55,9.6
-21,"Trey McBride","4","TE",21,67,24.5,7.67
-22,"De'Von Achane","4","RB",8,47,24.77,9.18
-23,"Chris Olave","4","WR",10,46,24.9,7.13
-24,"Omarion Hampton","4","RB",8,45,25.11,8.31
-25,"Josh Allen","4","QB",24,28,25.13,0.56
-26,"Malik Nabers","4","WR",11,59,27.86,9.94
-27,"Lamar Jackson","5","QB",25,58,30.05,7.01
-28,"Ashton Jeanty","5","RB",11,57,30.26,11.28
-29,"Rashee Rice","5","WR",10,54,31.07,9.56
-30,"Kyren Williams","5","RB",15,49,31.75,6.9
-31,"Zay Flowers","5","WR",14,54,32.16,8.86
-32,"DeVonta Smith","5","WR",19,59,32.84,8.03
-33,"Tee Higgins","5","WR",14,51,33.36,7.07
-34,"Javonte Williams","5","RB",20,55,35.21,7.35
-35,"Drake Maye","5","QB",25,73,35.29,11.42
-36,"Josh Jacobs","6","RB",15,60,37.54,8.86
-37,"Colston Loveland","6","TE",16,84,37.63,13.23
-38,"Emeka Egbuka","6","WR",14,61,39.04,8.33
-39,"Tetairoa McMillan","6","WR",19,59,39.24,7.14
-40,"Breece Hall","6","RB",24,55,42.15,5.21
-41,"Ladd McConkey","6","WR",21,65,42.84,7.8
-42,"Jaylen Waddle","6","WR",21,75,42.89,9.08
-43,"Joe Burrow","6","QB",27,72,43.29,11.94
-44,"Davante Adams","7","WR",24,69,47.04,9.4
-45,"Jeremiyah Love","7","RB",23,64,47.19,6.98
-46,"Travis Etienne Jr.","7","RB",28,64,48.11,7.34
-47,"Jameson Williams","7","WR",26,83,48.22,11.25
-48,"Garrett Wilson","7","WR",24,70,48.25,8.86
-49,"Terry McLaurin","7","WR",31,74,49.3,8.27
-50,"D'Andre Swift","7","RB",17,64,49.9,8.3
-51,"Jayden Daniels","7","QB",27,100,51.01,15.56
-52,"Christian Watson","7","WR",26,83,51.78,9.68
-53,"Quinshon Judkins","8","RB",31,66,54.29,8.75
-54,"Jalen Hurts","8","QB",29,79,54.42,12.35
-55,"Cam Skattebo","8","RB",40,77,54.44,7.38
-56,"Rome Odunze","8","WR",32,75,55.75,10.18
-57,"Luther Burden III","8","WR",31,75,55.84,10.23
-58,"David Montgomery","8","RB",33,71,55.85,8.06
-59,"Bucky Irving","8","RB",37,78,56.29,8.25
-60,"Mike Evans","8","WR",32,83,57.59,10.76
-61,"DJ Moore","8","WR",21,93,58.38,13.11
-62,"Tyler Warren","8","TE",22,84,58.84,12.89
-63,"Bhayshul Tuten","8","RB",37,87,60.47,8.94
-64,"Jadarian Price","9","RB",34,102,62.45,9.62
-65,"Tucker Kraft","9","TE",34,86,62.74,10.7
-66,"Caleb Williams","9","QB",36,97,65.81,12.33
-67,"TreVeyon Henderson","9","RB",41,92,67.18,9.78
-68,"Justin Herbert","9","QB",29,104,69.61,13.62
-69,"Parker Washington","10","WR",44,114,71.5,13.45
-70,"Marvin Harrison Jr.","10","WR",44,101,73.81,9.56
-71,"Rhamondre Stevenson","10","RB",57,108,75.24,9.4
-72,"Trevor Lawrence","10","QB",53,103,76.15,12.56
-73,"Brian Thomas Jr.","10","WR",48,115,76.8,11.51
-74,"Dak Prescott","10","QB",53,104,76.84,11.66
-75,"Tony Pollard","10","RB",56,102,78.11,9.96
-76,"Jaylen Warren","10","RB",57,102,78.46,8.33
-77,"Carnell Tate","10","WR",59,116,78.48,11.6
-78,"DK Metcalf","10","WR",51,101,78.65,9.34
-79,"Sam LaPorta","10","TE",56,130,80.39,11.37
-80,"J.K. Dobbins","10","RB",63,121,82.02,11.17
-81,"Rico Dowdle","10","RB",60,113,83.26,11.66
-82,"Courtland Sutton","11","WR",51,115,84.75,11.59
-83,"Jonathon Brooks","11","RB",55,141,85.49,16.45
-84,"Quentin Johnston","11","WR",65,132,87.68,11.16
-85,"Blake Corum","11","RB",64,127,88,11.07
-86,"Harold Fannin Jr.","11","TE",55,111,88.8,12.1
-87,"Alec Pierce","11","WR",50,164,89.55,20.45
-88,"Kyle Pitts Sr.","11","TE",67,108,90.28,8.7
-89,"Jacory Croskey-Merritt","11","RB",64,121,90.54,10.41
-90,"Chris Godwin Jr.","11","WR",69,132,90.82,12.95
-91,"George Kittle","11","TE",67,180,91.63,15.46
-92,"Brock Purdy","12","QB",62,124,95.31,10.16
-93,"Jordan Mason","12","RB",64,134,95.61,15.64
-94,"Jaxson Dart","12","QB",58,124,96.63,13.35
-95,"Chuba Hubbard","12","RB",66,134,96.88,15.52
-96,"Bo Nix","12","QB",68,128,98.2,10.69
-97,"Michael Wilson","12","WR",67,142,99.22,15.48
-98,"Jordan Addison","12","WR",69,153,99.66,15.53
-99,"Patrick Mahomes II","12","QB",62,124,100.48,11.34
-100,"Dalton Kincaid","12","TE",76,137,101.7,16.83
-101,"Kyle Monangai","13","RB",72,143,102.88,13.79
-102,"Jayden Reed","13","WR",75,138,103.67,14.2
-103,"Matthew Stafford","13","QB",62,133,103.95,13.72
-104,"Jared Goff","13","QB",62,128,105.81,10.89
-105,"Michael Pittman Jr.","13","WR",70,139,105.99,15.25
-106,"Travis Kelce","13","TE",76,144,107.32,10.8
-107,"Dallas Goedert","14","TE",84,180,111.34,16.58
-108,"RJ Harvey","14","RB",72,156,111.47,14.32
-109,"Makai Lemon","14","WR",75,162,111.79,17.89
-110,"Kyler Murray","14","QB",97,152,113.44,10.91
-111,"Josh Downs","14","WR",75,153,113.51,15.69
-112,"Rachaad White","14","RB",82,156,113.87,13.01
-113,"Kenny Gainwell","14","RB",82,148,115.73,9.44
-114,"Jakobi Meyers","14","WR",75,168,116.2,18.49
-115,"Chris Rodriguez Jr.","14","RB",76,159,117.08,16.85
-116,"Isaiah Likely","14","TE",84,208,117.19,26.19
-117,"Mark Andrews","15","TE",76,195,117.94,23.56
-118,"Aaron Jones Sr.","15","RB",82,161,119.59,12.42
-119,"Jordan Love","15","QB",90,142,120.54,10.22
-120,"Baker Mayfield","15","QB",68,136,120.55,10.6
-121,"Wan'Dale Robinson","15","WR",81,162,120.99,15.81
-122,"Stefon Diggs","14","WR",74,223,113.07,30.08
-123,"Xavier Worthy","15","WR",87,183,121.38,16.39
-124,"Tyler Shough","16","QB",97,241,126.82,16.39
-125,"Romeo Doubs","16","WR",81,179,127.77,17.51
-126,"Tyler Allgeier","16","RB",95,159,128.97,12.99
-127,"Matthew Golden","16","WR",81,183,129.07,20.66
-128,"Woody Marks","16","RB",95,174,131.87,14.84
-129,"KC Concepcion","16","WR",83,292,130.35,27.69
-130,"Malik Willis","16","QB",97,305,134.97,30.61
-131,"Jake Ferguson","16","TE",105,208,135.02,18.96
-132,"Jalen Coker","16","WR",89,179,135.72,17.81
-133,"De'Zhaun Stribling","16","WR",74,271,131.46,42.29
-134,"Jordyn Tyson","16","WR",91,238,140.09,31.51
-135,"Juwan Johnson","17","TE",96,228,141.93,26.37
-136,"Tank Bigsby","17","RB",121,207,142.12,13.93
-137,"Rashid Shaheed","17","WR",109,194,140.49,15.55
-138,"Sam Darnold","17","QB",112,213,144.17,15.88
-139,"Khalil Shakir","17","WR",115,175,144.65,14.06
-140,"Deebo Samuel Sr.","17","WR",80,229,137.8,33.94
-141,"Zach Charbonnet","17","RB",99,257,141.27,24.49
-142,"Keaton Mitchell","17","RB",102,282,144.2,26.14
-143,"C.J. Stroud","18","QB",107,241,149.25,19.03
-144,"Jonah Coleman","17","RB",108,277,147.63,25.74
-145,"Hunter Henry","18","TE",110,208,152.63,22.14
-146,"Daniel Jones","18","QB",112,275,152.91,28.04
-147,"Tyjae Spears","18","RB",117,236,155.98,25.97
-148,"Isiah Pacheco","18","RB",117,230,153.85,21.5
-149,"Brian Robinson Jr.","18","RB",119,264,149.03,19.07
-150,"Brenton Strange","18","TE",111,225,157.38,25.42
-151,"Braelon Allen","19","RB",113,270,158.06,27.32
-152,"Denzel Boston","19","WR",114,308,161.73,33.53
-153,"Tyrone Tracy Jr.","19","RB",113,282,159.63,33.15
-154,"Houston Texans","18","DST",150,169,152.01,4.89
-155,"Cam Ward","20","QB",133,337,167.08,30.57
-156,"Chig Okonkwo","20","TE",123,235,168.63,26.51
-157,"MarShawn Lloyd","20","RB",113,317,166.67,46.23
-158,"Mike Washington Jr.","18","RB",107,291,155.34,35.24
-159,"Adonai Mitchell","20","WR",116,288,170.58,27.97
-160,"Tre Tucker","20","WR",115,246,167.58,26
-161,"Dylan Sampson","20","RB",119,257,170.59,25.27
-162,"Jauan Jennings","20","WR",109,272,171.07,30
-163,"Alvin Kamara","20","RB",119,282,175.91,34.13
-164,"Denver Broncos","19","DST",150,184,163.31,5.64
-165,"Jalen McMillan","20","WR",116,297,172.69,27.97
-166,"Kayshon Boutte","20","WR",106,272,174.15,30.24
-167,"Jerry Jeudy","21","WR",133,266,179.31,26.23
-168,"Seattle Seahawks","20","DST",150,279,167.24,12.13
-169,"Los Angeles Rams","20","DST",150,205,167.26,7.52
-170,"Dalton Schultz","22","TE",123,235,186.57,31.43
-171,"Terrance Ferguson","22","TE",105,376,183.46,45.42
-172,"Bryce Young","22","QB",136,339,188.56,34.77
-173,"Emmett Johnson","21","RB",141,277,182.7,30.68
-174,"Tre' Harris","22","WR",125,276,189.28,29.09
-175,"Philadelphia Eagles","20","DST",160,234,173.94,8.47
-176,"AJ Barner","23","TE",130,253,195.37,24.44
-177,"Dontayvion Wicks","23","WR",114,295,194.17,34.36
-178,"Oronde Gadsden II","23","TE",110,290,192.39,41.99
-179,"Jalen Nailor","22","WR",116,297,188.81,33.6
-180,"Ray Davis","22","RB",131,257,188.86,30.51
-181,"Pittsburgh Steelers","22","DST",164,205,185.34,6.3
-182,"Kimani Vidal","22","RB",151,303,190.11,34.81
-183,"Brandon Aubrey","22","K",170,192,185.99,2.44
-184,"New England Patriots","22","DST",167,219,184.12,5.96
-185,"Calvin Ridley","23","WR",125,306,195.24,32.81
-186,"Minnesota Vikings","22","DST",170,248,184.76,9.88
-187,"Omar Cooper Jr.","23","WR",138,327,194.44,37.03
-188,"Ryan Flournoy","23","WR",138,330,195.02,30.56
-189,"Travis Hunter","23","WR",101,311,193.65,41.13
-190,"Los Angeles Chargers","23","DST",169,353,192.19,21.25
-191,"Cameron Dicker","23","K",174,332,194.39,14.89
-192,"Jacksonville Jaguars","22","DST",150,279,188.37,15.91
-193,"Ka'imi Fairbairn","23","K",178,210,191.89,3.79
-194,"Sean Tucker","23","RB",140,359,199.64,37.11
-195,"Nicholas Singleton","24","RB",143,320,205.59,37.16
-196,"Cam Little","23","K",191,252,198.42,7.56
-197,"Baltimore Ravens","23","DST",170,355,196.64,22.88
-198,"Jason Myers","23","K",179,252,200.06,8.2
-199,"Pat Bryant","24","WR",125,343,206.25,33.69
-200,"Malik Washington","24","WR",148,300,208.45,32.54
+1,"Jahmyr Gibbs","1","RB",1,5,1.38,0.84
+2,"Ja'Marr Chase","1","WR",2,6,2.49,0.99
+3,"Bijan Robinson","1","RB",1,7,2.75,1.01
+4,"Puka Nacua","1","WR",2,9,4.24,1.49
+5,"Jaxon Smith-Njigba","1","WR",2,11,6.04,1.32
+6,"Amon-Ra St. Brown","2","WR",4,20,6.96,1.77
+7,"Jonathan Taylor","2","RB",2,20,7.1,3.52
+8,"CeeDee Lamb","2","WR",7,21,10.17,2.9
+9,"James Cook III","2","RB",3,23,10.22,3.61
+10,"Christian McCaffrey","2","RB",3,28,10.28,4.96
+11,"Justin Jefferson","2","WR",7,39,12.02,4.49
+12,"A.J. Brown","3","WR",7,38,14.87,6.26
+13,"Derrick Henry","3","RB",6,23,15.4,3.63
+14,"Nico Collins","3","WR",9,35,15.84,4.82
+15,"Drake London","3","WR",9,35,16.52,5.31
+16,"Saquon Barkley","3","RB",7,33,16.84,5.5
+17,"Brock Bowers","3","TE",15,67,17.56,6.24
+18,"George Pickens","3","WR",10,39,19.9,6.07
+19,"Chase Brown","4","RB",8,42,21.41,7.47
+20,"Kenneth Walker III","4","RB",10,47,23.15,8.91
+21,"Trey McBride","4","TE",16,67,24.39,7.74
+22,"De'Von Achane","4","RB",8,47,24.55,9.3
+23,"Chris Olave","4","WR",10,46,24.98,6.95
+24,"Josh Allen","4","QB",24,28,25.13,0.56
+25,"Omarion Hampton","4","RB",8,45,25.16,8.29
+26,"Malik Nabers","4","WR",10,51,27.21,9.6
+27,"Ashton Jeanty","5","RB",11,57,29.84,11.26
+28,"Lamar Jackson","5","QB",25,58,30.15,7.02
+29,"Rashee Rice","5","WR",10,61,31.69,9.95
+30,"Kyren Williams","5","RB",15,49,31.72,6.82
+31,"Zay Flowers","5","WR",18,54,32.51,8.94
+32,"DeVonta Smith","5","WR",19,59,33.35,8.01
+33,"Tee Higgins","5","WR",18,51,33.42,7.48
+34,"Javonte Williams","6","RB",20,55,35.06,7.17
+35,"Drake Maye","6","QB",25,73,35.29,11.42
+36,"Colston Loveland","7","TE",16,84,37.99,13.54
+37,"Josh Jacobs","7","RB",15,63,38.77,9.65
+38,"Tetairoa McMillan","7","WR",19,59,39.18,7.04
+39,"Emeka Egbuka","7","WR",14,65,39.21,8.8
+40,"Breece Hall","7","RB",24,55,41.89,5.33
+41,"Jaylen Waddle","7","WR",21,75,42.59,9.4
+42,"Ladd McConkey","7","WR",21,65,42.83,7.54
+43,"Joe Burrow","7","QB",27,72,43.5,12.27
+44,"Jeremiyah Love","8","RB",21,64,46.91,7.46
+45,"Davante Adams","8","WR",24,69,46.98,9.69
+46,"Travis Etienne Jr.","8","RB",28,64,47.83,7.34
+47,"Garrett Wilson","8","WR",24,70,47.86,8.87
+48,"Jameson Williams","8","WR",26,83,48.03,11.23
+49,"Terry McLaurin","8","WR",31,74,49.37,8.27
+50,"D'Andre Swift","8","RB",17,64,50.15,8.32
+51,"Jayden Daniels","8","QB",27,100,51.1,15.57
+52,"Christian Watson","8","WR",26,83,52.27,9.88
+53,"Jalen Hurts","9","QB",29,79,54.43,12.62
+54,"Cam Skattebo","9","RB",40,77,54.46,7.45
+55,"Quinshon Judkins","9","RB",31,66,54.51,8.63
+56,"Rome Odunze","9","WR",32,75,55.36,10.12
+57,"Luther Burden III","9","WR",26,75,55.64,10.54
+58,"David Montgomery","9","RB",33,71,55.71,8.04
+59,"Bucky Irving","9","RB",37,78,55.89,8.29
+60,"DJ Moore","9","WR",21,93,58,12.96
+61,"Mike Evans","9","WR",32,83,58.33,11.03
+62,"Tyler Warren","9","TE",22,84,58.63,12.83
+63,"Bhayshul Tuten","10","RB",37,87,60.65,9.11
+64,"Jadarian Price","10","RB",34,102,62.07,9.57
+65,"Tucker Kraft","10","TE",34,86,62.52,11.36
+66,"Caleb Williams","10","QB",36,97,65.26,12.38
+67,"TreVeyon Henderson","10","RB",42,93,67.27,9.79
+68,"Justin Herbert","10","QB",29,104,69.77,13.6
+69,"Parker Washington","10","WR",44,114,71.28,13.66
+70,"Marvin Harrison Jr.","11","WR",44,106,73.94,9.7
+71,"Rhamondre Stevenson","11","RB",55,102,74.79,8.84
+72,"Trevor Lawrence","11","QB",53,104,76.34,12.93
+73,"Dak Prescott","11","QB",53,104,76.96,11.9
+74,"Brian Thomas Jr.","11","WR",48,115,77.31,10.76
+75,"Tony Pollard","11","RB",56,102,78.32,9.96
+76,"Carnell Tate","11","WR",59,116,78.44,11.6
+77,"Jaylen Warren","11","RB",60,102,78.6,8.19
+78,"DK Metcalf","11","WR",51,106,78.68,9.36
+79,"Sam LaPorta","11","TE",56,130,80.64,11.37
+80,"J.K. Dobbins","11","RB",63,108,82.58,11.12
+81,"Rico Dowdle","11","RB",63,113,83.56,11.76
+82,"Courtland Sutton","11","WR",51,115,84.64,11.46
+83,"Jonathon Brooks","11","RB",55,141,85.66,16.93
+84,"Alec Pierce","11","WR",50,138,87.61,17.55
+85,"Blake Corum","11","RB",64,127,87.78,11.11
+86,"Quentin Johnston","11","WR",65,132,88.03,11.36
+87,"Harold Fannin Jr.","11","TE",55,111,88.65,12.27
+88,"Jacory Croskey-Merritt","12","RB",64,121,90.49,10.54
+89,"Kyle Pitts Sr.","12","TE",67,123,90.57,9.26
+90,"Chris Godwin Jr.","12","WR",69,132,91.07,13.06
+91,"George Kittle","12","TE",67,180,91.66,16.06
+92,"Brock Purdy","12","QB",62,124,95.25,10.25
+93,"Jordan Mason","12","RB",64,134,95.46,15.55
+94,"Jaxson Dart","12","QB",58,124,96.38,13.13
+95,"Chuba Hubbard","12","RB",66,140,96.57,15.76
+96,"Bo Nix","12","QB",68,128,97.88,10.57
+97,"Michael Wilson","12","WR",67,142,99.29,15.98
+98,"Jordan Addison","12","WR",69,153,99.38,14.96
+99,"Patrick Mahomes II","12","QB",62,124,100.84,11.7
+100,"Dalton Kincaid","12","TE",76,137,101.24,16.5
+101,"Kyle Monangai","12","RB",72,143,102.89,13.92
+102,"Jayden Reed","12","WR",75,138,103.61,13.88
+103,"Matthew Stafford","12","QB",62,133,104.09,13.91
+104,"Jared Goff","12","QB",62,128,105.76,10.9
+105,"Michael Pittman Jr.","12","WR",70,139,106.3,15.03
+106,"Travis Kelce","13","TE",76,144,107.46,10.95
+107,"RJ Harvey","13","RB",72,143,110.95,14.21
+108,"Makai Lemon","13","WR",74,153,111.17,18.3
+109,"Dallas Goedert","13","TE",84,180,111.17,16.81
+110,"Kyler Murray","13","QB",90,152,113.32,11.15
+111,"Rachaad White","13","RB",82,156,114.52,13.54
+112,"Josh Downs","13","WR",75,153,114.59,15.1
+113,"Jakobi Meyers","13","WR",75,168,116.27,18.62
+114,"Kenny Gainwell","13","RB",87,148,116.47,8.63
+115,"Chris Rodriguez Jr.","13","RB",76,159,117.63,16.82
+116,"Isaiah Likely","13","TE",84,208,117.65,26.16
+117,"Mark Andrews","13","TE",76,195,118.9,23.35
+118,"Aaron Jones Sr.","13","RB",82,163,119.8,12.53
+119,"Baker Mayfield","13","QB",68,136,120.46,10.74
+120,"Jordan Love","13","QB",90,142,120.62,10.29
+121,"Wan'Dale Robinson","13","WR",81,162,121.79,15.28
+122,"Xavier Worthy","13","WR",87,183,121.93,16.31
+123,"Stefon Diggs","13","WR",74,223,114.38,30.45
+124,"Tyler Shough","14","QB",97,241,126.82,16.05
+125,"Romeo Doubs","14","WR",81,179,127.48,17.8
+126,"Tyler Allgeier","14","RB",92,159,128.42,13.24
+127,"Matthew Golden","14","WR",81,183,128.82,20.99
+128,"KC Concepcion","14","WR",81,292,128.62,28.53
+129,"Woody Marks","14","RB",99,163,131.3,14.4
+130,"Malik Willis","14","QB",97,305,134.57,30.89
+131,"Jake Ferguson","14","TE",105,225,134.9,19.69
+132,"Jalen Coker","14","WR",89,179,136.31,17.57
+133,"De'Zhaun Stribling","14","WR",74,268,131.79,42.19
+134,"Jordyn Tyson","14","WR",91,238,139.88,30.65
+135,"Tank Bigsby","15","RB",121,207,142.16,13.91
+136,"Juwan Johnson","15","TE",96,228,142.35,26.3
+137,"Rashid Shaheed","15","WR",114,194,140.77,15.79
+138,"Sam Darnold","15","QB",112,213,143.88,15.9
+139,"Khalil Shakir","15","WR",115,175,144.9,13.9
+140,"Deebo Samuel Sr.","14","WR",80,229,137.83,33.88
+141,"Zach Charbonnet","15","RB",99,257,140.67,24.47
+142,"Keaton Mitchell","15","RB",102,282,144.83,26.48
+143,"C.J. Stroud","15","QB",107,241,149.88,18.84
+144,"Jonah Coleman","15","RB",102,277,147.49,26.1
+145,"Hunter Henry","15","TE",110,202,151.77,21.29
+146,"Daniel Jones","15","QB",112,275,152.43,27.97
+147,"Tyjae Spears","15","RB",117,236,155.05,25.08
+148,"Isiah Pacheco","15","RB",117,227,153.05,19.63
+149,"Brian Robinson Jr.","15","RB",119,264,149.67,19.24
+150,"Brenton Strange","15","TE",111,225,156.59,23.71
+151,"Braelon Allen","15","RB",113,270,158.18,27.43
+152,"Denzel Boston","16","WR",114,308,161.11,33.24
+153,"Tyrone Tracy Jr.","16","RB",113,282,162.15,33.8
+154,"Cam Ward","16","QB",133,337,167.28,30.57
+155,"MarShawn Lloyd","16","RB",99,317,165.67,47.57
+156,"Mike Washington Jr.","15","RB",102,291,154.14,33.9
+157,"Houston Texans","15","DST",149,169,152.02,4.92
+158,"Chig Okonkwo","16","TE",123,235,169.74,26.55
+159,"Adonai Mitchell","16","WR",116,237,169.83,25.79
+160,"Dylan Sampson","16","RB",119,257,169.2,23.52
+161,"Tre Tucker","16","WR",115,246,166.75,27.01
+162,"Alvin Kamara","16","RB",119,282,174.91,34
+163,"Kayshon Boutte","16","WR",106,272,172.97,29.06
+164,"Jalen McMillan","16","WR",116,297,173.11,27.99
+165,"Jauan Jennings","16","WR",109,272,171.44,30.45
+166,"Denver Broncos","16","DST",150,184,163.13,5.59
+167,"Jerry Jeudy","17","WR",133,266,179.95,25.89
+168,"Seattle Seahawks","16","DST",150,279,167.24,12.19
+169,"Los Angeles Rams","16","DST",150,205,167.43,7.49
+170,"Terrance Ferguson","17","TE",96,376,183.5,46.95
+171,"Dalton Schultz","17","TE",111,235,187.8,31.97
+172,"Bryce Young","17","QB",136,339,187.81,34.27
+173,"Emmett Johnson","17","RB",141,277,182.29,30.74
+174,"Tre' Harris","17","WR",125,276,189.89,29.17
+175,"Ray Davis","20","RB",131,250,189,30.31
+176,"Philadelphia Eagles","18","DST",160,234,173.84,8.48
+177,"AJ Barner","23","TE",130,267,195.58,24.93
+178,"Dontayvion Wicks","22","WR",114,295,193.88,34.24
+179,"Oronde Gadsden II","21","TE",105,290,192.35,44
+180,"Kimani Vidal","21","RB",151,303,190.52,34.68
+181,"Jalen Nailor","21","WR",116,297,190.57,33.32
+182,"Calvin Ridley","22","WR",125,306,194.96,33.23
+183,"Pittsburgh Steelers","19","DST",164,205,185.36,6.33
+184,"New England Patriots","19","DST",167,355,185.96,18.35
+185,"Brandon Aubrey","19","K",170,192,185.98,2.45
+186,"Omar Cooper Jr.","21","WR",135,327,192.77,37.42
+187,"Ryan Flournoy","22","WR",138,333,194.73,31.04
+188,"Minnesota Vikings","19","DST",170,248,184.54,9.73
+189,"Travis Hunter","22","WR",101,311,194.25,41.32
+190,"Los Angeles Chargers","21","DST",169,353,192.24,21.34
+191,"Cameron Dicker","22","K",174,332,194.45,14.96
+192,"Jacksonville Jaguars","20","DST",150,279,188.3,15.81
+193,"Nicholas Singleton","25","RB",143,320,205.94,37.64
+194,"Ka'imi Fairbairn","21","K",178,210,191.88,3.8
+195,"Sean Tucker","24","RB",143,359,200.38,36.42
+196,"Cam Little","24","K",191,252,198.39,7.56
+197,"Baltimore Ravens","24","DST",170,355,197.14,23.03
+198,"Pat Bryant","25","WR",120,343,207.31,33.56
+199,"Jason Myers","24","K",179,252,200.08,8.23
+200,"Kenyon Sadiq","25","TE",119,366,210.33,37.76
