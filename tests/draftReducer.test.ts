@@ -203,6 +203,18 @@ describe('draft', () => {
     expect(result.draftedPlayers).toEqual([]);
     expect(result.roster).toEqual([]);
   });
+
+  it('undo is a no-op when nothing has been drafted', () => {
+    const state = {
+      ...baseState,
+      roster: [{ ...playerFixture, round: 1, pick: 3 }],
+    };
+
+    const result = draftReducer(state, { type: 'undo' });
+
+    expect(result.draftedPlayers).toEqual([]);
+    expect(result.roster).toEqual([{ ...playerFixture, round: 1, pick: 3 }]);
+  });
 });
 
 describe('hydrate notes', () => {

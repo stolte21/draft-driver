@@ -109,15 +109,21 @@ export const draftReducer: Reducer<State, Action> = (state, action) => {
       };
       break;
     }
-    case 'undo':
-      newState = {
-        ...state,
-        draftedPlayers: state.draftedPlayers.filter((_, i) => i !== 0),
-        roster: state.roster.filter(
-          (player) => player.id !== state.draftedPlayers[0].id
-        ),
-      };
+    case 'undo': {
+      const lastDrafted = state.draftedPlayers[0];
+
+      // nothing drafted yet, so there's nothing to undo
+      newState = lastDrafted
+        ? {
+            ...state,
+            draftedPlayers: state.draftedPlayers.filter((_, i) => i !== 0),
+            roster: state.roster.filter(
+              (player) => player.id !== lastDrafted.id
+            ),
+          }
+        : state;
       break;
+    }
     case 'reset':
       newState = {
         ...state,
